@@ -10,3 +10,4 @@ public class InventariosapiApplication {
         SpringApplication.run(InventariosapiApplication.class, args);
     }
 }
+//comentario
