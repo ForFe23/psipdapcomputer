@@ -13,7 +13,7 @@ public class ActaMapper {
             return null;
         }
         List<ActaItem> items = origen.getItems() == null ? List.of() : origen.getItems().stream().map(this::toDomainItem).toList();
-        return new Acta(origen.getId(), origen.getCodigo(), origen.getIdCliente(), origen.getIdEquipo(), origen.getFechaActa(), origen.getTema(), origen.getEntregadoPor(), origen.getRecibidoPor(), origen.getCargoEntrega(), origen.getCargoRecibe(), origen.getDepartamentoUsuario(), origen.getCiudadEquipo(), origen.getUbicacionUsuario(), origen.getObservacionesGenerales(), origen.getEquipoTipo(), origen.getEquipoSerie(), origen.getEquipoModelo(), origen.getCreadoEn(), origen.getCreadoPor(), items);
+        return new Acta(origen.getId(), origen.getCodigo(), origen.getEstado(), origen.getIdCliente(), origen.getIdEquipo(), origen.getFechaActa(), origen.getTema(), origen.getEntregadoPor(), origen.getRecibidoPor(), origen.getCargoEntrega(), origen.getCargoRecibe(), origen.getDepartamentoUsuario(), origen.getCiudadEquipo(), origen.getUbicacionUsuario(), origen.getObservacionesGenerales(), origen.getEquipoTipo(), origen.getEquipoSerie(), origen.getEquipoModelo(), origen.getCreadoEn(), origen.getCreadoPor(), items);
     }
 
     public ActaJpa toJpa(Acta origen) {
@@ -23,6 +23,7 @@ public class ActaMapper {
         ActaJpa destino = ActaJpa.builder()
                 .id(origen.id())
                 .codigo(origen.codigo())
+                .estado(origen.estado())
                 .idCliente(origen.idCliente())
                 .idEquipo(origen.idEquipo())
                 .fechaActa(origen.fechaActa())

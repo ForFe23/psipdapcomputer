@@ -13,7 +13,7 @@ public class ActaDtoMapper {
         }
         Integer actaId = origen.id();
         List<ActaItem> items = origen.items() == null ? List.of() : origen.items().stream().map(item -> toDomainItem(item, actaId)).toList();
-        return new Acta(origen.id(), origen.codigo(), origen.idCliente(), origen.idEquipo(), origen.fechaActa(), origen.tema(), origen.entregadoPor(), origen.recibidoPor(), origen.cargoEntrega(), origen.cargoRecibe(), origen.departamentoUsuario(), origen.ciudadEquipo(), origen.ubicacionUsuario(), origen.observacionesGenerales(), origen.equipoTipo(), origen.equipoSerie(), origen.equipoModelo(), origen.creadoEn(), origen.creadoPor(), items);
+        return new Acta(origen.id(), origen.codigo(), origen.estado(), origen.idCliente(), origen.idEquipo(), origen.fechaActa(), origen.tema(), origen.entregadoPor(), origen.recibidoPor(), origen.cargoEntrega(), origen.cargoRecibe(), origen.departamentoUsuario(), origen.ciudadEquipo(), origen.ubicacionUsuario(), origen.observacionesGenerales(), origen.equipoTipo(), origen.equipoSerie(), origen.equipoModelo(), origen.creadoEn(), origen.creadoPor(), items);
     }
 
     public ActaDto toDto(Acta origen) {
@@ -21,7 +21,7 @@ public class ActaDtoMapper {
             return null;
         }
         List<ActaItemDto> items = origen.items() == null ? List.of() : origen.items().stream().map(this::toDtoItem).toList();
-        return new ActaDto(origen.id(), origen.codigo(), origen.idCliente(), origen.idEquipo(), origen.fechaActa(), origen.tema(), origen.entregadoPor(), origen.recibidoPor(), origen.cargoEntrega(), origen.cargoRecibe(), origen.departamentoUsuario(), origen.ciudadEquipo(), origen.ubicacionUsuario(), origen.observacionesGenerales(), origen.equipoTipo(), origen.equipoSerie(), origen.equipoModelo(), origen.creadoEn(), origen.creadoPor(), items);
+        return new ActaDto(origen.id(), origen.codigo(), origen.estado(), origen.idCliente(), origen.idEquipo(), origen.fechaActa(), origen.tema(), origen.entregadoPor(), origen.recibidoPor(), origen.cargoEntrega(), origen.cargoRecibe(), origen.departamentoUsuario(), origen.ciudadEquipo(), origen.ubicacionUsuario(), origen.observacionesGenerales(), origen.equipoTipo(), origen.equipoSerie(), origen.equipoModelo(), origen.creadoEn(), origen.creadoPor(), items);
     }
 
     private ActaItem toDomainItem(ActaItemDto origen, Integer actaId) {

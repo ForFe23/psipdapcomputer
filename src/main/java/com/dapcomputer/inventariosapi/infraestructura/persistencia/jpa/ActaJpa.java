@@ -1,8 +1,11 @@
 package com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa;
 
+import com.dapcomputer.inventariosapi.dominio.entidades.EstadoActa;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,6 +34,10 @@ public class ActaJpa {
 
     @Column(name = "acta_code", length = 40, unique = true)
     private String codigo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", length = 30, nullable = false)
+    private EstadoActa estado;
 
     @Column(name = "idCliente")
     private Integer idCliente;
