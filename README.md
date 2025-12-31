@@ -17,7 +17,7 @@ Prototipo web para gestionar el inventario TI y las actas de entrega de un clien
 - `usuarios`, `cliente`, `incidente`, `acta_seq`
 
 ## Configuración
-- Base de datos: PostgreSQL remoto `186.71.192.250:5432/psipdapcomputer`, esquema `public`.
+- Base de datos: PostgreSQL remoto `'ip publica de mi casa':5432/psipdapcomputer`, esquema `public`.
 - DDL: `spring.jpa.hibernate.ddl-auto=update` (actualiza tablas sin dropear el esquema).
 
 ## Próximos pasos sugeridos
