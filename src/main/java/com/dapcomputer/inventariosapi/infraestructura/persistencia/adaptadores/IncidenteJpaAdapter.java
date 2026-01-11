@@ -11,10 +11,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class IncidenteJpaAdapter implements IncidenteRepositorio {
     private final IncidenteSpringRepository repository;
-    private final IncidenteMapper mapper = new IncidenteMapper();
+    private final IncidenteMapper mapper;
 
-    public IncidenteJpaAdapter(IncidenteSpringRepository repository) {
+    public IncidenteJpaAdapter(IncidenteSpringRepository repository, IncidenteMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -27,5 +28,15 @@ public class IncidenteJpaAdapter implements IncidenteRepositorio {
     @Override
     public List<Incidente> listarPorCliente(Long idCliente) {
         return repository.findByIdCliente(idCliente).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Incidente> listarPorSerieEquipo(String serieEquipo) {
+        return repository.findBySerieEquipo(serieEquipo).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Incidente> listarPorUsuario(Integer idUsuario) {
+        return repository.findByIdUsuario(idUsuario).stream().map(mapper::toDomain).toList();
     }
 }

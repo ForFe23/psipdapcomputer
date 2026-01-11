@@ -9,4 +9,5 @@ public interface EquipoRepositorio {
     Equipo guardar(Equipo equipo);
     Optional<Equipo> buscarPorId(EquipoId id);
     List<Equipo> listar();
+    Optional<Equipo> buscarPorSerie(String serie);
 }

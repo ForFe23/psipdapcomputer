@@ -42,4 +42,12 @@ public class EquipoJpaAdapter implements EquipoRepositorio {
     public List<Equipo> listar() {
         return repository.findAll().stream().map(mapper::toDomain).toList();
     }
+
+    @Override
+    public Optional<Equipo> buscarPorSerie(String serie) {
+        if (serie == null) {
+            return Optional.empty();
+        }
+        return repository.findByIdentificador_Serie(serie).map(mapper::toDomain);
+    }
 }
