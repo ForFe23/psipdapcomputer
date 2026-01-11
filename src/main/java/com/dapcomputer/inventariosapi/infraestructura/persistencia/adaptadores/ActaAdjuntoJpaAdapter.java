@@ -8,24 +8,27 @@ import com.dapcomputer.inventariosapi.infraestructura.persistencia.mapeadores.Ac
 import com.dapcomputer.inventariosapi.infraestructura.repositorios.ActaAdjuntoSpringRepository;
 import com.dapcomputer.inventariosapi.infraestructura.repositorios.ActaSpringRepository;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Repository
 public class ActaAdjuntoJpaAdapter implements ActaAdjuntoRepositorio {
     private final ActaAdjuntoSpringRepository repository;
     private final ActaSpringRepository actaRepository;
-    private final ActaAdjuntoMapper mapper = new ActaAdjuntoMapper();
+    private final ActaAdjuntoMapper mapper;
 
-    public ActaAdjuntoJpaAdapter(ActaAdjuntoSpringRepository repository, ActaSpringRepository actaRepository) {
+    public ActaAdjuntoJpaAdapter(ActaAdjuntoSpringRepository repository, ActaSpringRepository actaRepository, ActaAdjuntoMapper mapper) {
         this.repository = repository;
         this.actaRepository = actaRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public ActaAdjunto guardar(ActaAdjunto adjunto) {
         ActaJpa acta = adjunto.idActa() != null ? actaRepository.findById(adjunto.idActa()).orElse(null) : null;
         if (acta == null) {
-            throw new IllegalArgumentException("Acta no encontrada: " + adjunto.idActa());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Acta no encontrada");
         }
         ActaAdjuntoJpa entidad = mapper.toJpa(adjunto, acta);
         ActaAdjuntoJpa guardado = repository.save(entidad);

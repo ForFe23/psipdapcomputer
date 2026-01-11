@@ -3,31 +3,34 @@ package com.dapcomputer.inventariosapi.infraestructura.persistencia.mapeadores;
 import com.dapcomputer.inventariosapi.dominio.entidades.Movimiento;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.ActaJpa;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.MovimientoJpa;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class MovimientoMapper {
-    public Movimiento toDomain(MovimientoJpa origen) {
-        if (origen == null) {
-            return null;
-        }
-        return new Movimiento(origen.getId(), origen.getActa() != null ? origen.getActa().getId() : null, origen.getIdEquipo(), origen.getSerieEquipo(), origen.getTipo(), origen.getUbicacionOrigen(), origen.getUbicacionDestino(), origen.getIdUsuarioOrigen(), origen.getIdUsuarioDestino(), origen.getFecha(), origen.getObservacion());
-    }
+@Mapper(componentModel = "spring")
+public interface MovimientoMapper {
+    @Mapping(target = "acta", expression = "java(acta)")
+    @Mapping(target = "id", source = "origen.id")
+    @Mapping(target = "idEquipo", source = "origen.idEquipo")
+    @Mapping(target = "serieEquipo", source = "origen.serieEquipo")
+    @Mapping(target = "tipo", source = "origen.tipo")
+    @Mapping(target = "ubicacionOrigen", source = "origen.ubicacionOrigen")
+    @Mapping(target = "ubicacionDestino", source = "origen.ubicacionDestino")
+    @Mapping(target = "idUsuarioOrigen", source = "origen.idUsuarioOrigen")
+    @Mapping(target = "idUsuarioDestino", source = "origen.idUsuarioDestino")
+    @Mapping(target = "fecha", source = "origen.fecha")
+    @Mapping(target = "observacion", source = "origen.observacion")
+    MovimientoJpa toJpa(Movimiento origen, ActaJpa acta);
 
-    public MovimientoJpa toJpa(Movimiento origen, ActaJpa acta) {
-        if (origen == null) {
-            return null;
-        }
-        return MovimientoJpa.builder()
-                .id(origen.id())
-                .acta(acta)
-                .idEquipo(origen.idEquipo())
-                .serieEquipo(origen.serieEquipo())
-                .tipo(origen.tipo())
-                .ubicacionOrigen(origen.ubicacionOrigen())
-                .ubicacionDestino(origen.ubicacionDestino())
-                .idUsuarioOrigen(origen.idUsuarioOrigen())
-                .idUsuarioDestino(origen.idUsuarioDestino())
-                .fecha(origen.fecha())
-                .observacion(origen.observacion())
-                .build();
-    }
+    @Mapping(target = "idActa", expression = "java(origen.getActa() != null ? origen.getActa().getId() : null)")
+    @Mapping(target = "id", source = "origen.id")
+    @Mapping(target = "idEquipo", source = "origen.idEquipo")
+    @Mapping(target = "serieEquipo", source = "origen.serieEquipo")
+    @Mapping(target = "tipo", source = "origen.tipo")
+    @Mapping(target = "ubicacionOrigen", source = "origen.ubicacionOrigen")
+    @Mapping(target = "ubicacionDestino", source = "origen.ubicacionDestino")
+    @Mapping(target = "idUsuarioOrigen", source = "origen.idUsuarioOrigen")
+    @Mapping(target = "idUsuarioDestino", source = "origen.idUsuarioDestino")
+    @Mapping(target = "fecha", source = "origen.fecha")
+    @Mapping(target = "observacion", source = "origen.observacion")
+    Movimiento toDomain(MovimientoJpa origen);
 }

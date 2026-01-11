@@ -1,4 +1,10 @@
 package com.dapcomputer.inventariosapi.presentacion.dto;
 
-public record ActaAdjuntoDto(Integer id, Integer idActa, String nombre, String url, String tipo) {
-}
+import jakarta.validation.constraints.NotBlank;
+
+public record ActaAdjuntoDto(
+        Integer id,
+        Integer idActa,
+        @NotBlank String nombre,
+        @NotBlank String url,
+        @NotBlank String tipo) {}

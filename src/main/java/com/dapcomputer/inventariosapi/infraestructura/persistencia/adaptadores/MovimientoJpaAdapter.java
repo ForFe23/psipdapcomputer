@@ -14,11 +14,12 @@ import org.springframework.stereotype.Repository;
 public class MovimientoJpaAdapter implements MovimientoRepositorio {
     private final MovimientoSpringRepository repository;
     private final ActaSpringRepository actaRepository;
-    private final MovimientoMapper mapper = new MovimientoMapper();
+    private final MovimientoMapper mapper;
 
-    public MovimientoJpaAdapter(MovimientoSpringRepository repository, ActaSpringRepository actaRepository) {
+    public MovimientoJpaAdapter(MovimientoSpringRepository repository, ActaSpringRepository actaRepository, MovimientoMapper mapper) {
         this.repository = repository;
         this.actaRepository = actaRepository;
+        this.mapper = mapper;
     }
 
     @Override
