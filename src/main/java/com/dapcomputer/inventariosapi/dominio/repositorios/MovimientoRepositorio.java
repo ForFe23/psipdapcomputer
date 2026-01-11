@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface MovimientoRepositorio {
     Movimiento guardar(Movimiento movimiento);
+    List<Movimiento> listar();
     List<Movimiento> listarPorEquipo(String serieEquipo);
     List<Movimiento> listarPorUsuario(Integer idUsuario);
 }

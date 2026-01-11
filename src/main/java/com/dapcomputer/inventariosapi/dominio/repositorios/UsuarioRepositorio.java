@@ -8,4 +8,6 @@ public interface UsuarioRepositorio {
     Usuario guardar(Usuario usuario);
     Optional<Usuario> buscarPorId(Integer id);
     List<Usuario> listarPorCliente(Long idCliente);
+    List<Usuario> listarTodos();
+    void eliminar(Integer id);
 }

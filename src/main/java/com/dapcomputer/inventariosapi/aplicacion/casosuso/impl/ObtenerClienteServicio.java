@@ -4,9 +4,7 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerClient
 import com.dapcomputer.inventariosapi.aplicacion.excepciones.RecursoNoEncontradoException;
 import com.dapcomputer.inventariosapi.dominio.entidades.Cliente;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ClienteRepositorio;
-import org.springframework.stereotype.Service;
 
-@Service
 public class ObtenerClienteServicio implements ObtenerClienteCasoUso {
     private final ClienteRepositorio repositorio;
 

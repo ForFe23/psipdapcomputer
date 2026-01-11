@@ -3,9 +3,7 @@ package com.dapcomputer.inventariosapi.aplicacion.casosuso.impl;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.CrearClienteCasoUso;
 import com.dapcomputer.inventariosapi.dominio.entidades.Cliente;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ClienteRepositorio;
-import org.springframework.stereotype.Service;
 
-@Service
 public class CrearClienteServicio implements CrearClienteCasoUso {
     private final ClienteRepositorio repositorio;
 

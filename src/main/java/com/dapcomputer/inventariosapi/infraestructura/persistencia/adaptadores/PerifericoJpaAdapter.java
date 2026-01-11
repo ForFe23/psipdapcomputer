@@ -12,10 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PerifericoJpaAdapter implements PerifericoRepositorio {
     private final PerifericoSpringRepository repository;
-    private final PerifericoMapper mapper = new PerifericoMapper();
+    private final PerifericoMapper mapper;
 
-    public PerifericoJpaAdapter(PerifericoSpringRepository repository) {
+    public PerifericoJpaAdapter(PerifericoSpringRepository repository, PerifericoMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -31,5 +32,25 @@ public class PerifericoJpaAdapter implements PerifericoRepositorio {
             return List.of();
         }
         return repository.findByIdIdAndIdSerieEquipo(id.id(), id.serie()).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Periferico> listarPorSerie(String serieEquipo) {
+        if (serieEquipo == null) {
+            return List.of();
+        }
+        return repository.findByIdSerieEquipo(serieEquipo).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Periferico> listarTodos() {
+        return repository.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public void eliminar(EquipoId id) {
+        if (id != null) {
+            repository.deleteById(new com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.PerifericoJpaId(id.id(), id.serie()));
+        }
     }
 }

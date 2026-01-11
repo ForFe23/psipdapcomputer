@@ -4,9 +4,7 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerActaCa
 import com.dapcomputer.inventariosapi.aplicacion.excepciones.RecursoNoEncontradoException;
 import com.dapcomputer.inventariosapi.dominio.entidades.Acta;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ActaRepositorio;
-import org.springframework.stereotype.Service;
 
-@Service
 public class ObtenerActaServicio implements ObtenerActaCasoUso {
     private final ActaRepositorio repositorio;
 

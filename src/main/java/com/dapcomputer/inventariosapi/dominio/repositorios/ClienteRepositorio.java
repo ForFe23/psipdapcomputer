@@ -8,4 +8,5 @@ public interface ClienteRepositorio {
     Cliente guardar(Cliente cliente);
     Optional<Cliente> buscarPorId(Long id);
     List<Cliente> listar();
+    void eliminar(Long id);
 }

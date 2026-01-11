@@ -4,9 +4,7 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarEquipos
 import com.dapcomputer.inventariosapi.dominio.entidades.Equipo;
 import com.dapcomputer.inventariosapi.dominio.repositorios.EquipoRepositorio;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
-@Service
 public class ListarEquiposServicio implements ListarEquiposCasoUso {
     private final EquipoRepositorio repositorio;
 

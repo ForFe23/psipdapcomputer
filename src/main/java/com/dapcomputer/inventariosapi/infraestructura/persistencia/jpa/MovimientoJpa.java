@@ -1,14 +1,18 @@
 package com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa;
 
 import com.dapcomputer.inventariosapi.dominio.entidades.TipoMovimiento;
+import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.UsuarioJpa;
+import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.EquipoJpa;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -33,6 +37,13 @@ public class MovimientoJpa {
     @JoinColumn(name = "acta_id")
     private ActaJpa acta;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "equipo_id", referencedColumnName = "ID", insertable = false, updatable = false),
+            @JoinColumn(name = "equipo_serie", referencedColumnName = "SERIEEQUIPO", insertable = false, updatable = false)
+    })
+    private EquipoJpa equipo;
+
     @Column(name = "equipo_id")
     private Integer idEquipo;
 
@@ -52,8 +63,16 @@ public class MovimientoJpa {
     @Column(name = "usuario_origen_id")
     private Integer idUsuarioOrigen;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_origen_id", insertable = false, updatable = false)
+    private UsuarioJpa usuarioOrigen;
+
     @Column(name = "usuario_destino_id")
     private Integer idUsuarioDestino;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_destino_id", insertable = false, updatable = false)
+    private UsuarioJpa usuarioDestino;
 
     @Column(name = "fecha_movimiento")
     private LocalDateTime fecha;

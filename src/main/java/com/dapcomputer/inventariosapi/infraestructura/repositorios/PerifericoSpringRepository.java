@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PerifericoSpringRepository extends JpaRepository<PerifericoJpa, PerifericoJpaId> {
     List<PerifericoJpa> findByIdIdAndIdSerieEquipo(Integer id, String serieEquipo);
+    List<PerifericoJpa> findByIdSerieEquipo(String serieEquipo);
 }

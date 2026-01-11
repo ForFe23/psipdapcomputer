@@ -1,4 +1,15 @@
 package com.dapcomputer.inventariosapi.presentacion.dto;
 
-public record ActaItemDto(Integer id, Integer itemNumero, String tipo, String serie, String modelo, String observacion) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record ActaItemDto(
+        Integer id,
+        @NotNull Integer itemNumero,
+        @NotBlank String tipo,
+        @NotBlank String serie,
+        String modelo,
+        String observacion,
+        @NotNull Integer equipoId,
+        @NotBlank String equipoSerie) {
 }

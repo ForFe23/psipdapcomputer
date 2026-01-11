@@ -4,63 +4,46 @@ import com.dapcomputer.inventariosapi.dominio.entidades.Acta;
 import com.dapcomputer.inventariosapi.dominio.entidades.ActaItem;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.ActaItemJpa;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.ActaJpa;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.EquipoJpa;
+import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.EquipoJpaId;
+import java.util.Objects;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-public class ActaMapper {
-    public Acta toDomain(ActaJpa origen) {
-        if (origen == null) {
-            return null;
+@Mapper(componentModel = "spring")
+public interface ActaMapper {
+    @Mapping(target = "items", source = "items")
+    Acta toDomain(ActaJpa origen);
+
+    @Mapping(target = "items", source = "items")
+    ActaJpa toJpa(Acta origen);
+
+    @Mapping(target = "actaId", expression = "java(origen.getActa() != null ? origen.getActa().getId() : null)")
+    @Mapping(target = "equipoId", expression = "java(origen.getEquipo() != null ? origen.getEquipo().getId() : null)")
+    @Mapping(target = "equipoSerie", expression = "java(origen.getEquipo() != null ? origen.getEquipo().getSerieEquipo() : null)")
+    ActaItem toDomain(ActaItemJpa origen);
+
+    @Mapping(target = "acta", ignore = true)
+    @Mapping(target = "equipo", ignore = true)
+    @Mapping(target = "itemNumero", source = "itemNumero")
+    ActaItemJpa toJpa(ActaItem origen);
+
+    @AfterMapping
+    default void linkActa(@MappingTarget ActaJpa destino) {
+        if (destino.getItems() != null) {
+            destino.getItems().stream().filter(Objects::nonNull).forEach(item -> item.setActa(destino));
         }
-        List<ActaItem> items = origen.getItems() == null ? List.of() : origen.getItems().stream().map(this::toDomainItem).toList();
-        return new Acta(origen.getId(), origen.getCodigo(), origen.getEstado(), origen.getIdCliente(), origen.getIdEquipo(), origen.getFechaActa(), origen.getTema(), origen.getEntregadoPor(), origen.getRecibidoPor(), origen.getCargoEntrega(), origen.getCargoRecibe(), origen.getDepartamentoUsuario(), origen.getCiudadEquipo(), origen.getUbicacionUsuario(), origen.getObservacionesGenerales(), origen.getEquipoTipo(), origen.getEquipoSerie(), origen.getEquipoModelo(), origen.getCreadoEn(), origen.getCreadoPor(), items);
     }
 
-    public ActaJpa toJpa(Acta origen) {
-        if (origen == null) {
-            return null;
+    @AfterMapping
+    default void linkEquipo(ActaItem origen, @MappingTarget ActaItemJpa destino) {
+        if (origen.equipoId() != null || origen.equipoSerie() != null) {
+            EquipoJpa equipo = new EquipoJpa();
+            equipo.setId(origen.equipoId());
+            equipo.setSerieEquipo(origen.equipoSerie());
+            destino.setEquipo(equipo);
         }
-        ActaJpa destino = ActaJpa.builder()
-                .id(origen.id())
-                .codigo(origen.codigo())
-                .estado(origen.estado())
-                .idCliente(origen.idCliente())
-                .idEquipo(origen.idEquipo())
-                .fechaActa(origen.fechaActa())
-                .tema(origen.tema())
-                .entregadoPor(origen.entregadoPor())
-                .recibidoPor(origen.recibidoPor())
-                .cargoEntrega(origen.cargoEntrega())
-                .cargoRecibe(origen.cargoRecibe())
-                .departamentoUsuario(origen.departamentoUsuario())
-                .ciudadEquipo(origen.ciudadEquipo())
-                .ubicacionUsuario(origen.ubicacionUsuario())
-                .observacionesGenerales(origen.observacionesGenerales())
-                .equipoTipo(origen.equipoTipo())
-                .equipoSerie(origen.equipoSerie())
-                .equipoModelo(origen.equipoModelo())
-                .creadoEn(origen.creadoEn())
-                .creadoPor(origen.creadoPor())
-                .build();
-        List<ActaItemJpa> items = origen.items() == null ? List.of() : origen.items().stream().map(item -> toJpaItem(item, destino)).collect(Collectors.toList());
-        destino.setItems(items);
-        return destino;
-    }
-
-    private ActaItem toDomainItem(ActaItemJpa origen) {
-        return new ActaItem(origen.getId(), origen.getActa() != null ? origen.getActa().getId() : null, origen.getItemNumero(), origen.getTipo(), origen.getSerie(), origen.getModelo(), origen.getObservacion());
-    }
-
-    private ActaItemJpa toJpaItem(ActaItem origen, ActaJpa acta) {
-        ActaItemJpa destino = ActaItemJpa.builder()
-                .id(origen.id())
-                .acta(acta)
-                .itemNumero(origen.itemNumero())
-                .tipo(origen.tipo())
-                .serie(origen.serie())
-                .modelo(origen.modelo())
-                .observacion(origen.observacion())
-                .build();
-        return destino;
     }
 }

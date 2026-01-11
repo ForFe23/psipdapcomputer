@@ -10,17 +10,20 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class ActaJpaAdapter implements ActaRepositorio {
     private final ActaSpringRepository repository;
-    private final ActaMapper mapper = new ActaMapper();
+    private final ActaMapper mapper;
 
-    public ActaJpaAdapter(ActaSpringRepository repository) {
+    public ActaJpaAdapter(ActaSpringRepository repository, ActaMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
+    @Transactional
     public Acta guardar(Acta acta) {
         ActaJpa entidad = mapper.toJpa(acta);
         ActaJpa guardado = repository.save(entidad);
@@ -28,22 +31,38 @@ public class ActaJpaAdapter implements ActaRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Acta> buscarPorId(Integer id) {
         return repository.findById(id).map(mapper::toDomain);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Acta> listar() {
         return repository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Acta> listarPorEstado(EstadoActa estado) {
         return repository.findByEstado(estado).stream().map(mapper::toDomain).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Acta> listarPorRangoFecha(LocalDate inicio, LocalDate fin) {
         return repository.findByFechaActaBetween(inicio, fin).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Acta> listarPorCliente(Integer idCliente) {
+        return repository.findByIdCliente(idCliente).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Acta> listarPorUsuario(String nombre) {
+        return repository.findByEntregadoPorIgnoreCaseOrRecibidoPorIgnoreCase(nombre, nombre).stream().map(mapper::toDomain).toList();
     }
 }

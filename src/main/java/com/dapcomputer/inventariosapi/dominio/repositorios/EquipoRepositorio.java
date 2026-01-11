@@ -10,4 +10,7 @@ public interface EquipoRepositorio {
     Optional<Equipo> buscarPorId(EquipoId id);
     List<Equipo> listar();
     Optional<Equipo> buscarPorSerie(String serie);
+    List<Equipo> listarPorEstado(String estado);
+    List<Equipo> listarPorUbicacion(String ubicacion);
+    void eliminar(EquipoId id);
 }

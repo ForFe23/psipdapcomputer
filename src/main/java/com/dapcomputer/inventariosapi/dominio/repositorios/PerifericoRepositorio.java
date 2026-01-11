@@ -7,4 +7,7 @@ import java.util.List;
 public interface PerifericoRepositorio {
     Periferico guardar(Periferico periferico);
     List<Periferico> listarPorEquipo(EquipoId id);
+    List<Periferico> listarPorSerie(String serieEquipo);
+    List<Periferico> listarTodos();
+    void eliminar(EquipoId id);
 }

@@ -4,18 +4,16 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarCliente
 import com.dapcomputer.inventariosapi.dominio.entidades.Cliente;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ClienteRepositorio;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
-@Service
 public class ListarClientesServicio implements ListarClientesCasoUso {
-    private final ClienteRepositorio repositorio;
+	private final ClienteRepositorio repositorio;
 
-    public ListarClientesServicio(ClienteRepositorio repositorio) {
-        this.repositorio = repositorio;
-    }
+	public ListarClientesServicio(ClienteRepositorio repositorio) {
+		this.repositorio = repositorio;
+	}
 
-    @Override
-    public List<Cliente> ejecutar() {
-        return repositorio.listar();
-    }
+	@Override
+	public List<Cliente> ejecutar() {
+		return repositorio.listar();
+	}
 }

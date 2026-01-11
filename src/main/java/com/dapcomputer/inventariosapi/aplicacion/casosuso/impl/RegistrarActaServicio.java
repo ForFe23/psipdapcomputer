@@ -5,9 +5,7 @@ import com.dapcomputer.inventariosapi.dominio.entidades.Acta;
 import com.dapcomputer.inventariosapi.dominio.entidades.EstadoActa;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ActaRepositorio;
 import java.time.LocalDateTime;
-import org.springframework.stereotype.Service;
 
-@Service
 public class RegistrarActaServicio implements RegistrarActaCasoUso {
     private final ActaRepositorio repositorio;
 

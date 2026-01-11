@@ -1,8 +1,9 @@
 package com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -12,13 +13,19 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "equipo", schema = "public")
+@IdClass(EquipoJpaId.class)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EquipoJpa {
-    @EmbeddedId
-    private EquipoJpaId identificador;
+    @Id
+    @Column(name = "ID")
+    private Integer id;
+
+    @Id
+    @Column(name = "SERIEEQUIPO", length = 50)
+    private String serieEquipo;
 
     @Column(name = "IDCLIENTE")
     private Long idCliente;

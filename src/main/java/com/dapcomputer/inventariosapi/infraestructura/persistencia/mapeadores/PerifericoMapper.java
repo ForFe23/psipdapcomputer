@@ -4,51 +4,29 @@ import com.dapcomputer.inventariosapi.dominio.entidades.EquipoId;
 import com.dapcomputer.inventariosapi.dominio.entidades.Periferico;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.PerifericoJpa;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.PerifericoJpaId;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class PerifericoMapper {
-    public Periferico toDomain(PerifericoJpa origen) {
-        if (origen == null || origen.getId() == null) {
-            return null;
-        }
-        return new Periferico(origen.getId().getId(), origen.getId().getSerieEquipo(), origen.getSerieMonitor(), origen.getActivoMonitor(), origen.getMarcaMonitor(), origen.getModeloMonitor(), origen.getObservacionMonitor(), origen.getSerieTeclado(), origen.getActivoTeclado(), origen.getMarcaTeclado(), origen.getModeloTeclado(), origen.getObservacionTeclado(), origen.getSerieMouse(), origen.getActivoMouse(), origen.getMarcaMouse(), origen.getModeloMouse(), origen.getObservacionMouse(), origen.getSerieTelefono(), origen.getActivoTelefono(), origen.getMarcaTelefono(), origen.getModeloTelefono(), origen.getObservacionTelefono(), origen.getClientePerifericos(), origen.getIdCliente());
-    }
+@Mapper(componentModel = "spring")
+public interface PerifericoMapper {
+    @Mapping(target = "id", source = "id.id")
+    @Mapping(target = "serieEquipo", source = "id.serieEquipo")
+    Periferico toDomain(PerifericoJpa origen);
 
-    public PerifericoJpa toJpa(Periferico origen) {
-        if (origen == null) {
-            return null;
-        }
-        PerifericoJpaId id = new PerifericoJpaId(origen.id(), origen.serieEquipo());
-        return PerifericoJpa.builder()
-                .id(id)
-                .serieMonitor(origen.serieMonitor())
-                .activoMonitor(origen.activoMonitor())
-                .marcaMonitor(origen.marcaMonitor())
-                .modeloMonitor(origen.modeloMonitor())
-                .observacionMonitor(origen.observacionMonitor())
-                .serieTeclado(origen.serieTeclado())
-                .activoTeclado(origen.activoTeclado())
-                .marcaTeclado(origen.marcaTeclado())
-                .modeloTeclado(origen.modeloTeclado())
-                .observacionTeclado(origen.observacionTeclado())
-                .serieMouse(origen.serieMouse())
-                .activoMouse(origen.activoMouse())
-                .marcaMouse(origen.marcaMouse())
-                .modeloMouse(origen.modeloMouse())
-                .observacionMouse(origen.observacionMouse())
-                .serieTelefono(origen.serieTelefono())
-                .activoTelefono(origen.activoTelefono())
-                .marcaTelefono(origen.marcaTelefono())
-                .modeloTelefono(origen.modeloTelefono())
-                .observacionTelefono(origen.observacionTelefono())
-                .clientePerifericos(origen.clientePerifericos())
-                .idCliente(origen.idCliente())
-                .build();
-    }
+    @Mapping(target = "id", expression = "java(toJpaId(origen.id(), origen.serieEquipo()))")
+    PerifericoJpa toJpa(Periferico origen);
 
-    public EquipoId aIdEquipo(PerifericoJpa origen) {
+    default EquipoId aIdEquipo(PerifericoJpa origen) {
         if (origen == null || origen.getId() == null) {
             return null;
         }
         return new EquipoId(origen.getId().getId(), origen.getId().getSerieEquipo());
+    }
+
+    default PerifericoJpaId toJpaId(Integer id, String serie) {
+        if (id == null && serie == null) {
+            return null;
+        }
+        return new PerifericoJpaId(id, serie);
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface IncidenteRepositorio {
     Incidente guardar(Incidente incidente);
+    List<Incidente> listar();
     List<Incidente> listarPorCliente(Long idCliente);
     List<Incidente> listarPorSerieEquipo(String serieEquipo);
     List<Incidente> listarPorUsuario(Integer idUsuario);

@@ -7,6 +7,7 @@ import com.dapcomputer.inventariosapi.infraestructura.persistencia.mapeadores.In
 import com.dapcomputer.inventariosapi.infraestructura.repositorios.IncidenteSpringRepository;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class IncidenteJpaAdapter implements IncidenteRepositorio {
@@ -19,6 +20,7 @@ public class IncidenteJpaAdapter implements IncidenteRepositorio {
     }
 
     @Override
+    @Transactional
     public Incidente guardar(Incidente incidente) {
         IncidenteJpa entidad = mapper.toJpa(incidente);
         IncidenteJpa guardado = repository.save(entidad);
@@ -26,16 +28,25 @@ public class IncidenteJpaAdapter implements IncidenteRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Incidente> listar() {
+        return repository.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Incidente> listarPorCliente(Long idCliente) {
         return repository.findByIdCliente(idCliente).stream().map(mapper::toDomain).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Incidente> listarPorSerieEquipo(String serieEquipo) {
         return repository.findBySerieEquipo(serieEquipo).stream().map(mapper::toDomain).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Incidente> listarPorUsuario(Integer idUsuario) {
         return repository.findByIdUsuario(idUsuario).stream().map(mapper::toDomain).toList();
     }

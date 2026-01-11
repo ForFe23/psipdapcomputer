@@ -5,9 +5,7 @@ import com.dapcomputer.inventariosapi.aplicacion.excepciones.RecursoNoEncontrado
 import com.dapcomputer.inventariosapi.dominio.entidades.Equipo;
 import com.dapcomputer.inventariosapi.dominio.entidades.EquipoId;
 import com.dapcomputer.inventariosapi.dominio.repositorios.EquipoRepositorio;
-import org.springframework.stereotype.Service;
 
-@Service
 public class ObtenerEquipoServicio implements ObtenerEquipoCasoUso {
     private final EquipoRepositorio repositorio;
 

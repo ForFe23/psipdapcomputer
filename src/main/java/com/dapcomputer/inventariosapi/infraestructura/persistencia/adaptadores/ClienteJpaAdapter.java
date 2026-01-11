@@ -12,10 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ClienteJpaAdapter implements ClienteRepositorio {
     private final ClienteSpringRepository repository;
-    private final ClienteMapper mapper = new ClienteMapper();
+    private final ClienteMapper mapper;
 
-    public ClienteJpaAdapter(ClienteSpringRepository repository) {
+    public ClienteJpaAdapter(ClienteSpringRepository repository, ClienteMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -33,5 +34,10 @@ public class ClienteJpaAdapter implements ClienteRepositorio {
     @Override
     public List<Cliente> listar() {
         return repository.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public void eliminar(Long id) {
+        repository.deleteById(id);
     }
 }

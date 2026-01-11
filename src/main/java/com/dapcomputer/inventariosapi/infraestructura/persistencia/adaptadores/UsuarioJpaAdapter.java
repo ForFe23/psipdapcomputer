@@ -12,10 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UsuarioJpaAdapter implements UsuarioRepositorio {
     private final UsuarioSpringRepository repository;
-    private final UsuarioMapper mapper = new UsuarioMapper();
+    private final UsuarioMapper mapper;
 
-    public UsuarioJpaAdapter(UsuarioSpringRepository repository) {
+    public UsuarioJpaAdapter(UsuarioSpringRepository repository, UsuarioMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -33,5 +34,15 @@ public class UsuarioJpaAdapter implements UsuarioRepositorio {
     @Override
     public List<Usuario> listarPorCliente(Long idCliente) {
         return repository.findByIdCliente(idCliente).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Usuario> listarTodos() {
+        return repository.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public void eliminar(Integer id) {
+        repository.deleteById(id);
     }
 }

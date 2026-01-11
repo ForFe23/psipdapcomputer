@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,13 @@ public class ActaItemJpa {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "acta_id")
     private ActaJpa acta;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "equipo_id", referencedColumnName = "ID"),
+            @JoinColumn(name = "equipo_serie", referencedColumnName = "SERIEEQUIPO")
+    })
+    private EquipoJpa equipo;
 
     @Column(name = "item_num")
     private Integer itemNumero;

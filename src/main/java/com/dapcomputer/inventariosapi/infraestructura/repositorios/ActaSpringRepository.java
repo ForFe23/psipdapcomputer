@@ -10,4 +10,8 @@ public interface ActaSpringRepository extends JpaRepository<ActaJpa, Integer> {
     List<ActaJpa> findByEstado(EstadoActa estado);
 
     List<ActaJpa> findByFechaActaBetween(LocalDate inicio, LocalDate fin);
+
+    List<ActaJpa> findByIdCliente(Integer idCliente);
+
+    List<ActaJpa> findByEntregadoPorIgnoreCaseOrRecibidoPorIgnoreCase(String entregadoPor, String recibidoPor);
 }

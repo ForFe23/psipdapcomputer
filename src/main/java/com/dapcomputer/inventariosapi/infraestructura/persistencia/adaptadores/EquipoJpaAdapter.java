@@ -10,27 +10,28 @@ import com.dapcomputer.inventariosapi.infraestructura.repositorios.EquipoSpringR
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class EquipoJpaAdapter implements EquipoRepositorio {
     private final EquipoSpringRepository repository;
-    private final EquipoMapper mapper = new EquipoMapper();
+    private final EquipoMapper mapper;
 
-    public EquipoJpaAdapter(EquipoSpringRepository repository) {
+    public EquipoJpaAdapter(EquipoSpringRepository repository, EquipoMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
+    @Transactional
     public Equipo guardar(Equipo equipo) {
         EquipoJpa entidad = mapper.toJpa(equipo);
-        if (entidad.getIdentificador() == null) {
-            entidad.setIdentificador(new EquipoJpaId(null, equipo.identificador() != null ? equipo.identificador().serie() : null));
-        }
         EquipoJpa guardado = repository.save(entidad);
         return mapper.toDomain(guardado);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Equipo> buscarPorId(EquipoId id) {
         if (id == null) {
             return Optional.empty();
@@ -39,15 +40,37 @@ public class EquipoJpaAdapter implements EquipoRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Equipo> listar() {
         return repository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Equipo> buscarPorSerie(String serie) {
         if (serie == null) {
             return Optional.empty();
         }
-        return repository.findByIdentificador_Serie(serie).map(mapper::toDomain);
+        return repository.findBySerieEquipo(serie).map(mapper::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Equipo> listarPorEstado(String estado) {
+        return repository.findByEstadoIgnoreCase(estado).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Equipo> listarPorUbicacion(String ubicacion) {
+        return repository.findByUbicacionUsuarioIgnoreCase(ubicacion).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional
+    public void eliminar(EquipoId id) {
+        if (id != null) {
+            repository.deleteById(new EquipoJpaId(id.id(), id.serie()));
+        }
     }
 }

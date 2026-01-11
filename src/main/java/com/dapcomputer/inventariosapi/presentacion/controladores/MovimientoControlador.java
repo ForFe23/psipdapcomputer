@@ -2,11 +2,13 @@ package com.dapcomputer.inventariosapi.presentacion.controladores;
 
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarMovimientosPorEquipoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarMovimientosPorUsuarioCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarMovimientosCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.RegistrarMovimientoCasoUso;
 import com.dapcomputer.inventariosapi.presentacion.dto.MovimientoDto;
 import com.dapcomputer.inventariosapi.presentacion.mapeadores.MovimientoDtoMapper;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,29 +21,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/movimientos")
 public class MovimientoControlador {
     private final RegistrarMovimientoCasoUso registrarMovimiento;
+    private final ListarMovimientosCasoUso listarMovimientos;
     private final ListarMovimientosPorEquipoCasoUso listarPorEquipo;
     private final ListarMovimientosPorUsuarioCasoUso listarPorUsuario;
-    private final MovimientoDtoMapper mapper = new MovimientoDtoMapper();
+    private final MovimientoDtoMapper mapper;
 
-    public MovimientoControlador(RegistrarMovimientoCasoUso registrarMovimiento, ListarMovimientosPorEquipoCasoUso listarPorEquipo, ListarMovimientosPorUsuarioCasoUso listarPorUsuario) {
+    public MovimientoControlador(RegistrarMovimientoCasoUso registrarMovimiento, ListarMovimientosCasoUso listarMovimientos, ListarMovimientosPorEquipoCasoUso listarPorEquipo, ListarMovimientosPorUsuarioCasoUso listarPorUsuario, MovimientoDtoMapper mapper) {
         this.registrarMovimiento = registrarMovimiento;
+        this.listarMovimientos = listarMovimientos;
         this.listarPorEquipo = listarPorEquipo;
         this.listarPorUsuario = listarPorUsuario;
+        this.mapper = mapper;
     }
 
     @PostMapping
     public ResponseEntity<MovimientoDto> crear(@Valid @RequestBody MovimientoDto solicitud) {
         var creado = registrarMovimiento.ejecutar(mapper.toDomain(solicitud));
-        return ResponseEntity.ok(mapper.toDto(creado));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(creado));
+    }
+
+    @GetMapping
+    public List<MovimientoDto> listar() {
+        return listarMovimientos.ejecutar().stream().map(mapper::toDto).toList();
     }
 
     @GetMapping("/equipo/{serie}")
     public List<MovimientoDto> listarPorEquipo(@PathVariable String serie) {
-        return mapper.toDtoList(listarPorEquipo.ejecutar(serie));
+        return listarPorEquipo.ejecutar(serie).stream().map(mapper::toDto).toList();
     }
 
     @GetMapping("/usuario/{idUsuario}")
     public List<MovimientoDto> listarPorUsuario(@PathVariable Integer idUsuario) {
-        return mapper.toDtoList(listarPorUsuario.ejecutar(idUsuario));
+        return listarPorUsuario.ejecutar(idUsuario).stream().map(mapper::toDto).toList();
     }
 }

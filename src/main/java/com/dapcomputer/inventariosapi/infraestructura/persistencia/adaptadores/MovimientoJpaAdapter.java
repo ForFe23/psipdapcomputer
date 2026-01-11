@@ -9,6 +9,7 @@ import com.dapcomputer.inventariosapi.infraestructura.repositorios.ActaSpringRep
 import com.dapcomputer.inventariosapi.infraestructura.repositorios.MovimientoSpringRepository;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class MovimientoJpaAdapter implements MovimientoRepositorio {
@@ -23,6 +24,7 @@ public class MovimientoJpaAdapter implements MovimientoRepositorio {
     }
 
     @Override
+    @Transactional
     public Movimiento guardar(Movimiento movimiento) {
         ActaJpa acta = movimiento.idActa() != null ? actaRepository.findById(movimiento.idActa()).orElse(null) : null;
         MovimientoJpa entidad = mapper.toJpa(movimiento, acta);
@@ -31,11 +33,19 @@ public class MovimientoJpaAdapter implements MovimientoRepositorio {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Movimiento> listarPorEquipo(String serieEquipo) {
         return repository.findBySerieEquipo(serieEquipo).stream().map(mapper::toDomain).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Movimiento> listar() {
+        return repository.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Movimiento> listarPorUsuario(Integer idUsuario) {
         return repository.findByIdUsuarioOrigenOrIdUsuarioDestino(idUsuario, idUsuario).stream().map(mapper::toDomain).toList();
     }

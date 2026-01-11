@@ -18,21 +18,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class KardexControlador {
     private final ListarMovimientosPorEquipoCasoUso listarMovimientos;
     private final ListarIncidentesPorEquipoCasoUso listarIncidentes;
-    private final MovimientoDtoMapper movimientoMapper = new MovimientoDtoMapper();
-    private final IncidenteDtoMapper incidenteMapper = new IncidenteDtoMapper();
+    private final MovimientoDtoMapper movimientoMapper;
+    private final IncidenteDtoMapper incidenteMapper;
 
     public KardexControlador(
             ListarMovimientosPorEquipoCasoUso listarMovimientos,
-            ListarIncidentesPorEquipoCasoUso listarIncidentes) {
+            ListarIncidentesPorEquipoCasoUso listarIncidentes,
+            MovimientoDtoMapper movimientoMapper,
+            IncidenteDtoMapper incidenteMapper) {
         this.listarMovimientos = listarMovimientos;
         this.listarIncidentes = listarIncidentes;
+        this.movimientoMapper = movimientoMapper;
+        this.incidenteMapper = incidenteMapper;
     }
 
     @GetMapping("/equipo/{serie}")
     public Map<String, Object> kardexEquipo(@PathVariable String serie) {
         Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("movimientos", movimientoMapper.toDtoList(listarMovimientos.ejecutar(serie)));
-        respuesta.put("incidentes", incidenteMapper.toDtoList(listarIncidentes.ejecutar(serie)));
+        respuesta.put("movimientos", listarMovimientos.ejecutar(serie).stream().map(movimientoMapper::toDto).toList());
+        respuesta.put("incidentes", listarIncidentes.ejecutar(serie).stream().map(incidenteMapper::toDto).toList());
         return respuesta;
     }
 }

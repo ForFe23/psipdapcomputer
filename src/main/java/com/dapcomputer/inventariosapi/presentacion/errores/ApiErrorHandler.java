@@ -2,6 +2,7 @@ package com.dapcomputer.inventariosapi.presentacion.errores;
 
 import java.time.Instant;
 import java.util.Map;
+import com.dapcomputer.inventariosapi.aplicacion.excepciones.RecursoNoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,6 +19,13 @@ public class ApiErrorHandler {
         HttpStatus status = ex.getStatusCode() instanceof HttpStatus http ? http : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status)
                 .body(Map.of("timestamp", Instant.now(), "status", status.value(), "error", ex.getReason()));
+    }
+
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(RecursoNoEncontradoException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status)
+                .body(Map.of("timestamp", Instant.now(), "status", status.value(), "error", ex.getMessage()));
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class, IllegalArgumentException.class})

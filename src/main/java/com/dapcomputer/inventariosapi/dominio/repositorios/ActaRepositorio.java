@@ -16,4 +16,8 @@ public interface ActaRepositorio {
     List<Acta> listarPorEstado(EstadoActa estado);
 
     List<Acta> listarPorRangoFecha(LocalDate inicio, LocalDate fin);
+
+    List<Acta> listarPorCliente(Integer idCliente);
+
+    List<Acta> listarPorUsuario(String nombre);
 }

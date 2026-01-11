@@ -12,10 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ActaSecuenciaJpaAdapter implements ActaSecuenciaRepositorio {
     private final ActaSecuenciaSpringRepository repository;
-    private final ActaSecuenciaMapper mapper = new ActaSecuenciaMapper();
+    private final ActaSecuenciaMapper mapper;
 
-    public ActaSecuenciaJpaAdapter(ActaSecuenciaSpringRepository repository) {
+    public ActaSecuenciaJpaAdapter(ActaSecuenciaSpringRepository repository, ActaSecuenciaMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
