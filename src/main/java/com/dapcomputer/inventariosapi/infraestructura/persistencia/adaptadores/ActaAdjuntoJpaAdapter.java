@@ -24,6 +24,9 @@ public class ActaAdjuntoJpaAdapter implements ActaAdjuntoRepositorio {
     @Override
     public ActaAdjunto guardar(ActaAdjunto adjunto) {
         ActaJpa acta = adjunto.idActa() != null ? actaRepository.findById(adjunto.idActa()).orElse(null) : null;
+        if (acta == null) {
+            throw new IllegalArgumentException("Acta no encontrada: " + adjunto.idActa());
+        }
         ActaAdjuntoJpa entidad = mapper.toJpa(adjunto, acta);
         ActaAdjuntoJpa guardado = repository.save(entidad);
         return mapper.toDomain(guardado);

@@ -25,8 +25,8 @@ public class ActaAdjuntoJpa {
     @Column(name = "id")
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "acta_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "acta_id", nullable = false)
     private ActaJpa acta;
 
     @Column(name = "nombre", length = 255)
