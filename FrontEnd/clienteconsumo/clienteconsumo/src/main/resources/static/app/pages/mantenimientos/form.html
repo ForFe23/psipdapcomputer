@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mantenimiento</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
+</head>
+<body class="bg-light">
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" id="form-title">Registrar mantenimiento</h4>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="mant-form">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label>Empresa</label>
+                    <select class="form-control" name="idCliente" id="clienteSelect" required>
+                      <option value="">Seleccione empresa</option>
+                    </select>
+                    <small class="form-text text-muted">Selecciona primero la empresa para listar sus equipos.</small>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Serie equipo</label>
+                    <input type="text" class="form-control" name="serieEquipo" list="seriesList" autocomplete="off" required>
+                    <datalist id="seriesList">
+                      <option value="⬇SUGERENCIAS⬇"></option>
+                    </datalist>
+                    <input type="hidden" id="equipoId" name="equipoId">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Fecha programada</label>
+                    <input type="datetime-local" class="form-control" name="fechaProgramada" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label>Frecuencia (días)</label>
+                    <input type="number" class="form-control" name="frecuenciaDias" min="0" value="0">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Estado</label>
+                    <select class="form-control" name="estado" id="estadoSelect">
+                      <option value="PROGRAMADO">Programado</option>
+                      <option value="EN_CURSO">En curso</option>
+                      <option value="COMPLETADO">Completado</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label>Descripción</label>
+                    <textarea class="form-control" name="descripcion" rows="3"></textarea>
+                  </div>
+                </div>
+                <button class="btn btn-primary" type="submit">Guardar</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <h5 class="mb-3">Estrategias sugeridas</h5>
+          <div class="row">
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="mb-1">Preventivo mensual</h6>
+                  <p class="text-muted mb-2">Chequeo general cada 30 días</p>
+                  <a href="#" class="btn btn-outline-primary btn-sm" data-plan data-freq="30" data-estado="PROGRAMADO" data-desc="Chequeo preventivo mensual">Planificar</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="mb-1">Correctivo inmediato</h6>
+                  <p class="text-muted mb-2">Atención en el día</p>
+                  <a href="#" class="btn btn-outline-danger btn-sm" data-plan data-freq="0" data-estado="EN_CURSO" data-desc="Correctivo inmediato">Planificar</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="mb-1">Revisión trimestral</h6>
+                  <p class="text-muted mb-2">Cada 90 días</p>
+                  <a href="#" class="btn btn-outline-info btn-sm" data-plan data-freq="90" data-estado="PROGRAMADO" data-desc="Revisión trimestral">Planificar</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="mb-1">Auditoría anual</h6>
+                  <p class="text-muted mb-2">Una vez al año</p>
+                  <a href="#" class="btn btn-outline-secondary btn-sm" data-plan data-freq="365" data-estado="PROGRAMADO" data-desc="Auditoría anual">Planificar</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/mantenimientos.form.js"></script>
+</body>
+</html>

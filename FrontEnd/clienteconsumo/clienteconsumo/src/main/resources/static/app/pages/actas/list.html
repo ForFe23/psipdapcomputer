@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actas</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Actas</h4>
+              <small class="text-muted">Generación y seguimiento</small>
+            </div>
+            <a class="btn btn-primary" href="./form.html">Nueva acta</a>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-primary"><i class="las la-file-alt la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Actas emitidas</p>
+                    <h5 class="mb-0">42</h5>
+                    <small class="text-success">+3 hoy</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-warning"><i class="las la-clock la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Registradas</p>
+                    <h5 class="mb-0">15</h5>
+                    <small class="text-muted">Pendientes de emisión</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-success"><i class="las la-check-circle la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Cerradas</p>
+                    <h5 class="mb-0">21</h5>
+                    <small class="text-muted">Con items y adjuntos</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-danger"><i class="las la-ban la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Anuladas</p>
+                    <h5 class="mb-0">3</h5>
+                    <small class="text-muted">Últimos 30 días</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="filtros-actas" class="form-row">
+                <div class="form-group col-md-3">
+                  <label for="fCodigo">Código</label>
+                  <input class="form-control" type="text" id="fCodigo" placeholder="ACT-2026-0012">
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fCliente">Cliente</label>
+                  <input class="form-control" type="text" id="fCliente" placeholder="ID cliente">
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fEstado">Estado</label>
+                  <select class="form-control" id="fEstado">
+                    <option value="">Todos</option>
+                    <option>REGISTRADA</option>
+                    <option>EMITIDA</option>
+                    <option>CERRADA</option>
+                    <option>ANULADA</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3 d-flex align-items-end">
+                  <button class="btn btn-outline-primary mr-2" type="submit"><i class="las la-filter mr-2"></i>Filtrar</button>
+                  <button class="btn btn-outline-secondary" type="button" onclick="window.location.reload()">Limpiar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Estado</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="actas-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/actas.list.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

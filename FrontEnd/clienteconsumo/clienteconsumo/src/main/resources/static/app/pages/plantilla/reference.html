@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guía de plantilla</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex align-items-center mb-3">
+            <i class="las la-layer-group la-2x text-primary mr-2"></i>
+            <div>
+              <h4 class="mb-0">Guía visual de la plantilla</h4>
+              <small class="text-muted">Componentes reutilizables para el frontend</small>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 col-xl-3 mb-3">
+              <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                  <i class="las la-laptop-code la-2x text-primary mb-2"></i>
+                  <h6 class="card-title mb-1">Cards</h6>
+                  <p class="text-muted small mb-0">Paneles con iconos y métricas.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3 mb-3">
+              <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                  <i class="las la-table la-2x text-primary mb-2"></i>
+                  <h6 class="card-title mb-1">Tablas</h6>
+                  <p class="text-muted small mb-0">Listados con cabecera y hover.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3 mb-3">
+              <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                  <i class="las la-pen-alt la-2x text-primary mb-2"></i>
+                  <h6 class="card-title mb-1">Formularios</h6>
+                  <p class="text-muted small mb-0">Inputs alineados en grid responsivo.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-xl-3 mb-3">
+              <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                  <i class="las la-bell la-2x text-primary mb-2"></i>
+                  <h6 class="card-title mb-1">Alerts</h6>
+                  <p class="text-muted small mb-0">Mensajes de estado con colores Bootstrap.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+              <h6 class="mb-0">Paleta y botones</h6>
+            </div>
+            <div class="card-body">
+              <div class="d-flex flex-wrap align-items-center mb-3">
+                <span class="badge badge-primary mr-2 mb-2">Primario</span>
+                <span class="badge badge-secondary mr-2 mb-2">Secundario</span>
+                <span class="badge badge-success mr-2 mb-2">Éxito</span>
+                <span class="badge badge-warning mr-2 mb-2 text-dark">Alerta</span>
+                <span class="badge badge-danger mr-2 mb-2">Error</span>
+                <span class="badge badge-info mr-2 mb-2">Info</span>
+              </div>
+              <div class="d-flex flex-wrap align-items-center">
+                <button class="btn btn-primary btn-sm mr-2 mb-2">Primario</button>
+                <button class="btn btn-outline-primary btn-sm mr-2 mb-2">Outline</button>
+                <button class="btn btn-success btn-sm mr-2 mb-2">Éxito</button>
+                <button class="btn btn-warning btn-sm mr-2 mb-2 text-dark">Alerta</button>
+                <button class="btn btn-danger btn-sm mr-2 mb-2">Error</button>
+                <button class="btn btn-info btn-sm mr-2 mb-2 text-white">Info</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h6 class="mb-0">Tabla ejemplo</h6>
+              <span class="badge badge-primary">Inventario</span>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Serie</th>
+                    <th>Modelo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>101</td>
+                    <td>SR-ABC-001</td>
+                    <td>ThinkPad T14</td>
+                    <td><span class="badge badge-success">Operativo</span></td>
+                    <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                  </tr>
+                  <tr>
+                    <td>102</td>
+                    <td>SR-ABC-002</td>
+                    <td>Latitude 7420</td>
+                    <td><span class="badge badge-warning text-dark">Mantenimiento</span></td>
+                    <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                  </tr>
+                  <tr>
+                    <td>103</td>
+                    <td>SR-ABC-003</td>
+                    <td>MacBook Pro</td>
+                    <td><span class="badge badge-danger">Baja</span></td>
+                    <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+              <h6 class="mb-0">Formulario ejemplo</h6>
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label>Código interno</label>
+                    <input class="form-control" type="text" placeholder="Ej. EQ-1001">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Serie</label>
+                    <input class="form-control" type="text" placeholder="Serie">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Tipo</label>
+                    <input class="form-control" type="text" placeholder="Laptop/PC/Monitor">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label>Marca</label>
+                    <input class="form-control" type="text" placeholder="Lenovo, Dell...">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Modelo</label>
+                    <input class="form-control" type="text" placeholder="Modelo">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Estado</label>
+                    <select class="form-control">
+                      <option>Operativo</option>
+                      <option>Mantenimiento</option>
+                      <option>Baja</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn btn-primary" type="button">Guardar</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+              <h6 class="mb-0">Alerts y badges</h6>
+              <span class="badge badge-info text-white">Estado</span>
+            </div>
+            <div class="card-body">
+              <div class="alert alert-success" role="alert">Operación exitosa.</div>
+              <div class="alert alert-warning" role="alert">Revisa los datos antes de continuar.</div>
+              <div class="alert alert-danger" role="alert">Hubo un error al procesar la solicitud.</div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="card-header bg-white">
+              <h6 class="mb-0">Visuales</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <img class="img-fluid rounded shadow-sm" src="../../../assets/images/undraw_dashboard_nklg.svg" alt="Dashboard sample">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <img class="img-fluid rounded shadow-sm" src="../../../assets/images/undraw_medical_research_qg4d.svg" alt="Illustration sample">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/plantilla.reference.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

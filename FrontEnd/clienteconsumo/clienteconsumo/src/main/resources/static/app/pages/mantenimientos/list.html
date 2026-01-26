@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mantenimientos</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
+</head>
+<body class="bg-light">
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Mantenimientos programados</h4>
+              <small class="text-muted">Gestiona el plan de mantenimiento por equipo</small>
+            </div>
+            <div>
+              <a class="btn btn-outline-secondary" href="../equipos/list.html">Volver a equipos</a>
+              <a class="btn btn-primary" href="./form.html">Nuevo mantenimiento</a>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Total programados</p>
+                  <h5 class="mb-0" id="stat-total">--</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Recurrentes</p>
+                  <h5 class="mb-0" id="stat-recurrentes">--</h5>
+                  <small class="text-muted">Con frecuencia en días</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Únicos</p>
+                  <h5 class="mb-0" id="stat-unicos">--</h5>
+                  <small class="text-muted">Una sola vez</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Próximos 7 días</p>
+                  <h5 class="mb-0" id="stat-proximos">--</h5>
+                  <small class="text-muted">Ventana inmediata</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="filter-form" class="form-inline">
+                <label class="mr-2">Serie</label>
+                <input class="form-control mr-2" type="text" id="serieFilter" name="serie" placeholder="Serie equipo" />
+                <label class="mr-2">Cliente</label>
+                <select class="form-control mr-2" id="clienteFilter" name="cliente">
+                  <option value="">Todos</option>
+                </select>
+                <label class="mr-2">Estado</label>
+                <select class="form-control mr-2" id="estadoFilter" name="estado">
+                  <option value="">Todos</option>
+                  <option value="PROGRAMADO">PROGRAMADO</option>
+                  <option value="EN_CURSO">EN_CURSO</option>
+                  <option value="CERRADO">CERRADO</option>
+                </select>
+                <button class="btn btn-primary" type="submit">Filtrar</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <h6 class="mb-3">Estrategias sugeridas</h6>
+              <div class="row">
+                <div class="col-md-3 mb-2">
+                  <div class="card mini-card h-100">
+                    <div class="card-body">
+                      <p class="text-muted mb-1">Preventivo mensual</p>
+                      <small class="d-block mb-2">Chequeo general cada 30 días</small>
+                      <a class="btn btn-sm btn-outline-primary" href="./form.html?frecuencia=30&estado=PROGRAMADO&desc=Chequeo%20preventivo%20mensual">Planificar</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <div class="card mini-card h-100">
+                    <div class="card-body">
+                      <p class="text-muted mb-1">Correctivo inmediato</p>
+                      <small class="d-block mb-2">Atención en el día</small>
+                      <a class="btn btn-sm btn-outline-danger" href="./form.html?frecuencia=0&estado=EN_CURSO&desc=Correctivo%20inmediato">Planificar</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <div class="card mini-card h-100">
+                    <div class="card-body">
+                      <p class="text-muted mb-1">Revisión trimestral</p>
+                      <small class="d-block mb-2">Cada 90 días</small>
+                      <a class="btn btn-sm btn-outline-info" href="./form.html?frecuencia=90&estado=PROGRAMADO&desc=Revisi%C3%B3n%20trimestral">Planificar</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <div class="card mini-card h-100">
+                    <div class="card-body">
+                      <p class="text-muted mb-1">Auditoría anual</p>
+                      <small class="d-block mb-2">Una vez al año</small>
+                      <a class="btn btn-sm btn-outline-secondary" href="./form.html?frecuencia=365&estado=PROGRAMADO&desc=Auditor%C3%ADa%20anual">Planificar</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Acciones</th>
+                    <th>ID</th>
+                    <th>Serie</th>
+                    <th>Cliente</th>
+                    <th>Fecha programada</th>
+                    <th>Frecuencia (días)</th>
+                    <th>Estado</th>
+                    <th>Descripción</th>
+                    <th>Próximo</th>
+                  </tr>
+                </thead>
+                <tbody id="mantenimientos-tbody">
+                  <tr><td colspan="9" class="text-center text-muted">Sin datos</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/mantenimientos.list.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Periféricos</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
+</head>
+<body class="bg-light">
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Periféricos</h4>
+              <small class="text-muted">Inventario de monitor, teclado, mouse y teléfono por equipo</small>
+            </div>
+            <div>
+              <a class="btn btn-outline-secondary" href="../equipos/list.html">Volver a equipos</a>
+              <a class="btn btn-primary" href="./form.html">Nuevo periférico</a>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Total periféricos</p>
+                  <h5 class="mb-0" id="stat-total">--</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Con monitor</p>
+                  <h5 class="mb-0" id="stat-monitor">--</h5>
+                  <small class="text-muted">Serie o activo registrado</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Con teclado</p>
+                  <h5 class="mb-0" id="stat-teclado">--</h5>
+                  <small class="text-muted">Incluye inalámbricos</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card mini-card h-100">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Con teléfono</p>
+                  <h5 class="mb-0" id="stat-telefono">--</h5>
+                  <small class="text-muted">Escritorio o IP</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="filter-form" class="form-inline">
+                <label class="mr-2">Serie</label>
+                <input class="form-control mr-2" type="text" id="serieFilter" name="serie" placeholder="Serie del equipo">
+                <label class="mr-2">Cliente</label>
+                <select class="form-control mr-2" id="clienteFilter" name="cliente">
+                  <option value="">Todos</option>
+                </select>
+                <button class="btn btn-primary" type="submit">Aplicar</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Acciones</th>
+                    <th>ID</th>
+                    <th>Serie</th>
+                    <th>Cliente</th>
+                    <th>Monitor</th>
+                    <th>Teclado</th>
+                    <th>Mouse</th>
+                    <th>Teléfono</th>
+                  </tr>
+                </thead>
+                <tbody id="perifericos-tbody">
+                  <tr><td colspan="8" class="text-center text-muted">Sin datos</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/perifericos.list.js"></script>
+</body>
+</html>

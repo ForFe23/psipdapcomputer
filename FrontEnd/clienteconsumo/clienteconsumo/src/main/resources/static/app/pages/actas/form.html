@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acta</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" data-form-title>Nueva acta</h4>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="acta-form">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="clienteId">Cliente</label>
+                    <input class="form-control" type="text" id="clienteId" name="clienteId" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="emisorId">Emisor</label>
+                    <input class="form-control" type="text" id="emisorId" name="emisorId" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="receptorId">Receptor</label>
+                    <input class="form-control" type="text" id="receptorId" name="receptorId" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="ubicacion">Ubicación destino</label>
+                    <input class="form-control" type="text" id="ubicacion" name="ubicacion">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="estado">Estado</label>
+                    <select class="form-control" id="estado" name="estado" required>
+                      <option value="REGISTRADA">REGISTRADA</option>
+                      <option value="EMITIDA">EMITIDA</option>
+                      <option value="CERRADA">CERRADA</option>
+                      <option value="ANULADA">ANULADA</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="observaciones">Observaciones</label>
+                    <input class="form-control" type="text" id="observaciones" name="observaciones">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Flujo sugerido</h6>
+                  <span class="badge badge-info text-white">Referencia</span>
+                </div>
+                <div class="card-body">
+                  <ol class="mb-0">
+                    <li>Registrar acta con cliente, emisor y receptor.</li>
+                    <li>Agregar items en la vista de detalle (usar API /actas/{id}/items).</li>
+                    <li>Adjuntar soportes (firmas, guías) desde Adjuntos.</li>
+                    <li>Cambiar estado a EMITIDA o CERRADA según el flujo.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Integraciones relacionadas</h6>
+                  <span class="badge badge-primary">Trazabilidad</span>
+                </div>
+                <div class="card-body">
+                  <p class="text-muted mb-2">Cada acta se refleja en movimientos y adjuntos. Usa estos atajos:</p>
+                  <div class="d-flex flex-wrap">
+                    <a class="btn btn-outline-primary mr-2 mb-2" href="../movimientos/list.html"><i class="las la-random mr-2"></i>Movimientos</a>
+                    <a class="btn btn-outline-primary mr-2 mb-2" href="../adjuntos/list.html"><i class="las la-paperclip mr-2"></i>Adjuntos</a>
+                    <a class="btn btn-outline-secondary mb-2" href="../plantilla/reference.html"><i class="las la-layer-group mr-2"></i>Componentes</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/actas.form.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

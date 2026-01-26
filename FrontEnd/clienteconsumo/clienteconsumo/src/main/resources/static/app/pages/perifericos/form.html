@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Periféricos</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
+</head>
+<body class="bg-light">
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0" id="form-title">Registrar periférico</h4>
+              <small class="text-muted">Asocia monitor, teclado, mouse y teléfono a un equipo</small>
+            </div>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="periferico-form">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="serieEquipo">Serie del equipo</label>
+                    <input class="form-control" type="text" id="serieEquipo" name="serieEquipo" list="seriesList" placeholder="SERIE" required autocomplete="off">
+                    <small class="form-text text-muted">Se completará en mayúsculas.</small>
+                    <datalist id="seriesList">
+                      <option value="⬇SUGERENCIAS⬇"></option>
+                    </datalist>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="clienteSelect">Cliente</label>
+                    <select class="form-control" id="clienteSelect" name="idCliente" required>
+                      <option value="">Seleccione cliente</option>
+                    </select>
+                    <input type="hidden" id="idEquipo" name="idEquipo">
+                    <small class="form-text text-muted">Al escribir la serie se asignará automáticamente el cliente.</small>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-6 mb-3">
+                    <div class="card mini-card h-100">
+                      <div class="card-header bg-white">
+                        <h6 class="mb-0">Monitor</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="form-row">
+                          <div class="form-group col-md-6">
+                            <label for="serieMonitor">Serie</label>
+                            <input class="form-control" type="text" id="serieMonitor" name="serieMonitor" placeholder="Serie monitor">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="activoMonitor">Activo</label>
+                            <input class="form-control" type="text" id="activoMonitor" name="activoMonitor" placeholder="Código / Activo">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="marcaMonitor">Marca</label>
+                            <input class="form-control" type="text" id="marcaMonitor" name="marcaMonitor">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="modeloMonitor">Modelo</label>
+                            <input class="form-control" type="text" id="modeloMonitor" name="modeloMonitor">
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="observacionMonitor">Observación</label>
+                            <input class="form-control" type="text" id="observacionMonitor" name="observacionMonitor" placeholder="Notas del monitor">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6 mb-3">
+                    <div class="card mini-card h-100">
+                      <div class="card-header bg-white">
+                        <h6 class="mb-0">Teclado</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="form-row">
+                          <div class="form-group col-md-6">
+                            <label for="serieTeclado">Serie</label>
+                            <input class="form-control" type="text" id="serieTeclado" name="serieTeclado">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="activoTeclado">Activo</label>
+                            <input class="form-control" type="text" id="activoTeclado" name="activoTeclado" placeholder="Código / Activo">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="marcaTeclado">Marca</label>
+                            <input class="form-control" type="text" id="marcaTeclado" name="marcaTeclado">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="modeloTeclado">Modelo</label>
+                            <input class="form-control" type="text" id="modeloTeclado" name="modeloTeclado">
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="observacionTeclado">Observación</label>
+                            <input class="form-control" type="text" id="observacionTeclado" name="observacionTeclado" placeholder="Notas del teclado">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-6 mb-3">
+                    <div class="card mini-card h-100">
+                      <div class="card-header bg-white">
+                        <h6 class="mb-0">Mouse</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="form-row">
+                          <div class="form-group col-md-6">
+                            <label for="serieMouse">Serie</label>
+                            <input class="form-control" type="text" id="serieMouse" name="serieMouse">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="activoMouse">Activo</label>
+                            <input class="form-control" type="text" id="activoMouse" name="activoMouse" placeholder="Código / Activo">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="marcaMouse">Marca</label>
+                            <input class="form-control" type="text" id="marcaMouse" name="marcaMouse">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="modeloMouse">Modelo</label>
+                            <input class="form-control" type="text" id="modeloMouse" name="modeloMouse">
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="observacionMouse">Observación</label>
+                            <input class="form-control" type="text" id="observacionMouse" name="observacionMouse" placeholder="Notas del mouse">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6 mb-3">
+                    <div class="card mini-card h-100">
+                      <div class="card-header bg-white">
+                        <h6 class="mb-0">Teléfono</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="form-row">
+                          <div class="form-group col-md-6">
+                            <label for="serieTelefono">Serie</label>
+                            <input class="form-control" type="text" id="serieTelefono" name="serieTelefono">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="activoTelefono">Activo</label>
+                            <input class="form-control" type="text" id="activoTelefono" name="activoTelefono" placeholder="Código / Activo">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="marcaTelefono">Marca</label>
+                            <input class="form-control" type="text" id="marcaTelefono" name="marcaTelefono">
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="modeloTelefono">Modelo</label>
+                            <input class="form-control" type="text" id="modeloTelefono" name="modeloTelefono">
+                          </div>
+                          <div class="form-group col-12">
+                            <label for="observacionTelefono">Observación</label>
+                            <input class="form-control" type="text" id="observacionTelefono" name="observacionTelefono" placeholder="Notas del teléfono">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                  <div class="text-muted small">Cliente e ID se asignan según la serie seleccionada.</div>
+                  <button class="btn btn-primary" type="submit">Guardar periférico</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h6 class="mb-2">Tips rápidos</h6>
+                  <ul class="mb-0 text-muted">
+                    <li>Usa la serie del equipo para traer cliente automáticamente.</li>
+                    <li>Los códigos de activo se guardan en mayúsculas.</li>
+                    <li>Completa observaciones para daños o cambios de periféricos.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h6 class="mb-2">Accesos rápidos</h6>
+                  <a class="btn btn-outline-primary mr-2" href="../equipos/list.html"><i class="las la-desktop mr-1"></i>Ir a equipos</a>
+                  <a class="btn btn-outline-secondary" href="./list.html"><i class="las la-list mr-1"></i>Ver listado</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/perifericos.form.js"></script>
+</body>
+</html>
