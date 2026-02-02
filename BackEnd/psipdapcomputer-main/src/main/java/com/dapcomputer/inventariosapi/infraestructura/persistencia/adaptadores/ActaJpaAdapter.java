@@ -29,6 +29,13 @@ public class ActaJpaAdapter implements ActaRepositorio {
         if (entidad.getEstadoInterno() == null || entidad.getEstadoInterno().isBlank()) {
             entidad.setEstadoInterno("ACTIVO_INTERNAL");
         }
+        if (entidad.getItems() != null) {
+            entidad.getItems().forEach(item -> {
+                if (item.getEstadoInterno() == null || item.getEstadoInterno().isBlank()) {
+                    item.setEstadoInterno("ACTIVO_INTERNAL");
+                }
+            });
+        }
         ActaJpa guardado = repository.save(entidad);
         return mapper.toDomain(guardado);
     }
@@ -74,6 +81,22 @@ public class ActaJpaAdapter implements ActaRepositorio {
     public void actualizarEstadoInternoPorEquipo(Integer idEquipo, String estadoInterno) {
         if (idEquipo != null) {
             repository.actualizarEstadoInternoPorEquipo(idEquipo, estadoInterno);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstadoInterno(Integer id, String estadoInterno) {
+        if (id != null) {
+            repository.actualizarEstadoInterno(id, estadoInterno);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstadoInternoPorCliente(Integer idCliente, String estadoInterno) {
+        if (idCliente != null) {
+            repository.actualizarEstadoInternoPorCliente(idCliente, estadoInterno);
         }
     }
 }

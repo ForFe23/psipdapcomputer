@@ -8,6 +8,7 @@ public interface UsuarioRepositorio {
     Usuario guardar(Usuario usuario);
     Optional<Usuario> buscarPorId(Integer id);
     List<Usuario> listarPorCliente(Long idCliente);
+    List<Usuario> listarPorEmpresa(Long empresaId);
     List<Usuario> listarTodos();
     void actualizarEstadoInterno(Integer id, String estadoInterno, String estatus);
     void actualizarEstadoInternoPorCliente(Long idCliente, String estadoInterno, String estatus);

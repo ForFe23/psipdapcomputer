@@ -54,4 +54,7 @@ public class ActaItemJpa {
 
     @Column(name = "observacion", length = 255)
     private String observacion;
+
+    @Column(name = "estado_interno", length = 50)
+    private String estadoInterno;
 }

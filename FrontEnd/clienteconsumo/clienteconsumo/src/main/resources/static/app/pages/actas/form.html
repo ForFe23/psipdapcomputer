@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
   <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
   <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
 </head>
 <body>
   <div data-include="header"></div>
@@ -25,22 +26,19 @@
               <form id="acta-form">
                 <div class="form-row">
                   <div class="form-group col-md-4">
-                    <label for="clienteId">Cliente</label>
-                    <input class="form-control" type="text" id="clienteId" name="clienteId" required>
+                    <label for="clienteSelect">Empresa</label>
+                    <select class="form-control" id="clienteSelect" name="clienteId" required>
+                      <option value="">Seleccione empresa</option>
+                    </select>
+                    <small class="form-text text-muted">Usa la flecha para ver sugeridos.</small>
                   </div>
                   <div class="form-group col-md-4">
-                    <label for="emisorId">Emisor</label>
-                    <input class="form-control" type="text" id="emisorId" name="emisorId" required>
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="receptorId">Receptor</label>
-                    <input class="form-control" type="text" id="receptorId" name="receptorId" required>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group col-md-4">
-                    <label for="ubicacion">Ubicación destino</label>
-                    <input class="form-control" type="text" id="ubicacion" name="ubicacion">
+                    <label for="serieEquipo">Serie equipo</label>
+                    <input class="form-control" type="text" id="serieEquipo" name="serieEquipo" list="seriesList" autocomplete="off" required>
+                    <datalist id="seriesList">
+                      <option value="⬇SUGERENCIAS⬇"></option>
+                    </datalist>
+                    <input type="hidden" id="equipoId" name="equipoId">
                   </div>
                   <div class="form-group col-md-4">
                     <label for="estado">Estado</label>
@@ -51,6 +49,47 @@
                       <option value="ANULADA">ANULADA</option>
                     </select>
                   </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="entregadoPor">Emisor / Entrega</label>
+                    <input class="form-control" type="text" id="entregadoPor" name="entregadoPor" list="personas-usuarios-datalist" placeholder="Nombre persona/empresa" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="recibidoPor">Receptor</label>
+                    <input class="form-control" type="text" id="recibidoPor" name="recibidoPor" list="personas-usuarios-datalist" placeholder="Nombre persona/empresa" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="cargoEntrega">Cargo emisor</label>
+                    <input class="form-control" type="text" id="cargoEntrega" name="cargoEntrega" list="cargos-list" placeholder="Selecciona o escribe cargo">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="cargoRecibe">Cargo receptor</label>
+                    <input class="form-control" type="text" id="cargoRecibe" name="cargoRecibe" list="cargos-list" placeholder="Selecciona o escribe cargo">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="ubicacionId">Ubicación destino</label>
+                    <select class="form-control" id="ubicacionId" name="ubicacionId">
+                      <option value="">Seleccione ubicación del cliente</option>
+                    </select>
+                    <small class="form-text text-muted">Se carga según la empresa seleccionada. Puedes escribir manual si es especial.</small>
+                    <input class="form-control mt-2" type="text" id="ubicacion" name="ubicacion" placeholder="Ubicación manual (opcional)">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="fechaActa">Fecha acta</label>
+                    <div class="d-flex">
+                      <input class="form-control" type="date" id="fechaActa" name="fechaActa" required>
+                      <button class="btn btn-outline-secondary ml-2" type="button" id="btnFechaHoyActa" title="Usar fecha actual">Hoy</button>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="tema">Tema</label>
+                    <input class="form-control" type="text" id="tema" name="tema" required>
+                  </div>
                   <div class="form-group col-md-4">
                     <label for="observaciones">Observaciones</label>
                     <input class="form-control" type="text" id="observaciones" name="observaciones">
@@ -60,6 +99,7 @@
                   <button class="btn btn-primary" type="submit">Guardar</button>
                 </div>
               </form>
+              <datalist id="cargos-list"></datalist>
             </div>
           </div>
 
@@ -106,13 +146,6 @@
   <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
   <script src="../../../assets/js/global.js"></script>
   <script type="module" src="../../js/pages/actas.form.js"></script>
+  <datalist id="personas-usuarios-datalist"></datalist>
 </body>
 </html>
-
-
-
-
-
-
-
-

@@ -4,6 +4,7 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.CrearUsuarioC
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarUsuarioCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarUsuariosCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarUsuariosPorClienteCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarUsuariosPorEmpresaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerUsuarioCasoUso;
 import com.dapcomputer.inventariosapi.presentacion.dto.UsuarioDto;
 import com.dapcomputer.inventariosapi.presentacion.mapeadores.UsuarioDtoMapper;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,14 +28,16 @@ public class UsuarioControlador {
     private final CrearUsuarioCasoUso crearUsuario;
     private final ListarUsuariosCasoUso listarUsuarios;
     private final ListarUsuariosPorClienteCasoUso listarPorCliente;
+    private final ListarUsuariosPorEmpresaCasoUso listarPorEmpresa;
     private final ObtenerUsuarioCasoUso obtenerUsuario;
     private final EliminarUsuarioCasoUso eliminarUsuario;
     private final UsuarioDtoMapper mapper;
 
-    public UsuarioControlador(CrearUsuarioCasoUso crearUsuario, ListarUsuariosCasoUso listarUsuarios, ListarUsuariosPorClienteCasoUso listarPorCliente, ObtenerUsuarioCasoUso obtenerUsuario, EliminarUsuarioCasoUso eliminarUsuario, UsuarioDtoMapper mapper) {
+    public UsuarioControlador(CrearUsuarioCasoUso crearUsuario, ListarUsuariosCasoUso listarUsuarios, ListarUsuariosPorClienteCasoUso listarPorCliente, ListarUsuariosPorEmpresaCasoUso listarPorEmpresa, ObtenerUsuarioCasoUso obtenerUsuario, EliminarUsuarioCasoUso eliminarUsuario, UsuarioDtoMapper mapper) {
         this.crearUsuario = crearUsuario;
         this.listarUsuarios = listarUsuarios;
         this.listarPorCliente = listarPorCliente;
+        this.listarPorEmpresa = listarPorEmpresa;
         this.obtenerUsuario = obtenerUsuario;
         this.eliminarUsuario = eliminarUsuario;
         this.mapper = mapper;
@@ -67,7 +71,10 @@ public class UsuarioControlador {
     }
 
     @GetMapping
-    public List<UsuarioDto> listar() {
+    public List<UsuarioDto> listar(@RequestParam(value = "empresaId", required = false) Long empresaId) {
+        if (empresaId != null) {
+            return listarPorEmpresa.ejecutar(empresaId).stream().map(mapper::toDto).toList();
+        }
         return listarUsuarios.ejecutar().stream().map(mapper::toDto).toList();
     }
 

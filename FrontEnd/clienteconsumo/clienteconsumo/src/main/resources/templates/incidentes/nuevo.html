@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Nuevo incidente · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0" id="titulo-form">Nuevo incidente</h1>
+      <small class="text-muted">Registrar ticket de soporte</small>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/incidentes}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="incidente-form">
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label for="equipoId">ID Equipo *</label>
+            <input id="equipoId" name="equipoId" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="idUsuario">ID Usuario *</label>
+            <input id="idUsuario" name="idUsuario" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="idCliente">ID Cliente *</label>
+            <input id="idCliente" name="idCliente" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="fechaIncidente">Fecha *</label>
+            <input id="fechaIncidente" name="fechaIncidente" type="datetime-local" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="detalle">Detalle *</label>
+          <textarea id="detalle" name="detalle" rows="3" class="form-control" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="tecnico">Técnico</label>
+            <input id="tecnico" name="tecnico" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="responsable">Responsable</label>
+            <input id="responsable" name="responsable" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="estadoInterno">Estado interno</label>
+            <select id="estadoInterno" name="estadoInterno" class="form-control">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO_INTERNAL">INACTIVO_INTERNAL</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="costo">Costo</label>
+          <input id="costo" name="costo" class="form-control">
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <span id="status" class="text-muted ml-2"></span>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarIncidente(id) {
+    const res = await apiFetch('/incidentes/' + id);
+    if (!res.ok) throw new Error('Error ' + res.status);
+    const i = await res.json();
+    equipoId.value = i.equipoId ?? '';
+    idUsuario.value = i.idUsuario ?? '';
+    idCliente.value = i.idCliente ?? '';
+    fechaIncidente.value = toDateTimeInputValue(i.fechaIncidente);
+    detalle.value = i.detalle ?? '';
+    tecnico.value = i.tecnico ?? '';
+    responsable.value = i.responsable ?? '';
+    costo.value = i.costo ?? '';
+    estadoInterno.value = i.estadoInterno ?? '';
+  }
+
+  async function guardarIncidente(event) {
+    event.preventDefault();
+    const status = document.getElementById('status');
+    status.textContent = 'Guardando...';
+    const id = getIdParam();
+    const body = {
+      equipoId: equipoId.value ? Number(equipoId.value) : null,
+      idUsuario: idUsuario.value ? Number(idUsuario.value) : null,
+      idCliente: idCliente.value ? Number(idCliente.value) : null,
+      fechaIncidente: fechaIncidente.value ? new Date(fechaIncidente.value).toISOString() : null,
+      detalle: detalle.value,
+      tecnico: tecnico.value,
+      responsable: responsable.value,
+      costo: costo.value,
+      estadoInterno: estadoInterno.value
+    };
+    try {
+      const res = await apiFetch(id ? '/incidentes/' + id : '/incidentes', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error ' + res.status);
+      status.textContent = id ? 'Actualizado' : 'Creado';
+      setTimeout(() => window.location.href = '/incidentes', 800);
+    } catch (err) {
+      status.textContent = 'No se pudo guardar: ' + err.message;
+      status.classList.replace('text-muted', 'text-danger');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const id = getIdParam();
+    if (id) {
+      document.getElementById('titulo-form').textContent = 'Editar incidente';
+      cargarIncidente(id).catch(err => {
+        document.getElementById('status').textContent = 'No se pudo cargar: ' + err.message;
+      });
+    }
+    document.getElementById('incidente-form').addEventListener('submit', guardarIncidente);
+  });
+</script>
+</body>
+</html>

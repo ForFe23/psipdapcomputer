@@ -10,5 +10,6 @@ public interface MantenimientoRepositorio {
     Optional<Mantenimiento> buscarPorId(Integer id);
     List<Mantenimiento> listarPorEquipoId(Long equipoId);
     void actualizarEstadoPorEquipo(Long equipoId, String estado);
+    void actualizarEstadoPorCliente(Long idCliente, String estado);
     void eliminar(Integer id);
 }

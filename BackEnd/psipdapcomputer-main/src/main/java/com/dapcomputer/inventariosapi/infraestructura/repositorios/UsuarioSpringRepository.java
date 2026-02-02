@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface UsuarioSpringRepository extends JpaRepository<UsuarioJpa, Integer> {
     List<UsuarioJpa> findByIdCliente(Long idCliente);
+    List<UsuarioJpa> findByEmpresaId(Long empresaId);
 
     @Modifying
     @Query("update UsuarioJpa u set u.estadoInterno = :estadoInterno, u.estatus = :estatus where u.id = :id")

@@ -9,4 +9,7 @@ public interface IPersonaRepositorio {
     Persona actualizar(Persona persona);
     Optional<Persona> buscarPorId(Integer id);
     List<Persona> listarPorEmpresa(Long empresaId);
+    List<Persona> listar();
+    void actualizarEstadoInternoPorEmpresa(Long empresaId, String estadoInterno);
+    void eliminar(Integer id);
 }

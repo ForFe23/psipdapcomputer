@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kardex</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Kardex</h4>
+              <small class="text-muted">Movimientos e incidentes por equipo</small>
+            </div>
+            <div></div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="kardex-form" class="form-row">
+                <div class="form-group col-md-4">
+                  <label for="clienteSelect">Empresa</label>
+                  <select class="form-control" id="clienteSelect">
+                    <option value="">Seleccione empresa</option>
+                  </select>
+                  <small class="form-text text-muted">Filtra series por empresa.</small>
+                </div>
+                <div class="form-group col-md-4">
+                  <label for="serieEquipo">Serie equipo</label>
+                  <input class="form-control" type="text" id="serieEquipo" list="seriesList" autocomplete="off" required>
+                  <datalist id="seriesList">
+                    <option value="⬇SUGERENCIAS⬇"></option>
+                  </datalist>
+                  <input type="hidden" id="equipoId">
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="desde">Desde</label>
+                  <input class="form-control" type="date" id="desde">
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="hasta">Hasta</label>
+                  <input class="form-control" type="date" id="hasta">
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                  <button class="btn btn-primary mr-2" type="submit"><i class="las la-search mr-1"></i>Consultar</button>
+                  <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('kardex-form').reset();"><i class="las la-undo mr-1"></i>Limpiar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Movimientos</h6>
+                  <span class="badge badge-primary" id="mov-count">0</span>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Tipo</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Fecha</th>
+                      </tr>
+                    </thead>
+                    <tbody id="movimientos-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Incidentes</h6>
+                  <span class="badge badge-warning text-dark" id="inc-count">0</span>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Detalle</th>
+                        <th>Fecha</th>
+                        <th>Técnico</th>
+                      </tr>
+                    </thead>
+                    <tbody id="incidentes-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/kardex.list.js"></script>
+</body>
+</html>

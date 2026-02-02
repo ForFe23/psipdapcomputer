@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record PerifericoDto(
         Integer id,
-        @NotNull Integer equipoId,
+        Integer equipoId,
         String serieEquipo,
         String serieMonitor,
         String activoMonitor,

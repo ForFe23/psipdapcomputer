@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Nueva acta · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0" id="titulo-form">Nueva acta</h1>
+      <small class="text-muted">Crea un acta básica</small>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/actas}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="acta-form">
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="codigo">Código</label>
+            <input id="codigo" name="codigo" class="form-control" placeholder="ACT-XXXX" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado" class="form-control">
+              <option value="REGISTRADA">REGISTRADA</option>
+              <option value="EMITIDA">EMITIDA</option>
+              <option value="ANULADA">ANULADA</option>
+            </select>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="estadoInterno">Estado interno</label>
+            <select id="estadoInterno" name="estadoInterno" class="form-control">
+              <option value="">(opcional)</option>
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO_INTERNAL">INACTIVO_INTERNAL</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="idCliente">ID Cliente *</label>
+            <input id="idCliente" name="idCliente" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="idEquipo">ID Equipo *</label>
+            <input id="idEquipo" name="idEquipo" type="number" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fechaActa">Fecha del acta *</label>
+          <input id="fechaActa" name="fechaActa" type="date" class="form-control" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="tema">Tema *</label>
+            <input id="tema" name="tema" class="form-control" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="equipoSerie">Serie del equipo *</label>
+            <input id="equipoSerie" name="equipoSerie" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="entregadoPor">Entregado por *</label>
+            <input id="entregadoPor" name="entregadoPor" class="form-control" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="recibidoPor">Recibido por *</label>
+            <input id="recibidoPor" name="recibidoPor" class="form-control" required>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <span id="status" class="text-muted ml-2"></span>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarActa(id) {
+    const res = await apiFetch('/actas/' + id);
+    if (!res.ok) throw new Error('Error ' + res.status);
+    const a = await res.json();
+    codigo.value = a.codigo ?? '';
+    estado.value = a.estado ?? 'REGISTRADA';
+    estadoInterno.value = a.estadoInterno ?? '';
+    idCliente.value = a.idCliente ?? '';
+    idEquipo.value = a.idEquipo ?? '';
+    fechaActa.value = toDateInputValue(a.fechaActa);
+    tema.value = a.tema ?? '';
+    equipoSerie.value = a.equipoSerie ?? '';
+    entregadoPor.value = a.entregadoPor ?? '';
+    recibidoPor.value = a.recibidoPor ?? '';
+  }
+
+  async function guardarActa(event) {
+    event.preventDefault();
+    const status = document.getElementById('status');
+    status.textContent = 'Guardando...';
+    const id = getIdParam();
+    const body = {
+      codigo: codigo.value,
+      idCliente: idCliente.value ? Number(idCliente.value) : null,
+      idEquipo: idEquipo.value ? Number(idEquipo.value) : null,
+      estado: estado.value,
+      estadoInterno: estadoInterno.value || null,
+      fechaActa: fechaActa.value || null,
+      tema: tema.value,
+      entregadoPor: entregadoPor.value,
+      recibidoPor: recibidoPor.value,
+      equipoSerie: equipoSerie.value
+    };
+    try {
+      const res = await apiFetch(id ? '/actas/' + id : '/actas', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error ' + res.status);
+      status.textContent = id ? 'Actualizada' : 'Creada';
+      setTimeout(() => window.location.href = '/actas', 800);
+    } catch (err) {
+      status.textContent = 'No se pudo guardar: ' + err.message;
+      status.classList.replace('text-muted', 'text-danger');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const id = getIdParam();
+    if (id) {
+      document.getElementById('titulo-form').textContent = 'Editar acta';
+      cargarActa(id).catch(err => {
+        document.getElementById('status').textContent = 'No se pudo cargar: ' + err.message;
+      });
+    }
+    document.getElementById('acta-form').addEventListener('submit', guardarActa);
+  });
+</script>
+</body>
+</html>

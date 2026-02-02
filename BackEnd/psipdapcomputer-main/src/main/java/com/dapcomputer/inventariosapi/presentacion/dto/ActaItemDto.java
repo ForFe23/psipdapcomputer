@@ -11,5 +11,6 @@ public record ActaItemDto(
         String modelo,
         String observacion,
         @NotNull Integer equipoId,
-        @NotBlank String equipoSerie) {
+        @NotBlank String equipoSerie,
+        String estadoInterno) {
 }

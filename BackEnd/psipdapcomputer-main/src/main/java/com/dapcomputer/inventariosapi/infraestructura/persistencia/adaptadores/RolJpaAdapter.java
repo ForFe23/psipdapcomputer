@@ -39,4 +39,9 @@ public class RolJpaAdapter implements RolRepositorio {
     public List<Rol> listar() {
         return repository.findAll().stream().map(mapper::toDomain).toList();
     }
+
+    @Override
+    public void eliminar(Long id) {
+        repository.deleteById(id);
+    }
 }

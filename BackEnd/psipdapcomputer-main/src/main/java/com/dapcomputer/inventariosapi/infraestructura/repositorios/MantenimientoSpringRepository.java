@@ -13,4 +13,8 @@ public interface MantenimientoSpringRepository extends JpaRepository<Mantenimien
     @Modifying
     @Query("update MantenimientoJpa m set m.estado = :estado, m.estadoInterno = :estado where m.equipoId = :equipoId")
     void actualizarEstadoPorEquipo(@Param("equipoId") Long equipoId, @Param("estado") String estado);
+
+    @Modifying
+    @Query("update MantenimientoJpa m set m.estado = :estado, m.estadoInterno = :estado where m.idCliente = :idCliente")
+    void actualizarEstadoPorCliente(@Param("idCliente") Long idCliente, @Param("estado") String estado);
 }

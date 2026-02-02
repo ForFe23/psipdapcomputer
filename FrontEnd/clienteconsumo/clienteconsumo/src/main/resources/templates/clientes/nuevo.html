@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Nuevo cliente · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0" id="titulo-form">Nuevo cliente</h1>
+      <small class="text-muted">Enviar al endpoint /api/clientes</small>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/clientes}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="cliente-form">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" name="nombre" class="form-control" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="contrasena">Contraseña</label>
+            <input id="contrasena" name="contrasena" type="password" class="form-control" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="licencia">Licencia</label>
+            <input id="licencia" name="licencia" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="calle">Calle</label>
+            <input id="calle" name="calle" class="form-control">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="ciudad">Ciudad</label>
+            <input id="ciudad" name="ciudad" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="fechaLicencia">Fecha licencia</label>
+            <input id="fechaLicencia" name="fechaLicencia" type="date" class="form-control">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="estadoInterno">Estado interno</label>
+            <select id="estadoInterno" name="estadoInterno" class="form-control">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO_INTERNAL">INACTIVO_INTERNAL</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <span id="status" class="text-muted ml-2"></span>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarCliente(id) {
+    const res = await apiFetch('/clientes/' + id);
+    if (!res.ok) throw new Error('Error ' + res.status);
+    const c = await res.json();
+    nombre.value = c.nombre ?? '';
+    email.value = c.email ?? '';
+    contrasena.value = c.contrasena ?? '';
+    licencia.value = c.licencia ?? '';
+    calle.value = c.calle ?? '';
+    ciudad.value = c.ciudad ?? '';
+    fechaLicencia.value = toDateInputValue(c.fechaLicencia);
+    estadoInterno.value = c.estadoInterno ?? '';
+  }
+
+  async function guardarCliente(event) {
+    event.preventDefault();
+    const status = document.getElementById('status');
+    status.textContent = 'Guardando...';
+    const id = getIdParam();
+    const body = {
+      nombre: nombre.value,
+      contrasena: contrasena.value,
+      email: email.value,
+      licencia: licencia.value,
+      calle: calle.value,
+      ciudad: ciudad.value,
+      fechaLicencia: fechaLicencia.value || null,
+      estadoInterno: estadoInterno.value
+    };
+    try {
+      const res = await apiFetch(id ? '/clientes/' + id : '/clientes', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error ' + res.status);
+      status.textContent = id ? 'Actualizado' : 'Creado correctamente';
+      setTimeout(() => window.location.href = '/clientes', 800);
+    } catch (err) {
+      status.textContent = 'No se pudo guardar: ' + err.message;
+      status.classList.replace('text-muted', 'text-danger');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const id = getIdParam();
+    if (id) {
+      document.getElementById('titulo-form').textContent = 'Editar cliente';
+      cargarCliente(id).catch(err => {
+        document.getElementById('status').textContent = 'No se pudo cargar: ' + err.message;
+      });
+    }
+    document.getElementById('cliente-form').addEventListener('submit', guardarCliente);
+  });
+</script>
+</body>
+</html>

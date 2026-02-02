@@ -1,6 +1,7 @@
 import { loadLayout } from "../ui/render.js";
 import { perifericosApi } from "../api/perifericos.api.js";
-import { clientesApi } from "../api/clientes.api.js";
+import { empresasApi } from "../api/empresas.api.js";
+import { equiposApi } from "../api/equipos.api.js";
 import { showError, showSuccess } from "../ui/alerts.js";
 
 const INACTIVO_INTERNAL = "INACTIVO_INTERNAL";
@@ -8,8 +9,8 @@ const INACTIVO_INTERNAL = "INACTIVO_INTERNAL";
 const getParam = (name) => new URL(window.location.href).searchParams.get(name) || "";
 const toUpper = (val) => (val ? val.trim().toUpperCase() : "");
 
-const clienteNombre = (id, clientes) => {
-  const c = clientes.find((cl) => String(cl.id) === String(id));
+const empresaNombre = (id, empresas) => {
+  const c = empresas.find((cl) => String(cl.id) === String(id));
   return c ? (c.nombre || c.razonSocial || c.id) : id;
 };
 
@@ -22,7 +23,7 @@ const deviceLabel = (serie, activo, marca, modelo) => {
   return parts.length ? parts.join("<br>") : `<span class="text-muted">-</span>`;
 };
 
-const rowTemplate = (p, clientes) => `
+const rowTemplate = (p, empresas) => `
   <tr>
     <td>
       <div class="btn-group btn-group-sm" role="group">
@@ -32,7 +33,7 @@ const rowTemplate = (p, clientes) => `
     </td>
     <td>${p.id ?? ""}</td>
     <td>${p.serieEquipo ?? ""}</td>
-    <td>${clienteNombre(p.idCliente, clientes) ?? ""}</td>
+    <td>${empresaNombre(p.empresaId ?? p.idCliente, empresas) ?? ""}</td>
     <td>${deviceLabel(p.serieMonitor, p.activoMonitor, p.marcaMonitor, p.modeloMonitor)}</td>
     <td>${deviceLabel(p.serieTeclado, p.activoTeclado, p.marcaTeclado, p.modeloTeclado)}</td>
     <td>${deviceLabel(p.serieMouse, p.activoMouse, p.marcaMouse, p.modeloMouse)}</td>
@@ -46,12 +47,13 @@ async function main() {
   await loadLayout("perifericos");
   const serieParam = getParam("serie");
   const serieInput = document.querySelector("#serieFilter");
-  const clienteSelect = document.querySelector("#clienteFilter");
+  const empresaSelect = document.querySelector("#fEmpresa");
   const tbody = document.querySelector("#perifericos-tbody");
 
   if (serieInput) serieInput.value = serieParam;
 
-  let clientes = [];
+  let empresas = [];
+  let equipos = [];
   let datos = [];
 
   const setStat = (id, val) => {
@@ -76,27 +78,36 @@ async function main() {
       tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Sin periféricos registrados</td></tr>`;
       return;
     }
-    tbody.innerHTML = items.map((p) => rowTemplate(p, clientes)).join("");
+    tbody.innerHTML = items.map((p) => rowTemplate(p, empresas)).join("");
   };
 
   const applyFilters = () => {
     let filtered = [...datos];
     const serie = toUpper(serieInput?.value);
-    const clienteSel = clienteSelect?.value;
+    const empresaSel = empresaSelect?.value;
     if (serie) filtered = filtered.filter((p) => toUpper(p.serieEquipo).includes(serie));
-    if (clienteSel) filtered = filtered.filter((p) => String(p.idCliente) === clienteSel);
+    if (empresaSel) filtered = filtered.filter((p) => String(p.empresaId) === empresaSel);
     renderTable(filtered);
     renderStats(filtered);
   };
 
-  const loadClientes = async () => {
+  const loadEmpresas = async () => {
     try {
-      clientes = await clientesApi.list();
-      if (clienteSelect) {
-        clienteSelect.innerHTML = `<option value="">Todos</option>` + clientes.map((c) => `<option value="${c.id}">${c.nombre || c.razonSocial || c.id}</option>`).join("");
+      empresas = await empresasApi.list();
+      if (empresaSelect) {
+        empresaSelect.innerHTML =
+          `<option value="">Todas</option>` + empresas.map((c) => `<option value="${c.id}">${c.nombre || c.razonSocial || c.id}</option>`).join("");
       }
     } catch (err) {
       
+    }
+  };
+
+  const loadEquipos = async () => {
+    try {
+      equipos = await equiposApi.list();
+    } catch (err) {
+      equipos = [];
     }
   };
 
@@ -104,11 +115,18 @@ async function main() {
     try {
       const params = {};
       const serie = toUpper(serieInput?.value);
-      const clienteId = clienteSelect?.value;
       if (serie) params.serie = serie;
-      if (clienteId) params.clienteId = clienteId;
       const data = await perifericosApi.list(params);
-      datos = (data || []).filter((p) => (p.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL);
+      const mergeEmpresa = (p) => {
+        const eq =
+          equipos.find((e) => String(e.id) === String(p.equipoId)) ||
+          equipos.find((e) => toUpper(e.serie || e.serieEquipo) === toUpper(p.serieEquipo));
+        const empresaId = eq?.empresaId ?? eq?.idCliente ?? p.empresaId ?? p.idCliente ?? null;
+        return { ...p, empresaId };
+      };
+      datos = (data || [])
+        .filter((p) => (p.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL)
+        .map(mergeEmpresa);
       renderTable(datos);
       renderStats(datos);
     } catch (err) {
@@ -121,7 +139,7 @@ async function main() {
     applyFilters();
   });
   serieInput?.addEventListener("input", applyFilters);
-  clienteSelect?.addEventListener("change", applyFilters);
+  empresaSelect?.addEventListener("change", applyFilters);
 
   document.addEventListener("click", async (ev) => {
     const btn = ev.target.closest(".btn-del");
@@ -139,7 +157,7 @@ async function main() {
     }
   });
 
-  await loadClientes();
+  await Promise.all([loadEmpresas(), loadEquipos()]);
   await load();
   applyFilters();
 }

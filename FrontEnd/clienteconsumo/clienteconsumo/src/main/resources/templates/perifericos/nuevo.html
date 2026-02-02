@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Nuevo periférico · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0" id="titulo-form">Nuevo periférico</h1>
+      <small class="text-muted">Registrar set de periféricos para un equipo</small>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/perifericos}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="periferico-form">
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="equipoId">ID Equipo *</label>
+            <input id="equipoId" name="equipoId" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="idCliente">ID Cliente *</label>
+            <input id="idCliente" name="idCliente" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="estadoInterno">Estado</label>
+            <select id="estadoInterno" name="estadoInterno" class="form-control">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO_INTERNAL">INACTIVO_INTERNAL</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="marcaMonitor">Monitor (marca/modelo)</label>
+            <input id="marcaMonitor" name="marcaMonitor" class="form-control" placeholder="Marca">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="modeloMonitor">Modelo</label>
+            <input id="modeloMonitor" name="modeloMonitor" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="serieMonitor">Serie</label>
+            <input id="serieMonitor" name="serieMonitor" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="marcaTeclado">Teclado (marca/modelo)</label>
+            <input id="marcaTeclado" name="marcaTeclado" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="modeloTeclado">Modelo</label>
+            <input id="modeloTeclado" name="modeloTeclado" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="serieTeclado">Serie</label>
+            <input id="serieTeclado" name="serieTeclado" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="marcaMouse">Mouse (marca/modelo)</label>
+            <input id="marcaMouse" name="marcaMouse" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="modeloMouse">Modelo</label>
+            <input id="modeloMouse" name="modeloMouse" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="serieMouse">Serie</label>
+            <input id="serieMouse" name="serieMouse" class="form-control">
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <span id="status" class="text-muted ml-2"></span>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarPeriferico(id) {
+    const res = await apiFetch('/perifericos/' + id);
+    if (!res.ok) throw new Error('Error ' + res.status);
+    const p = await res.json();
+    equipoId.value = p.equipoId ?? '';
+    idCliente.value = p.idCliente ?? '';
+    estadoInterno.value = p.estadoInterno ?? '';
+    marcaMonitor.value = p.marcaMonitor ?? '';
+    modeloMonitor.value = p.modeloMonitor ?? '';
+    serieMonitor.value = p.serieMonitor ?? '';
+    marcaTeclado.value = p.marcaTeclado ?? '';
+    modeloTeclado.value = p.modeloTeclado ?? '';
+    serieTeclado.value = p.serieTeclado ?? '';
+    marcaMouse.value = p.marcaMouse ?? '';
+    modeloMouse.value = p.modeloMouse ?? '';
+    serieMouse.value = p.serieMouse ?? '';
+  }
+
+  async function guardarPeriferico(event) {
+    event.preventDefault();
+    const status = document.getElementById('status');
+    status.textContent = 'Guardando...';
+    const id = getIdParam();
+    const body = {
+      equipoId: equipoId.value ? Number(equipoId.value) : null,
+      idCliente: idCliente.value ? Number(idCliente.value) : null,
+      estadoInterno: estadoInterno.value,
+      marcaMonitor: marcaMonitor.value,
+      modeloMonitor: modeloMonitor.value,
+      serieMonitor: serieMonitor.value,
+      marcaTeclado: marcaTeclado.value,
+      modeloTeclado: modeloTeclado.value,
+      serieTeclado: serieTeclado.value,
+      marcaMouse: marcaMouse.value,
+      modeloMouse: modeloMouse.value,
+      serieMouse: serieMouse.value
+    };
+    try {
+      const res = await apiFetch(id ? '/perifericos/' + id : '/perifericos', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error ' + res.status);
+      status.textContent = id ? 'Actualizado' : 'Creado';
+      setTimeout(() => window.location.href = '/perifericos', 800);
+    } catch (err) {
+      status.textContent = 'No se pudo guardar: ' + err.message;
+      status.classList.replace('text-muted', 'text-danger');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const id = getIdParam();
+    if (id) {
+      document.getElementById('titulo-form').textContent = 'Editar periférico';
+      cargarPeriferico(id).catch(err => {
+        document.getElementById('status').textContent = 'No se pudo cargar: ' + err.message;
+      });
+    }
+    document.getElementById('periferico-form').addEventListener('submit', guardarPeriferico);
+  });
+</script>
+</body>
+</html>

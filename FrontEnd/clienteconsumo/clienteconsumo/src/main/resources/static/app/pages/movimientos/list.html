@@ -80,11 +80,37 @@
               <form id="filtros-movimientos" class="form-row">
                 <div class="form-group col-md-3">
                   <label for="equipoId">Equipo ID</label>
-                  <input class="form-control" type="text" id="equipoId" name="equipoId">
+                  <input class="form-control" type="text" id="equipoId" name="equipoId" placeholder="Ej: 12">
                 </div>
                 <div class="form-group col-md-3">
                   <label for="usuarioId">Usuario ID</label>
-                  <input class="form-control" type="text" id="usuarioId" name="usuarioId">
+                  <input class="form-control" type="text" id="usuarioId" name="usuarioId" placeholder="Ej: 5">
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fEmpresa">Empresa</label>
+                  <select class="form-control" id="fEmpresa" name="empresaId">
+                    <option value="">Todas</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="tipo">Tipo</label>
+                  <select class="form-control" id="tipo" name="tipo">
+                    <option value="">Todos</option>
+                    <option>ASIGNACION</option>
+                    <option>REASIGNACION</option>
+                    <option>ENTREGA</option>
+                    <option>TRASLADO</option>
+                    <option>RETIRO</option>
+                    <option>ANULACION</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="estado">Estado</label>
+                  <select class="form-control" id="estado" name="estado">
+                    <option value="">Todos</option>
+                    <option>ACTIVO</option>
+                    <option>INACTIVO_INTERNAL</option>
+                  </select>
                 </div>
                 <div class="form-group col-md-3">
                   <label for="desde">Desde</label>
@@ -95,7 +121,8 @@
                   <input class="form-control" type="date" id="hasta" name="hasta">
                 </div>
                 <div class="col-12 d-flex justify-content-end">
-                  <button class="btn btn-outline-primary" type="submit">Aplicar filtros</button>
+                  <button class="btn btn-primary mr-2" type="submit"><i class="las la-filter mr-1"></i>Aplicar filtros</button>
+                  <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('filtros-movimientos').reset(); document.dispatchEvent(new Event('movimientos:reload'));"><i class="las la-undo mr-1"></i>Limpiar</button>
                 </div>
               </form>
             </div>
@@ -107,11 +134,14 @@
                   <tr>
                     <th>ID</th>
                     <th>Equipo</th>
-                    <th>Usuario</th>
                     <th>Tipo</th>
                     <th>Origen</th>
                     <th>Destino</th>
                     <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Observación</th>
+                    <th>Empresa</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody id="movimientos-tbody"></tbody>
@@ -129,9 +159,6 @@
   <script type="module" src="../../js/pages/movimientos.list.js"></script>
 </body>
 </html>
-
-
-
 
 
 

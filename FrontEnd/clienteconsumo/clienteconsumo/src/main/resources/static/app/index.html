@@ -9,16 +9,87 @@
   <link rel="stylesheet" href="../assets/css/vendors/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/css/vendors/line-awesome.min.css">
   <link rel="stylesheet" href="../assets/css/pages/layout.css">
+  <style>
+    /* Cortina de bienvenida */
+    #welcome-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 30%, rgba(0,123,255,0.25), transparent 45%),
+                  radial-gradient(circle at 70% 70%, rgba(168,0,31,0.25), transparent 45%),
+                  #0d0f16;
+      color: #fff;
+      z-index: 1200;
+      transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s ease;
+    }
+    body.welcome-hidden #welcome-overlay {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-12px);
+      pointer-events: none;
+    }
+    #welcome-overlay .welcome-content {
+      text-align: center;
+      animation: popIn 0.65s ease;
+    }
+    #welcome-overlay .welcome-badge {
+      display: inline-block;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    #welcome-overlay h1 { font-size: 2rem; margin-bottom: 0.4rem; }
+    #welcome-overlay p { color: #cfd3dc; margin: 0; }
+
+    /* Animaciones suaves en la página */
+    @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes floatY { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+
+    .animate-on-load {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fadeUp 0.75s ease forwards;
+      animation-delay: var(--anim-delay, 0.15s);
+    }
+    .animate-on-load.is-visible { opacity: 1; transform: translateY(0); }
+
+    .hero-card { overflow: hidden; }
+    .hero-illustration { animation: floatY 6s ease-in-out infinite alternate; }
+    .kpi-card, .mini-card, .hero-card, .list-group-item {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .kpi-card:hover, .mini-card:hover, .hero-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+    }
+    .list-group-item:hover { transform: translateX(4px); }
+    .btn { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.12); }
+  </style>
 </head>
 
 <body>
+  <div id="welcome-overlay">
+    <div class="welcome-content">
+      <span class="welcome-badge">Inventarios TI</span>
+      <h1>Bienvenido</h1>
+      <p>Conectando con tu tablero...</p>
+    </div>
+  </div>
   <div data-include="header"></div>
   <main class="layout-shell">
     <div data-include="sidebar" class="side-nav"></div>
     <div class="main-content">
       <div class="container-fluid">
         <section class="mb-4">
-          <div class="card hero-card p-4">
+              <div class="card hero-card p-4 animate-on-load">
             <div class="row align-items-center">
               <div class="col-lg-8">
                 <div class="d-flex align-items-start">
@@ -52,7 +123,7 @@
         <section class="mb-4">
           <div class="row">
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-              <div class="card kpi-card">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.2s">
                 <div class="card-body">
                   <div class="d-flex justify-content-between mb-2 align-items-center">
                     <span class="kpi-icon bg-primary text-white"><i class="las la-hdd"></i></span>
@@ -65,7 +136,7 @@
               </div>
             </div>
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-              <div class="card kpi-card">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.3s">
                 <div class="card-body">
                   <div class="d-flex justify-content-between mb-2 align-items-center">
                     <span class="kpi-icon bg-warning text-white"><i class="las la-file-alt"></i></span>
@@ -78,7 +149,7 @@
               </div>
             </div>
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-              <div class="card kpi-card">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.4s">
                 <div class="card-body">
                   <div class="d-flex justify-content-between mb-2 align-items-center">
                     <span class="kpi-icon bg-info text-white"><i class="las la-random"></i></span>
@@ -91,7 +162,7 @@
               </div>
             </div>
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-              <div class="card kpi-card">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.5s">
                 <div class="card-body">
                   <div class="d-flex justify-content-between mb-2 align-items-center">
                     <span class="kpi-icon bg-danger text-white"><i class="las la-paperclip"></i></span>
@@ -104,7 +175,7 @@
               </div>
             </div>
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-              <div class="card kpi-card">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.6s">
                 <div class="card-body">
                   <div class="d-flex justify-content-between mb-2 align-items-center">
                     <span class="kpi-icon bg-success text-white"><i class="las la-user-shield"></i></span>
@@ -117,7 +188,7 @@
               </div>
             </div>
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-              <div class="card kpi-card">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.7s">
                 <div class="card-body">
                   <div class="d-flex justify-content-between mb-2 align-items-center">
                     <span class="kpi-icon bg-secondary text-white"><i class="las la-building"></i></span>
@@ -135,7 +206,7 @@
         <section class="mb-4">
           <div class="row">
             <div class="col-lg-3 col-md-6 mb-3">
-              <div class="card mini-card h-100">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.2s">
                 <div class="card-body">
                   <p class="text-muted mb-1">Inventario</p>
                   <h5 class="mb-1">Equipos</h5>
@@ -148,7 +219,7 @@
               </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-3">
-              <div class="card mini-card h-100">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.3s">
                 <div class="card-body">
                   <p class="text-muted mb-1">Operación</p>
                   <h5 class="mb-1">Actas</h5>
@@ -161,7 +232,7 @@
               </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-3">
-              <div class="card mini-card h-100">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.4s">
                 <div class="card-body">
                   <p class="text-muted mb-1">Trazabilidad</p>
                   <h5 class="mb-1">Movimientos</h5>
@@ -174,14 +245,14 @@
               </div>
             </div>
             <div class="col-lg-3 col-md-6 mb-3">
-              <div class="card mini-card h-100">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.5s">
                 <div class="card-body">
                   <p class="text-muted mb-1">Soporte</p>
                   <h5 class="mb-1">Adjuntos</h5>
                   <p class="mb-3">Carga y consulta de archivos asociados a actas.</p>
                   <div class="d-flex align-items-center justify-content-between">
                     <a class="btn btn-outline-primary btn-sm" href="./pages/adjuntos/list.html">Abrir</a>
-                    <span class="badge badge-pill badge-danger">67 recientes</span>
+                    <span class="badge badge-pill badge-danger" id="kpi-adjuntos">--</span>
                   </div>
                 </div>
               </div>
@@ -192,7 +263,7 @@
         <section class="mb-4">
           <div class="row">
             <div class="col-xl-8 mb-3">
-              <div class="card h-100">
+              <div class="card h-100 animate-on-load" style="--anim-delay:0.2s">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <div>
                     <h6 class="mb-0 section-title">Actas recientes</h6>
@@ -212,73 +283,42 @@
                         <th>Fecha</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>ACT-2026-0012</td>
-                        <td>Cliente 310</td>
-                        <td>Usuario 210</td>
-                        <td>Usuario 305</td>
-                        <td><span class="badge badge-success">Emitida</span></td>
-                        <td>2026-01-23</td>
-                      </tr>
-                      <tr>
-                        <td>ACT-2026-0011</td>
-                        <td>Cliente 308</td>
-                        <td>Usuario 205</td>
-                        <td>Usuario 299</td>
-                        <td><span class="badge badge-warning text-dark">Registrada</span></td>
-                        <td>2026-01-22</td>
-                      </tr>
-                      <tr>
-                        <td>ACT-2026-0010</td>
-                        <td>Cliente 301</td>
-                        <td>Usuario 200</td>
-                        <td>Usuario 285</td>
-                        <td><span class="badge badge-danger">Anulada</span></td>
-                        <td>2026-01-21</td>
-                      </tr>
-                      <tr>
-                        <td>ACT-2026-0009</td>
-                        <td>Cliente 300</td>
-                        <td>Usuario 200</td>
-                        <td>Usuario 270</td>
-                        <td><span class="badge badge-primary">Cerrada</span></td>
-                        <td>2026-01-21</td>
-                      </tr>
+                    <tbody id="actas-recientes-body">
+                      <tr><td colspan="6" class="text-center text-muted">Cargando...</td></tr>
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
             <div class="col-xl-4 mb-3">
-              <div class="card h-100">
+              <div class="card h-100 animate-on-load" style="--anim-delay:0.3s">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <h6 class="mb-0 section-title">Salud Operativa</h6>
                   <span class="badge badge-success">Online</span>
                 </div>
                 <div class="card-body">
                   <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1"><span>Backlog actas</span><span class="text-muted">12</span></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Backlog actas</span><span class="text-muted" id="backlog-actas">--</span></div>
                     <div class="progress" style="height: 6px;">
-                      <div class="progress-bar bg-primary" style="width: 65%;"></div>
+                      <div class="progress-bar bg-primary" id="backlog-actas-bar" style="width: 0%;"></div>
                     </div>
                   </div>
                   <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1"><span>Movimientos hoy</span><span class="text-muted">19</span></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Movimientos hoy</span><span class="text-muted" id="movimientos-hoy">--</span></div>
                     <div class="progress" style="height: 6px;">
-                      <div class="progress-bar bg-info" style="width: 48%;"></div>
+                      <div class="progress-bar bg-info" id="movimientos-hoy-bar" style="width: 0%;"></div>
                     </div>
                   </div>
                   <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1"><span>Adjuntos pendientes</span><span class="text-muted">5</span></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Adjuntos pendientes</span><span class="text-muted" id="adjuntos-pendientes">--</span></div>
                     <div class="progress" style="height: 6px;">
-                      <div class="progress-bar bg-warning" style="width: 32%;"></div>
+                      <div class="progress-bar bg-warning" id="adjuntos-pendientes-bar" style="width: 0%;"></div>
                     </div>
                   </div>
                   <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1"><span>Incidentes</span><span class="text-muted">3 abiertos</span></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Incidentes</span><span class="text-muted" id="incidentes-abiertos">--</span></div>
                     <div class="progress" style="height: 6px;">
-                      <div class="progress-bar bg-danger" style="width: 22%;"></div>
+                      <div class="progress-bar bg-danger" id="incidentes-abiertos-bar" style="width: 0%;"></div>
                     </div>
                   </div>
                   <div class="alert alert-light border mt-3 mb-0">
@@ -294,41 +334,14 @@
         <section class="mb-4">
           <div class="row">
             <div class="col-xl-6 mb-3">
-              <div class="card h-100">
+              <div class="card h-100 animate-on-load" style="--anim-delay:0.4s">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <h6 class="mb-0 section-title">Movimientos recientes</h6>
                   <a class="btn btn-sm btn-outline-primary" href="./pages/movimientos/list.html">Ver todos</a>
                 </div>
                 <div class="card-body">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex align-items-center">
-                      <i class="las la-arrow-right text-primary mr-3"></i>
-                      <div>
-                        <strong>Traslado</strong> equipo SR-ABC-001 a Sede Lima
-                        <div class="text-muted small">Usuario 210 - 2026-01-23 10:20</div>
-                      </div>
-                    </li>
-                    <li class="list-group-item d-flex align-items-center">
-                      <i class="las la-arrow-left text-success mr-3"></i>
-                      <div>
-                        <strong>Entrega</strong> equipo SR-ABC-015 a Usuario 305
-                        <div class="text-muted small">Usuario 205 - 2026-01-23 09:10</div>
-                      </div>
-                    </li>
-                    <li class="list-group-item d-flex align-items-center">
-                      <i class="las la-ban text-danger mr-3"></i>
-                      <div>
-                        <strong>Anulación</strong> acta ACT-2026-0010
-                        <div class="text-muted small">Usuario 200 - 2026-01-22 18:45</div>
-                      </div>
-                    </li>
-                    <li class="list-group-item d-flex align-items-center">
-                      <i class="las la-exchange-alt text-warning mr-3"></i>
-                      <div>
-                        <strong>Reubicación</strong> equipo SR-DEF-020 a Almacén
-                        <div class="text-muted small">Usuario 280 - 2026-01-22 17:05</div>
-                      </div>
-                    </li>
+                  <ul class="list-group list-group-flush" id="movimientos-recientes-list">
+                    <li class="list-group-item text-muted text-center">Cargando...</li>
                   </ul>
                 </div>
               </div>
@@ -351,25 +364,8 @@
                           <th>Subido</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        <tr>
-                          <td>ACT-2026-0012</td>
-                          <td>firma.pdf</td>
-                          <td>120 KB</td>
-                          <td>2026-01-23</td>
-                        </tr>
-                        <tr>
-                          <td>ACT-2026-0011</td>
-                          <td>guia-remision.pdf</td>
-                          <td>98 KB</td>
-                          <td>2026-01-22</td>
-                        </tr>
-                        <tr>
-                          <td>ACT-2026-0009</td>
-                          <td>foto-equipo.jpg</td>
-                          <td>540 KB</td>
-                          <td>2026-01-21</td>
-                        </tr>
+                      <tbody id="adjuntos-recientes-body">
+                        <tr><td colspan="4" class="text-center text-muted">Cargando...</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -388,31 +384,8 @@
                   <span class="badge badge-danger">Atención</span>
                 </div>
                 <div class="card-body">
-                  <div class="timeline">
-                    <div class="timeline-item">
-                      <div class="d-flex justify-content-between">
-                        <strong>INC-2301 | Equipo no enciende</strong>
-                        <span class="badge badge-danger">Pendiente</span>
-                      </div>
-                      <p class="mb-1 text-muted">Serie SR-ABC-050 asignada a Usuario 280.</p>
-                      <small>Registrado 2026-01-23</small>
-                    </div>
-                    <div class="timeline-item">
-                      <div class="d-flex justify-content-between">
-                        <strong>INC-2299 | Pantalla rota</strong>
-                        <span class="badge badge-warning text-dark">En proceso</span>
-                      </div>
-                      <p class="mb-1 text-muted">Equipo asignado a Usuario 310.</p>
-                      <small>Registrado 2026-01-22</small>
-                    </div>
-                    <div class="timeline-item">
-                      <div class="d-flex justify-content-between">
-                        <strong>INC-2295 | Cambio de ubicación</strong>
-                        <span class="badge badge-success">Cerrado</span>
-                      </div>
-                      <p class="mb-1 text-muted">Actualizado en Movimientos.</p>
-                      <small>Registrado 2026-01-20</small>
-                    </div>
+                  <div class="timeline" id="incidentes-list">
+                    <div class="timeline-item text-muted">Cargando...</div>
                   </div>
                 </div>
               </div>
@@ -430,15 +403,15 @@
                         <div class="kpi-icon bg-primary text-white mr-3"><i class="las la-check-circle"></i></div>
                         <div>
                           <div class="text-muted small">Actas completadas</div>
-                          <h5 class="mb-0">126</h5>
-                          <small class="text-success">+12 vs mes anterior</small>
+                          <h5 class="mb-0" id="actas-completadas">--</h5>
+                          <small class="text-success" id="actas-completadas-delta"></small>
                         </div>
                       </div>
                       <div class="d-flex align-items-center mb-3">
                         <div class="kpi-icon bg-info text-white mr-3"><i class="las la-random"></i></div>
                         <div>
                           <div class="text-muted small">Movimientos log</div>
-                          <h5 class="mb-0">412</h5>
+                          <h5 class="mb-0" id="movimientos-log">--</h5>
                           <small class="text-muted">Últimos 30 días</small>
                         </div>
                       </div>
@@ -446,7 +419,7 @@
                         <div class="kpi-icon bg-success text-white mr-3"><i class="las la-lock-open"></i></div>
                         <div>
                           <div class="text-muted small">Equipos liberados</div>
-                          <h5 class="mb-0">32</h5>
+                          <h5 class="mb-0" id="equipos-liberados">--</h5>
                           <small class="text-success">En SLA</small>
                         </div>
                       </div>
@@ -491,23 +464,8 @@
                   <span class="badge badge-primary">Top 4</span>
                 </div>
                 <div class="card-body">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Cliente 300
-                      <span class="badge badge-primary badge-pill">18 equipos</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Cliente 308
-                      <span class="badge badge-primary badge-pill">12 equipos</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Cliente 310
-                      <span class="badge badge-primary badge-pill">9 equipos</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Cliente 315
-                      <span class="badge badge-primary badge-pill">7 equipos</span>
-                    </li>
+                  <ul class="list-group list-group-flush" id="resumen-clientes">
+                    <li class="list-group-item text-muted text-center">Cargando...</li>
                   </ul>
                 </div>
               </div>
@@ -519,28 +477,8 @@
                   <span class="badge badge-info text-white">Tracking</span>
                 </div>
                 <div class="card-body">
-                  <div class="list-group list-group-flush">
-                    <div class="list-group-item d-flex align-items-center">
-                      <i class="las la-building text-primary mr-3"></i>
-                      <div>
-                        <strong>Sede Lima</strong>
-                        <div class="text-muted small">52 equipos | 14 movimientos esta semana</div>
-                      </div>
-                    </div>
-                    <div class="list-group-item d-flex align-items-center">
-                      <i class="las la-warehouse text-primary mr-3"></i>
-                      <div>
-                        <strong>Almacén Central</strong>
-                        <div class="text-muted small">31 equipos | 6 actas abiertas</div>
-                      </div>
-                    </div>
-                    <div class="list-group-item d-flex align-items-center">
-                      <i class="las la-network-wired text-primary mr-3"></i>
-                      <div>
-                        <strong>Data Center</strong>
-                        <div class="text-muted small">18 equipos críticos</div>
-                      </div>
-                    </div>
+                  <div class="list-group list-group-flush" id="ubicaciones-destacadas">
+                    <div class="list-group-item text-muted text-center">Cargando...</div>
                   </div>
                 </div>
               </div>
@@ -567,8 +505,17 @@
   <script src="../assets/js/vendors/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/global.js"></script>
   <script type="module" src="./js/pages/home.js"></script>
+  <script>
+    // Oculta la cortina tras 1.5s
+    window.addEventListener("load", () => {
+      setTimeout(() => document.body.classList.add("welcome-hidden"), 1500);
+      // Activa animaciones progresivas
+      document.querySelectorAll(".animate-on-load").forEach((el, i) => {
+        el.style.setProperty("--anim-delay", `${0.1 * i}s`);
+        requestAnimationFrame(() => el.classList.add("is-visible"));
+      });
+    });
+  </script>
 </body>
 
 </html>
-
-

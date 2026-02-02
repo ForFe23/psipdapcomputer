@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuarios</title>
+  <link rel="icon" href="../../../assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Usuarios</h4>
+              <small class="text-muted">Cuentas asociadas a empresas</small>
+            </div>
+            <a class="btn btn-primary" href="./form.html"><i class="las la-plus mr-1"></i>Nuevo</a>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="filtros-usuarios" class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="fEmpresa">Empresa</label>
+                  <select class="form-control" id="fEmpresa">
+                    <option value="">Todos</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="fEstatus">Estatus</label>
+                  <select class="form-control" id="fEstatus">
+                    <option value="">Todos</option>
+                    <option value="ACTIVO">ACTIVO</option>
+                    <option value="INACTIVO">INACTIVO</option>
+                  </select>
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                  <button class="btn btn-primary mr-2" type="submit"><i class="las la-filter mr-1"></i>Filtrar</button>
+                  <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('filtros-usuarios').reset(); document.dispatchEvent(new Event('usuarios:reload'));"><i class="las la-undo mr-1"></i>Limpiar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Empresa</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Estatus</th>
+                    <th>Correo</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="usuarios-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="../../../assets/js/vendors/jquery.min.js"></script>
+  <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="../../../assets/js/global.js"></script>
+  <script type="module" src="../../js/pages/usuarios.list.js"></script>
+</body>
+</html>

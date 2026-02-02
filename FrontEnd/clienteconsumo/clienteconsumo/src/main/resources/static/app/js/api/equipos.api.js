@@ -6,5 +6,5 @@ export const equiposApi = {
   getBySerie: (serie) => http.get(`/equipos/serie/${encodeURIComponent(serie)}`),
   getById: (id) => http.get(`/equipos/${id}`),
   update: (id, payload) => http.put(`/equipos/${id}`, payload),
-  remove: (id, serie) => http.del(`/equipos/${id}/${encodeURIComponent(serie)}`)
+  remove: (id) => http.del(`/equipos/${id}`)
 };

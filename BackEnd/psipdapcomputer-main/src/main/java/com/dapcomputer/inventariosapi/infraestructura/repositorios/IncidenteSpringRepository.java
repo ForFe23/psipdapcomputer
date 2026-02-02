@@ -15,4 +15,8 @@ public interface IncidenteSpringRepository extends JpaRepository<IncidenteJpa, I
     @Modifying
     @Query("update IncidenteJpa i set i.estadoInterno = :estado where i.equipoId = :equipoId")
     void actualizarEstadoInternoPorEquipo(@Param("equipoId") Integer equipoId, @Param("estado") String estado);
+
+    @Modifying
+    @Query("update IncidenteJpa i set i.estadoInterno = :estado where i.idCliente = :idCliente")
+    void actualizarEstadoInternoPorCliente(@Param("idCliente") Long idCliente, @Param("estado") String estado);
 }

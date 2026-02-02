@@ -57,6 +57,12 @@ public class MantenimientoJpaAdapter implements MantenimientoRepositorio {
 
     @Override
     @Transactional
+    public void actualizarEstadoPorCliente(Long idCliente, String estado) {
+        repository.actualizarEstadoPorCliente(idCliente, estado);
+    }
+
+    @Override
+    @Transactional
     public void eliminar(Integer id) {
         repository.deleteById(id);
     }

@@ -21,5 +21,9 @@ public interface ActaRepositorio {
 
     List<Acta> listarPorUsuario(String nombre);
 
+    void actualizarEstadoInterno(Integer id, String estadoInterno);
+
     void actualizarEstadoInternoPorEquipo(Integer idEquipo, String estadoInterno);
+
+    void actualizarEstadoInternoPorCliente(Integer idCliente, String estadoInterno);
 }

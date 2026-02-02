@@ -12,5 +12,6 @@ public interface PerifericoRepositorio {
     List<Periferico> listarPorCliente(Integer idCliente);
     List<Periferico> listarTodos();
     void actualizarEstadoInternoPorEquipo(Integer equipoId, String estadoInterno);
+    void actualizarEstadoInternoPorCliente(Integer idCliente, String estadoInterno);
     void eliminar(Integer id);
 }

@@ -15,4 +15,8 @@ public interface PerifericoSpringRepository extends JpaRepository<PerifericoJpa,
     @Modifying
     @Query("update PerifericoJpa p set p.estadoInterno = :estado where p.equipoId = :equipoId")
     void actualizarEstadoInternoPorEquipo(@Param("equipoId") Integer equipoId, @Param("estado") String estado);
+
+    @Modifying
+    @Query("update PerifericoJpa p set p.estadoInterno = :estado where p.idCliente = :idCliente")
+    void actualizarEstadoInternoPorCliente(@Param("idCliente") Integer idCliente, @Param("estado") String estado);
 }

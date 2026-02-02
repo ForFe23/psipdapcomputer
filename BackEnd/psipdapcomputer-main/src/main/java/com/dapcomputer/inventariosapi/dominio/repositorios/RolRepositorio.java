@@ -9,4 +9,5 @@ public interface RolRepositorio {
     Optional<Rol> buscarPorId(Long id);
     Optional<Rol> buscarPorCodigo(String codigo);
     List<Rol> listar();
+    void eliminar(Long id);
 }

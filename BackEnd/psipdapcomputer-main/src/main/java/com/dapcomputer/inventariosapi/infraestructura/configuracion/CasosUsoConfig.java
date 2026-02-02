@@ -1,5 +1,8 @@
 package com.dapcomputer.inventariosapi.infraestructura.configuracion;
 
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ActualizarActaCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ActualizarAdjuntoActaCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ActualizarMovimientoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.AgregarAdjuntoActaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarAdjuntosPorActaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarActasPorClienteCasoUso;
@@ -8,7 +11,9 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarActasPo
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarActasPorUsuarioCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.BajaLogicaEquipoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarClienteCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarActaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarEquipoCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarMovimientoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ActualizarPerifericoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarPerifericoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarUsuarioCasoUso;
@@ -22,6 +27,7 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarPerifer
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerPerifericoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarUsuariosCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarUsuariosPorClienteCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarUsuariosPorEmpresaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerUsuarioCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarIncidentesPorClienteCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarIncidentesPorEquipoCasoUso;
@@ -30,6 +36,8 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarMovimie
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarMovimientosPorUsuarioCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.RegistrarIncidenteCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.RegistrarMovimientoCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.RegistrarKardexMovimientoCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarAdjuntoActaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ActualizarIncidenteCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarIncidenteCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerIncidenteCasoUso;
@@ -44,6 +52,12 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarEquipos
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarIncidentesCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.RegistrarActaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarMovimientosCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarKardexRecienteCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.SincronizarMovimientoPorActaCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerDashboardResumenCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ActualizarActaServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ActualizarAdjuntoActaServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ActualizarMovimientoServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.AgregarAdjuntoActaServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarAdjuntosPorActaServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarActasPorClienteServicio;
@@ -52,8 +66,11 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarActasPorRan
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarActasPorUsuarioServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.RegistrarActaServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ObtenerActaServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.EliminarAdjuntoActaServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.EliminarClienteServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.EliminarEquipoServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.EliminarActaServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.RegistrarKardexMovimientoServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.CrearClienteServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.CrearEquipoServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarActasServicio;
@@ -72,6 +89,7 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarMovimientos
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarMovimientosPorUsuarioServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.RegistrarIncidenteServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.RegistrarMovimientoServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.EliminarMovimientoServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.BajaLogicaEquipoServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.RegistrarMantenimientoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarMantenimientosCasoUso;
@@ -103,24 +121,33 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarUsuariosSer
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ObtenerPerifericoServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ObtenerUsuarioServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarUsuariosPorClienteServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarUsuariosPorEmpresaServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.EliminarPerifericoServicio;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.EliminarUsuarioServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ListarKardexRecienteServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.SincronizarMovimientoPorActaServicio;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.impl.ObtenerDashboardResumenServicio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ActaAdjuntoRepositorio;
+import com.dapcomputer.inventariosapi.dominio.repositorios.ActaItemRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ClienteRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.EquipoRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ActaRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.IncidenteRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.MovimientoRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.PerifericoRepositorio;
+import com.dapcomputer.inventariosapi.dominio.repositorios.IPersonaRepositorio;
+import com.dapcomputer.inventariosapi.dominio.repositorios.IUbicacionRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.UsuarioRepositorio;
+import com.dapcomputer.inventariosapi.dominio.repositorios.IEmpresaRepositorio;
+import com.dapcomputer.inventariosapi.dominio.repositorios.KardexRepositorio;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CasosUsoConfig {
     @Bean
-    public RegistrarActaCasoUso registrarActaCasoUso(ActaRepositorio repositorio) {
-        return new RegistrarActaServicio(repositorio);
+    public RegistrarActaCasoUso registrarActaCasoUso(ActaRepositorio repositorio, MovimientoRepositorio movimientoRepositorio, RegistrarKardexMovimientoCasoUso registrarKardexMovimientoCasoUso, SincronizarMovimientoPorActaCasoUso sincronizarMovimientoPorActaCasoUso, EquipoRepositorio equipoRepositorio) {
+        return new RegistrarActaServicio(repositorio, movimientoRepositorio, registrarKardexMovimientoCasoUso, sincronizarMovimientoPorActaCasoUso, equipoRepositorio);
     }
 
     @Bean
@@ -131,6 +158,16 @@ public class CasosUsoConfig {
     @Bean
     public ObtenerActaCasoUso obtenerActaCasoUso(ActaRepositorio repositorio) {
         return new ObtenerActaServicio(repositorio);
+    }
+
+    @Bean
+    public ActualizarActaCasoUso actualizarActaCasoUso(ActaRepositorio repositorio, SincronizarMovimientoPorActaCasoUso sincronizarMovimientoPorActaCasoUso) {
+        return new ActualizarActaServicio(repositorio, sincronizarMovimientoPorActaCasoUso);
+    }
+
+    @Bean
+    public EliminarActaCasoUso eliminarActaCasoUso(ActaRepositorio actaRepositorio, ActaAdjuntoRepositorio adjuntoRepositorio, ActaItemRepositorio actaItemRepositorio, MovimientoRepositorio movimientoRepositorio) {
+        return new EliminarActaServicio(actaRepositorio, adjuntoRepositorio, actaItemRepositorio, movimientoRepositorio);
     }
 
     @Bean
@@ -154,13 +191,23 @@ public class CasosUsoConfig {
     }
 
     @Bean
-    public RegistrarMovimientoCasoUso registrarMovimientoCasoUso(MovimientoRepositorio repositorio) {
-        return new RegistrarMovimientoServicio(repositorio);
+    public RegistrarMovimientoCasoUso registrarMovimientoCasoUso(MovimientoRepositorio repositorio, RegistrarKardexMovimientoCasoUso registrarKardexMovimientoCasoUso, BajaLogicaEquipoCasoUso bajaLogicaEquipoCasoUso) {
+        return new RegistrarMovimientoServicio(repositorio, registrarKardexMovimientoCasoUso, bajaLogicaEquipoCasoUso);
     }
 
     @Bean
     public ListarMovimientosCasoUso listarMovimientosCasoUso(MovimientoRepositorio repositorio) {
         return new ListarMovimientosServicio(repositorio);
+    }
+
+    @Bean
+    public ActualizarMovimientoCasoUso actualizarMovimientoCasoUso(MovimientoRepositorio repositorio, RegistrarKardexMovimientoCasoUso registrarKardexMovimientoCasoUso, BajaLogicaEquipoCasoUso bajaLogicaEquipoCasoUso) {
+        return new ActualizarMovimientoServicio(repositorio, registrarKardexMovimientoCasoUso, bajaLogicaEquipoCasoUso);
+    }
+
+    @Bean
+    public EliminarMovimientoCasoUso eliminarMovimientoCasoUso(MovimientoRepositorio repositorio, RegistrarKardexMovimientoCasoUso registrarKardexMovimientoCasoUso) {
+        return new EliminarMovimientoServicio(repositorio, registrarKardexMovimientoCasoUso);
     }
 
     @Bean
@@ -174,6 +221,26 @@ public class CasosUsoConfig {
     }
 
     @Bean
+    public RegistrarKardexMovimientoCasoUso registrarKardexMovimientoCasoUso(KardexRepositorio kardexRepositorio, UsuarioRepositorio usuarioRepositorio) {
+        return new RegistrarKardexMovimientoServicio(kardexRepositorio, usuarioRepositorio);
+    }
+
+    @Bean
+    public ListarKardexRecienteCasoUso listarKardexRecienteCasoUso(KardexRepositorio kardexRepositorio, MovimientoRepositorio movimientoRepositorio, RegistrarKardexMovimientoCasoUso registrarKardexMovimientoCasoUso) {
+        return new ListarKardexRecienteServicio(kardexRepositorio, movimientoRepositorio, registrarKardexMovimientoCasoUso);
+    }
+
+    @Bean
+    public SincronizarMovimientoPorActaCasoUso sincronizarMovimientoPorActaCasoUso(MovimientoRepositorio movimientoRepositorio, RegistrarKardexMovimientoCasoUso registrarKardexMovimientoCasoUso, EquipoRepositorio equipoRepositorio, IUbicacionRepositorio ubicacionRepositorio) {
+        return new SincronizarMovimientoPorActaServicio(movimientoRepositorio, registrarKardexMovimientoCasoUso, equipoRepositorio, ubicacionRepositorio);
+    }
+
+    @Bean
+    public ObtenerDashboardResumenCasoUso obtenerDashboardResumenCasoUso(ActaRepositorio actaRepositorio, MovimientoRepositorio movimientoRepositorio, ListarKardexRecienteCasoUso listarKardexRecienteCasoUso) {
+        return new ObtenerDashboardResumenServicio(actaRepositorio, movimientoRepositorio, listarKardexRecienteCasoUso);
+    }
+
+    @Bean
     public AgregarAdjuntoActaCasoUso agregarAdjuntoActaCasoUso(ActaAdjuntoRepositorio repositorio) {
         return new AgregarAdjuntoActaServicio(repositorio);
     }
@@ -181,6 +248,16 @@ public class CasosUsoConfig {
     @Bean
     public ListarAdjuntosPorActaCasoUso listarAdjuntosPorActaCasoUso(ActaAdjuntoRepositorio repositorio) {
         return new ListarAdjuntosPorActaServicio(repositorio);
+    }
+
+    @Bean
+    public ActualizarAdjuntoActaCasoUso actualizarAdjuntoActaCasoUso(ActaAdjuntoRepositorio repositorio) {
+        return new ActualizarAdjuntoActaServicio(repositorio);
+    }
+
+    @Bean
+    public EliminarAdjuntoActaCasoUso eliminarAdjuntoActaCasoUso(ActaAdjuntoRepositorio repositorio) {
+        return new EliminarAdjuntoActaServicio(repositorio);
     }
 
     @Bean
@@ -239,8 +316,8 @@ public class CasosUsoConfig {
     }
 
     @Bean
-    public EliminarClienteCasoUso eliminarClienteCasoUso(ClienteRepositorio repositorio, EquipoRepositorio equipoRepositorio, UsuarioRepositorio usuarioRepositorio, BajaLogicaEquipoCasoUso bajaLogicaEquipoCasoUso) {
-        return new EliminarClienteServicio(repositorio, equipoRepositorio, usuarioRepositorio, bajaLogicaEquipoCasoUso);
+    public EliminarClienteCasoUso eliminarClienteCasoUso(ClienteRepositorio repositorio, EquipoRepositorio equipoRepositorio, UsuarioRepositorio usuarioRepositorio, MantenimientoRepositorio mantenimientoRepositorio, IncidenteRepositorio incidenteRepositorio, PerifericoRepositorio perifericoRepositorio, ActaRepositorio actaRepositorio, MovimientoRepositorio movimientoRepositorio, ActaAdjuntoRepositorio actaAdjuntoRepositorio, ActaItemRepositorio actaItemRepositorio, IPersonaRepositorio personaRepositorio, IUbicacionRepositorio ubicacionRepositorio, IEmpresaRepositorio empresaRepositorio, BajaLogicaEquipoCasoUso bajaLogicaEquipoCasoUso) {
+        return new EliminarClienteServicio(repositorio, equipoRepositorio, usuarioRepositorio, mantenimientoRepositorio, incidenteRepositorio, perifericoRepositorio, actaRepositorio, movimientoRepositorio, actaAdjuntoRepositorio, actaItemRepositorio, personaRepositorio, ubicacionRepositorio, empresaRepositorio, bajaLogicaEquipoCasoUso);
     }
 
     @Bean
@@ -274,8 +351,8 @@ public class CasosUsoConfig {
     }
 
     @Bean
-    public BajaLogicaEquipoCasoUso bajaLogicaEquipoCasoUso(EquipoRepositorio equipoRepositorio, MantenimientoRepositorio mantenimientoRepositorio, IncidenteRepositorio incidenteRepositorio, PerifericoRepositorio perifericoRepositorio, ActaRepositorio actaRepositorio, MovimientoRepositorio movimientoRepositorio) {
-        return new BajaLogicaEquipoServicio(equipoRepositorio, mantenimientoRepositorio, incidenteRepositorio, perifericoRepositorio, actaRepositorio, movimientoRepositorio);
+    public BajaLogicaEquipoCasoUso bajaLogicaEquipoCasoUso(EquipoRepositorio equipoRepositorio, MantenimientoRepositorio mantenimientoRepositorio, IncidenteRepositorio incidenteRepositorio, PerifericoRepositorio perifericoRepositorio, ActaRepositorio actaRepositorio, MovimientoRepositorio movimientoRepositorio, ActaAdjuntoRepositorio actaAdjuntoRepositorio, ActaItemRepositorio actaItemRepositorio) {
+        return new BajaLogicaEquipoServicio(equipoRepositorio, mantenimientoRepositorio, incidenteRepositorio, perifericoRepositorio, actaRepositorio, movimientoRepositorio, actaAdjuntoRepositorio, actaItemRepositorio);
     }
 
     @Bean
@@ -291,6 +368,11 @@ public class CasosUsoConfig {
     @Bean
     public ListarUsuariosPorClienteCasoUso listarUsuariosPorClienteCasoUso(UsuarioRepositorio repositorio) {
         return new ListarUsuariosPorClienteServicio(repositorio);
+    }
+
+    @Bean
+    public ListarUsuariosPorEmpresaCasoUso listarUsuariosPorEmpresaCasoUso(UsuarioRepositorio repositorio) {
+        return new ListarUsuariosPorEmpresaServicio(repositorio);
     }
 
     @Bean

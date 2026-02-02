@@ -10,6 +10,8 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ActualizarInc
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarIncidenteCasoUso;
 import com.dapcomputer.inventariosapi.presentacion.dto.IncidenteDto;
 import com.dapcomputer.inventariosapi.presentacion.mapeadores.IncidenteDtoMapper;
+import com.dapcomputer.inventariosapi.dominio.entidades.Incidente;
+import com.dapcomputer.inventariosapi.dominio.repositorios.EquipoRepositorio;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,7 @@ public class IncidenteControlador {
     private final ActualizarIncidenteCasoUso actualizarIncidente;
     private final EliminarIncidenteCasoUso eliminarIncidente;
     private final IncidenteDtoMapper mapper;
+    private final EquipoRepositorio equipoRepositorio;
 
     public IncidenteControlador(
             RegistrarIncidenteCasoUso registrarIncidente,
@@ -38,7 +41,8 @@ public class IncidenteControlador {
             ObtenerIncidenteCasoUso obtenerIncidente,
             ActualizarIncidenteCasoUso actualizarIncidente,
             EliminarIncidenteCasoUso eliminarIncidente,
-            IncidenteDtoMapper mapper) {
+            IncidenteDtoMapper mapper,
+            EquipoRepositorio equipoRepositorio) {
         this.registrarIncidente = registrarIncidente;
         this.listarIncidentes = listarIncidentes;
         this.listarPorCliente = listarPorCliente;
@@ -48,11 +52,26 @@ public class IncidenteControlador {
         this.actualizarIncidente = actualizarIncidente;
         this.eliminarIncidente = eliminarIncidente;
         this.mapper = mapper;
+        this.equipoRepositorio = equipoRepositorio;
     }
 
     @PostMapping
     public ResponseEntity<IncidenteDto> crear(@Valid @RequestBody IncidenteDto solicitud) {
-        var creado = registrarIncidente.ejecutar(mapper.toDomain(solicitud));
+        Integer idEquipo = resolverEquipoId(solicitud);
+        if (idEquipo == null) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "equipoId o serieEquipo requerido");
+        }
+        var creado = registrarIncidente.ejecutar(new Incidente(
+                null,
+                idEquipo,
+                solicitud.idUsuario(),
+                solicitud.idCliente(),
+                solicitud.fechaIncidente(),
+                solicitud.detalle(),
+                solicitud.costo(),
+                solicitud.tecnico(),
+                solicitud.responsable(),
+                solicitud.estadoInterno()));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(creado));
     }
 
@@ -69,9 +88,13 @@ public class IncidenteControlador {
 
     @PutMapping("/{id}")
     public ResponseEntity<IncidenteDto> actualizar(@PathVariable Integer id, @Valid @RequestBody IncidenteDto solicitud) {
-        var actualizado = actualizarIncidente.ejecutar(mapper.toDomain(new IncidenteDto(
+        Integer idEquipo = resolverEquipoId(solicitud);
+        if (idEquipo == null) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "equipoId o serieEquipo requerido");
+        }
+        var actualizado = actualizarIncidente.ejecutar(new Incidente(
                 id,
-                solicitud.equipoId(),
+                idEquipo,
                 solicitud.idUsuario(),
                 solicitud.idCliente(),
                 solicitud.fechaIncidente(),
@@ -79,8 +102,7 @@ public class IncidenteControlador {
                 solicitud.costo(),
                 solicitud.tecnico(),
                 solicitud.responsable(),
-                solicitud.estadoInterno()
-        )));
+                solicitud.estadoInterno()));
         return ResponseEntity.ok(mapper.toDto(actualizado));
     }
 
@@ -96,12 +118,41 @@ public class IncidenteControlador {
     }
 
     @GetMapping("/equipo/{equipoId}")
-    public List<IncidenteDto> listarEquipo(@PathVariable Integer equipoId) {
-        return listarPorEquipo.ejecutar(equipoId).stream().map(mapper::toDto).toList();
+    public List<IncidenteDto> listarEquipo(@PathVariable String equipoId) {
+        Integer id = resolverEquipoIdDesdePath(equipoId);
+        if (id == null) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "equipoId o serie inválido");
+        }
+        return listarPorEquipo.ejecutar(id).stream().map(mapper::toDto).toList();
     }
 
     @GetMapping("/usuario/{idUsuario}")
     public List<IncidenteDto> listarUsuario(@PathVariable Integer idUsuario) {
         return listarPorUsuario.ejecutar(idUsuario).stream().map(mapper::toDto).toList();
+    }
+
+    private Integer resolverEquipoId(IncidenteDto solicitud) {
+        if (solicitud.equipoId() != null) {
+            return solicitud.equipoId();
+        }
+        if (solicitud.serieEquipo() != null && !solicitud.serieEquipo().isBlank()) {
+            return equipoRepositorio.buscarPorSerie(solicitud.serieEquipo().toUpperCase())
+                    .map(e -> e.id())
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    private Integer resolverEquipoIdDesdePath(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(valor);
+        } catch (NumberFormatException ex) {
+            return equipoRepositorio.buscarPorSerie(valor.toUpperCase())
+                    .map(e -> e.id())
+                    .orElse(null);
+        }
     }
 }

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Movimientos · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0">Movimientos</h1>
+      <small class="text-muted">Trazabilidad de equipos</small>
+    </div>
+    <a class="btn btn-primary" th:href="@{/movimientos/nuevo}"><i class="las la-plus mr-1"></i>Nuevo</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Equipo</th>
+            <th>Tipo</th>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th></th>
+          <th></th>
+          </tr>
+          </thead>
+          <tbody id="movimientos-body">
+          <tr><td colspan="9" class="text-center text-muted">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarMovimientos() {
+    const tbody = document.getElementById('movimientos-body');
+    try {
+      const res = await apiFetch('/movimientos');
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan=\"9\" class=\"text-center text-muted\">Sin movimientos</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(m => `
+        <tr>
+          <td>${m.id ?? ''}</td>
+          <td>${m.idEquipo ?? m.equipoId ?? ''}</td>
+          <td>${m.tipo ?? ''}</td>
+          <td>${m.ubicacionOrigen ?? ''}</td>
+          <td>${m.ubicacionDestino ?? ''}</td>
+          <td>${m.fecha ?? ''}</td>
+          <td><span class="badge ${estadoBadge(m.estadoInterno)}">${m.estadoInterno ?? ''}</span></td>
+          <td class="text-right">
+            <a class="btn btn-sm btn-outline-primary" href="/movimientos/nuevo?id=${m.id}">Editar</a>
+          </td>
+          <td><button class="btn btn-sm btn-outline-danger" data-delete="${m.id}">Eliminar</button></td>
+        </tr>
+      `).join('');
+      tbody.querySelectorAll('[data-delete]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.delete;
+          if (!confirm('¿Eliminar movimiento?')) return;
+          try {
+            const resDel = await apiFetch('/movimientos/' + id, { method: 'DELETE' });
+            if (!resDel.ok) throw new Error('Error ' + resDel.status);
+            await cargarMovimientos();
+          } catch (err) {
+            tbody.innerHTML = '<tr><td colspan=\"8\" class=\"text-danger text-center\">No se pudo eliminar (' + err.message + ')</td></tr>';
+          }
+        });
+      });
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan=\"9\" class=\"text-danger text-center\">No se pudo cargar (' + err.message + ')</td></tr>';
+    }
+  }
+
+  function estadoBadge(estado) {
+    const e = (estado || '').toUpperCase();
+    if (e.includes('ACT')) return 'badge-success';
+    if (e.includes('INACT')) return 'badge-secondary';
+    return 'badge-light';
+  }
+
+  document.addEventListener('DOMContentLoaded', cargarMovimientos);
+</script>
+</body>
+</html>

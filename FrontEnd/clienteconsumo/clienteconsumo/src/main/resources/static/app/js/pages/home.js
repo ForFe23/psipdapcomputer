@@ -4,8 +4,13 @@ import { equiposApi } from "../api/equipos.api.js";
 import { mantenimientosApi } from "../api/mantenimientos.api.js";
 import { movimientosApi } from "../api/movimientos.api.js";
 import { clientesApi } from "../api/clientes.api.js";
+import { actasApi } from "../api/actas.api.js";
+import { empresasApi } from "../api/empresas.api.js";
+import { incidentesApi } from "../api/incidentes.api.js";
+import { adjuntosApi } from "../api/adjuntos.api.js";
 
 const INACTIVO_INTERNAL = "INACTIVO_INTERNAL";
+let cacheData = null;
 
 async function main() {
   try {
@@ -15,6 +20,7 @@ async function main() {
   }
   initProtocolGuard();
   initTooltips();
+  await renderDashboard();
 }
 
 function basePath() {
@@ -97,55 +103,42 @@ function initTooltips() {
 
 
 async function loadKpis() {
-  try {
-    const [equiposRes, mantRes, movRes, clientesRes] = await Promise.allSettled([
-      equiposApi.list(),
-      mantenimientosApi.list(),
-      movimientosApi.list(),
-      clientesApi.list()
-    ]);
+  const data = await fetchDashboardData();
+  const equipos = data.equipos.filter((e) => (e.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL);
+  const countByEstado = (estado) =>
+    equipos.filter((e) => (e.estado || e.status || e.statusequipo || e.statusEquipo || "").toUpperCase() === estado).length;
+  const fechaHace24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const equiposData = equiposRes.status === "fulfilled" ? equiposRes.value : [];
-    const mantData = mantRes.status === "fulfilled" ? mantRes.value : [];
-    const movData = movRes.status === "fulfilled" ? movRes.value : [];
-    const clientesData = clientesRes.status === "fulfilled" ? clientesRes.value : [];
+  const mantActivos = data.mantenimientos.filter(
+    (m) =>
+      (m.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL &&
+      (m.estado || "").toUpperCase() !== INACTIVO_INTERNAL
+  );
+  const mov24h = data.movimientos.filter((m) => {
+    const f = m.fecha ? new Date(m.fecha) : null;
+    return f && f >= fechaHace24h;
+  });
+  const clientesActivos = data.clientes.filter((c) => (c.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL);
+  const usuariosActivos = new Set(
+    equipos
+      .map((e) => e.idUsuario)
+      .filter((id) => id !== null && id !== undefined)
+  );
 
-    const equipos = (equiposData || []).filter((e) => (e.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL);
-    const countByEstado = (estado) =>
-      equipos.filter((e) => (e.estado || e.status || e.statusequipo || e.statusEquipo || "").toUpperCase() === estado).length;
-    const fechaHace24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  setKpi("kpi-activos", countByEstado("ACTIVO"));
+  setKpi("kpi-mantenimiento", mantActivos.length);
+  setKpi("kpi-traslado", mov24h.length);
+  setKpi(
+    "kpi-baja",
+    equipos.filter(
+      (e) => (e.estadoInterno || "").toUpperCase() === "INACTIVO_INTERNAL" || (e.estado || "").toUpperCase() === "BAJA"
+    ).length
+  );
+  setKpi("kpi-usuarios", usuariosActivos.size);
+  setKpi("kpi-clientes", clientesActivos.length);
+  setKpi("kpi-adjuntos", data.actas.length);
 
-    const mantActivos = (mantData || []).filter(
-      (m) =>
-        (m.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL &&
-        (m.estado || "").toUpperCase() !== INACTIVO_INTERNAL
-    );
-    const mov24h = (movData || []).filter((m) => {
-      const f = m.fecha ? new Date(m.fecha) : null;
-      return f && f >= fechaHace24h;
-    });
-    const clientesActivos = (clientesData || []).filter((c) => (c.estadoInterno || "").toUpperCase() !== INACTIVO_INTERNAL);
-    const usuariosActivos = new Set(
-      equipos
-        .map((e) => e.idUsuario)
-        .filter((id) => id !== null && id !== undefined)
-    );
-
-    setKpi("kpi-activos", countByEstado("ACTIVO"));
-    setKpi("kpi-mantenimiento", mantActivos.length);
-    setKpi("kpi-traslado", mov24h.length);
-    setKpi(
-      "kpi-baja",
-      equipos.filter(
-        (e) => (e.estadoInterno || "").toUpperCase() === "INACTIVO_INTERNAL" || (e.estado || "").toUpperCase() === "BAJA"
-      ).length
-    );
-    setKpi("kpi-usuarios", usuariosActivos.size);
-    setKpi("kpi-clientes", clientesActivos.length);
-
-    bindKpiLinks();
-  } catch (err) {
-  }
+  bindKpiLinks();
 }
 
 function setKpi(id, value) {
@@ -171,4 +164,222 @@ function bindKpiLinks() {
 }
 
 document.addEventListener("DOMContentLoaded", main);
-document.addEventListener("DOMContentLoaded", loadKpis);
+async function fetchDashboardData() {
+  if (cacheData) return cacheData;
+  const [equiposRes, mantRes, movRes, clientesRes, actasRes, empresasRes, incidentesRes] = await Promise.allSettled([
+    equiposApi.list(),
+    mantenimientosApi.list(),
+    movimientosApi.list(),
+    clientesApi.list(),
+    actasApi.list(),
+    empresasApi.list(),
+    incidentesApi.list()
+  ]);
+  cacheData = {
+    equipos: equiposRes.status === "fulfilled" ? equiposRes.value : [],
+    mantenimientos: mantRes.status === "fulfilled" ? mantRes.value : [],
+    movimientos: movRes.status === "fulfilled" ? movRes.value : [],
+    clientes: clientesRes.status === "fulfilled" ? clientesRes.value : [],
+    actas: actasRes.status === "fulfilled" ? actasRes.value : [],
+    empresas: empresasRes.status === "fulfilled" ? empresasRes.value : [],
+    incidentes: incidentesRes.status === "fulfilled" ? incidentesRes.value : []
+  };
+  return cacheData;
+}
+
+function empresaNombre(empresas, id) {
+  const e = empresas.find((em) => String(em.id) === String(id) || String(em.idCliente) === String(id));
+  return e ? e.nombre || e.razonSocial || e.id : id ?? "";
+}
+
+function badgeEstadoActa(estado) {
+  const e = (estado || "").toUpperCase();
+  if (e.includes("ANU")) return "badge badge-danger";
+  if (e.includes("CER")) return "badge badge-primary";
+  if (e.includes("EMI")) return "badge badge-success";
+  return "badge badge-warning text-dark";
+}
+
+function iconoMovimiento(tipo) {
+  const t = (tipo || "").toUpperCase();
+  if (t === "TRASLADO") return { icon: "las la-random text-primary", label: "Traslado" };
+  if (t === "ENTREGA" || t === "ASIGNACION") return { icon: "las la-arrow-right text-success", label: "Entrega" };
+  if (t === "RETIRO") return { icon: "las la-arrow-left text-warning", label: "Retiro" };
+  if (t === "ANULACION") return { icon: "las la-ban text-danger", label: "Anulación" };
+  return { icon: "las la-exchange-alt text-info", label: tipo || "Movimiento" };
+}
+
+function setProgress(idCount, idBar, value, total) {
+  const countEl = document.getElementById(idCount);
+  if (countEl) countEl.textContent = value ?? "--";
+  const bar = document.getElementById(idBar);
+  if (bar) {
+    const pct = total > 0 ? Math.min(100, Math.round((value / total) * 100)) : 0;
+    bar.style.width = `${pct}%`;
+  }
+}
+
+function setList(containerId, itemsHtml) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = itemsHtml || `<div class="timeline-item text-muted">Sin datos</div>`;
+}
+
+async function obtenerAdjuntosRecientes(actas) {
+  const seleccion = actas.slice(0, 5);
+  const adjuntos = await Promise.all(
+    seleccion.map(async (a) => {
+      try {
+        const lista = await adjuntosApi.listByActa(a.id);
+        return (lista || []).map((it) => ({ ...it, actaId: a.id, actaCodigo: a.codigo || a.id }));
+      } catch (err) {
+        return [];
+      }
+    })
+  );
+  return adjuntos.flat().sort((a, b) => (b.id || 0) - (a.id || 0)).slice(0, 5);
+}
+
+async function renderDashboard() {
+  const data = await fetchDashboardData();
+  await loadKpis();
+
+  const actasOrdenadas = [...data.actas].sort((a, b) => new Date(b.fechaActa || b.fecha || 0) - new Date(a.fechaActa || a.fecha || 0));
+  const actasBody = document.getElementById("actas-recientes-body");
+  if (actasBody) {
+    const rows = actasOrdenadas.slice(0, 4).map((a) => {
+      return `<tr>
+        <td>${a.codigo || a.id || ""}</td>
+        <td>${empresaNombre(data.empresas, a.empresaId || a.idCliente)}</td>
+        <td>${a.entregadoPor || a.emisor || ""}</td>
+        <td>${a.recibidoPor || a.receptor || ""}</td>
+        <td><span class="${badgeEstadoActa(a.estado)}">${(a.estado || "").toUpperCase()}</span></td>
+        <td>${a.fechaActa || a.fecha || ""}</td>
+      </tr>`;
+    });
+    actasBody.innerHTML = rows.length ? rows.join("") : `<tr><td colspan="6" class="text-center text-muted">Sin actas</td></tr>`;
+  }
+
+  const movList = document.getElementById("movimientos-recientes-list");
+  if (movList) {
+    const movs = [...data.movimientos].sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0)).slice(0, 4);
+    const items = movs.map((m) => {
+      const icon = iconoMovimiento(m.tipo);
+      const fechaTxt = m.fecha ? new Date(m.fecha).toLocaleString() : "";
+      return `<li class="list-group-item d-flex align-items-center">
+        <i class="${icon.icon} mr-3"></i>
+        <div>
+          <strong>${icon.label}</strong> ${m.serieEquipo || ""} ${m.ubicacionDestino ? "→ " + m.ubicacionDestino : ""}
+          <div class="text-muted small">${m.ejecutadoPorId ? "Usuario " + m.ejecutadoPorId : ""}${fechaTxt ? " - " + fechaTxt : ""}</div>
+        </div>
+      </li>`;
+    });
+    movList.innerHTML = items.length ? items.join("") : `<li class="list-group-item text-center text-muted">Sin movimientos</li>`;
+  }
+
+  const adjBody = document.getElementById("adjuntos-recientes-body");
+  let adjuntosCount = 0;
+  if (adjBody) {
+    const adjuntos = await obtenerAdjuntosRecientes(actasOrdenadas);
+    adjuntosCount = adjuntos.length;
+    const rows = adjuntos.map((a) => {
+      return `<tr>
+        <td>${a.actaCodigo || a.actaId || ""}</td>
+        <td>${a.nombre || a.archivo || a.url || ""}</td>
+        <td>${a.tipo || ""}</td>
+        <td>${a.id || ""}</td>
+      </tr>`;
+    });
+    adjBody.innerHTML = rows.length ? rows.join("") : `<tr><td colspan="4" class="text-center text-muted">Sin adjuntos</td></tr>`;
+  }
+
+  const backlog = actasOrdenadas.filter((a) => (a.estado || "").toUpperCase() === "REGISTRADA" || (a.estado || "").toUpperCase() === "EMITIDA").length;
+  const movHoy = data.movimientos.filter((m) => {
+    if (!m.fecha) return false;
+    const f = new Date(m.fecha);
+    const today = new Date();
+    return f.getFullYear() === today.getFullYear() && f.getMonth() === today.getMonth() && f.getDate() === today.getDate();
+  }).length;
+  const adjCount = adjuntosCount;
+  const incidentesCount = data.incidentes.length;
+  setProgress("backlog-actas", "backlog-actas-bar", backlog, data.actas.length || 1);
+  setProgress("movimientos-hoy", "movimientos-hoy-bar", movHoy, data.movimientos.length || 1);
+  setProgress("adjuntos-pendientes", "adjuntos-pendientes-bar", adjCount, Math.max(adjCount, 1));
+  setProgress("incidentes-abiertos", "incidentes-abiertos-bar", incidentesCount, Math.max(incidentesCount, 1));
+
+  const incidentesList = data.incidentes.slice(0, 3).map((i) => {
+    const fecha = i.fechaIncidente || i.fecha || "";
+    return `<div class="timeline-item">
+      <div class="d-flex justify-content-between">
+        <strong>INC-${i.id || ""}</strong>
+        <span class="badge badge-danger">Pendiente</span>
+      </div>
+      <p class="mb-1 text-muted">${i.detalle || ""}</p>
+      <small>${fecha}</small>
+    </div>`;
+  }).join("");
+  setList("incidentes-list", incidentesList);
+
+  const actasCompletadas = actasOrdenadas.filter((a) => (a.estado || "").toUpperCase() === "CERRADA").length;
+  const movMes = data.movimientos.filter((m) => {
+    if (!m.fecha) return false;
+    const f = new Date(m.fecha);
+    const desde = new Date();
+    desde.setDate(desde.getDate() - 30);
+    return f >= desde;
+  }).length;
+  const equiposLiberados = data.equipos.filter(
+    (e) => (e.estadoInterno || "").toUpperCase() === INACTIVO_INTERNAL || (e.estado || "").toUpperCase() === "BAJA"
+  ).length;
+  setKpi("actas-completadas", actasCompletadas);
+  setKpi("movimientos-log", movMes);
+  setKpi("equipos-liberados", equiposLiberados);
+
+  const clientesList = document.getElementById("resumen-clientes");
+  if (clientesList) {
+    const agrupado = data.equipos.reduce((acc, e) => {
+      const key = e.empresaId || e.idCliente;
+      if (!key) return acc;
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    const top = Object.entries(agrupado)
+      .map(([id, count]) => ({ id, count, nombre: empresaNombre(data.empresas, id) }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 4)
+      .map(
+        (c) =>
+          `<li class="list-group-item d-flex justify-content-between align-items-center">
+            ${c.nombre}
+            <span class="badge badge-primary badge-pill">${c.count} equipos</span>
+          </li>`
+      )
+      .join("");
+    clientesList.innerHTML = top || `<li class="list-group-item text-center text-muted">Sin equipos</li>`;
+  }
+
+  const ubicacionesList = document.getElementById("ubicaciones-destacadas");
+  if (ubicacionesList) {
+    const agrupado = data.equipos.reduce((acc, e) => {
+      const key = (e.ubicacionUsuario || e.ubicacion || "SIN UBICACION").toUpperCase();
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    const top = Object.entries(agrupado)
+      .map(([nombre, count]) => ({ nombre, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3)
+      .map(
+        (u) =>
+          `<div class="list-group-item d-flex align-items-center">
+            <i class="las la-map-marker-alt text-primary mr-3"></i>
+            <div>
+              <strong>${u.nombre}</strong>
+              <div class="text-muted small">${u.count} equipos</div>
+            </div>
+          </div>`
+      )
+      .join("");
+    ubicacionesList.innerHTML = top || `<div class="list-group-item text-center text-muted">Sin ubicaciones</div>`;
+  }
+}

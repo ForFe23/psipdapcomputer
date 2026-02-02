@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Nuevo mantenimiento · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0" id="titulo-form">Nuevo mantenimiento</h1>
+      <small class="text-muted">Programar intervención</small>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/mantenimientos}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="mantenimiento-form">
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="equipoId">ID Equipo *</label>
+            <input id="equipoId" name="equipoId" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="idCliente">ID Cliente *</label>
+            <input id="idCliente" name="idCliente" type="number" class="form-control" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="fechaProgramada">Fecha programada *</label>
+            <input id="fechaProgramada" name="fechaProgramada" type="datetime-local" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="frecuenciaDias">Frecuencia (días)</label>
+            <input id="frecuenciaDias" name="frecuenciaDias" type="number" class="form-control">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado" class="form-control">
+              <option value="PROGRAMADO">PROGRAMADO</option>
+              <option value="EJECUTADO">EJECUTADO</option>
+              <option value="CANCELADO">CANCELADO</option>
+            </select>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="estadoInterno">Estado interno</label>
+            <select id="estadoInterno" name="estadoInterno" class="form-control">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO_INTERNAL">INACTIVO_INTERNAL</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="3" class="form-control"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <span id="status" class="text-muted ml-2"></span>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarMantenimiento(id) {
+    const res = await apiFetch('/mantenimientos/' + id);
+    if (!res.ok) throw new Error('Error ' + res.status);
+    const m = await res.json();
+    equipoId.value = m.equipoId ?? '';
+    idCliente.value = m.idCliente ?? '';
+    fechaProgramada.value = toDateTimeInputValue(m.fechaProgramada);
+    frecuenciaDias.value = m.frecuenciaDias ?? '';
+    estado.value = m.estado ?? 'PROGRAMADO';
+    estadoInterno.value = m.estadoInterno ?? '';
+    descripcion.value = m.descripcion ?? '';
+  }
+
+  async function guardarMantenimiento(event) {
+    event.preventDefault();
+    const status = document.getElementById('status');
+    status.textContent = 'Guardando...';
+    const id = getIdParam();
+    const body = {
+      equipoId: equipoId.value ? Number(equipoId.value) : null,
+      idCliente: idCliente.value ? Number(idCliente.value) : null,
+      fechaProgramada: fechaProgramada.value ? new Date(fechaProgramada.value).toISOString() : null,
+      frecuenciaDias: frecuenciaDias.value ? Number(frecuenciaDias.value) : null,
+      estado: estado.value,
+      estadoInterno: estadoInterno.value,
+      descripcion: descripcion.value
+    };
+    try {
+      const res = await apiFetch(id ? '/mantenimientos/' + id : '/mantenimientos', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error ' + res.status);
+      status.textContent = id ? 'Actualizado' : 'Creado';
+      setTimeout(() => window.location.href = '/mantenimientos', 800);
+    } catch (err) {
+      status.textContent = 'No se pudo guardar: ' + err.message;
+      status.classList.replace('text-muted', 'text-danger');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const id = getIdParam();
+    if (id) {
+      document.getElementById('titulo-form').textContent = 'Editar mantenimiento';
+      cargarMantenimiento(id).catch(err => {
+        document.getElementById('status').textContent = 'No se pudo cargar: ' + err.message;
+      });
+    }
+    document.getElementById('mantenimiento-form').addEventListener('submit', guardarMantenimiento);
+  });
+</script>
+</body>
+</html>

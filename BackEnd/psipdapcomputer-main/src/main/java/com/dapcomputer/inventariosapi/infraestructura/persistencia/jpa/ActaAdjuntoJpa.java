@@ -49,4 +49,7 @@ public class ActaAdjuntoJpa {
 
     @Column(name = "fecha_registro")
     private java.time.LocalDateTime fechaRegistro;
+
+    @Column(name = "estado_interno", length = 50)
+    private String estadoInterno;
 }

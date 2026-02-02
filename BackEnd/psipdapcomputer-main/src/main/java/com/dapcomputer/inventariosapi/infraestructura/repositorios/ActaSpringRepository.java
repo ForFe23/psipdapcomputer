@@ -21,4 +21,12 @@ public interface ActaSpringRepository extends JpaRepository<ActaJpa, Integer> {
     @Modifying
     @Query("update ActaJpa a set a.estadoInterno = :estado where a.idEquipo = :idEquipo")
     void actualizarEstadoInternoPorEquipo(@Param("idEquipo") Integer idEquipo, @Param("estado") String estado);
+
+    @Modifying
+    @Query("update ActaJpa a set a.estadoInterno = :estado where a.id = :id")
+    void actualizarEstadoInterno(@Param("id") Integer id, @Param("estado") String estado);
+
+    @Modifying
+    @Query("update ActaJpa a set a.estadoInterno = :estado where a.idCliente = :idCliente")
+    void actualizarEstadoInternoPorCliente(@Param("idCliente") Integer idCliente, @Param("estado") String estado);
 }

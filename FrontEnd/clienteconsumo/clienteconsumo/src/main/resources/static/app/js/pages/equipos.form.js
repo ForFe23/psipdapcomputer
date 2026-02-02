@@ -1,11 +1,17 @@
 import { loadLayout } from "../ui/render.js";
 import { equiposApi } from "../api/equipos.api.js";
 import { showError, showSuccess } from "../ui/alerts.js";
-import { clientesApi } from "../api/clientes.api.js";
+import { empresasApi } from "../api/empresas.api.js";
+import { ubicacionesApi } from "../api/ubicaciones.api.js";
+import { personasApi } from "../api/personas.api.js";
+import { usuariosApi } from "../api/usuarios.api.js";
 
 const ACTIVO_INTERNAL = "ACTIVO_INTERNAL";
 
 let estadoInternoActual = ACTIVO_INTERNAL;
+let empresas = [];
+let ubicaciones = [];
+let personasUsuarios = [];
 
 function getId() {
   const url = new URL(window.location.href);
@@ -21,7 +27,7 @@ function showStep(step) {
 async function loadEquipo(id, form) {
   const data = await equiposApi.getById(id);
   estadoInternoActual = data.estadoInterno || ACTIVO_INTERNAL;
-  form.idCliente.value = data.idCliente ?? "";
+  if (form.empresaId) form.empresaId.value = data.empresaId ?? data.idCliente ?? "";
   form.codigoInterno.value = data.codigoInterno ?? data.activo ?? "";
   form.serie.value = data.serie ?? "";
   form.tipo.value = data.tipo ?? "";
@@ -48,10 +54,15 @@ async function loadEquipo(id, form) {
   form.ubicacionUsuario.value = data.ubicacionUsuario ?? "";
   form.departamentoUsuario.value = data.departamentoUsuario ?? "";
   form.nombreUsuario.value = data.nombreUsuario ?? "";
+  if (form.ubicacionActualId) {
+    form.ubicacionActualId.dataset.pendingValue = data.ubicacionActualId ?? "";
+  }
   
   form.querySelectorAll("input[type='text'], input[type='email']").forEach((el) => {
     el.value = (el.value || "").toUpperCase();
   });
+
+  return data;
 }
 
 function bindWizard() {
@@ -99,12 +110,69 @@ function applyUppercase(form) {
   });
 }
 
+async function loadUbicacionesByEmpresa(empresaId, select, onAfterRender) {
+  if (!select) return;
+  if (!empresaId) {
+    ubicaciones = [];
+    select.innerHTML = `<option value=\"\">Seleccione según empresa</option>`;
+    if (onAfterRender) onAfterRender();
+    return;
+  }
+  try {
+    ubicaciones = await ubicacionesApi.listByEmpresa(empresaId);
+    select.innerHTML =
+      `<option value=\"\">Seleccione ubicación</option>` +
+      ubicaciones.map((u) => `<option value=\"${u.id}\">${u.nombre || u.id}</option>`).join("");
+    if (onAfterRender) onAfterRender();
+  } catch (err) {
+    select.innerHTML = `<option value=\"\">Sin ubicaciones</option>`;
+    showError("No se pudieron cargar ubicaciones: " + err.message);
+  }
+}
+
 async function main() {
   await loadLayout("equipos");
   bindWizard();
   const form = document.querySelector("#equipo-form");
-  const clienteSelect = form?.idCliente;
+  const empresaSelect = form?.empresaId;
+  const ubicacionSelect = form?.ubicacionActualId;
   applyUppercase(form);
+  const syncUbicacionUsuario = () => {
+    if (!ubicacionSelect || !form.ubicacionUsuario) return;
+    const opt = ubicacionSelect.selectedOptions[0];
+    if (opt && opt.value) {
+      form.ubicacionUsuario.value = opt.textContent;
+    } else {
+      form.ubicacionUsuario.value = "";
+    }
+  };
+
+  const personasUsuariosList = document.querySelector("#personas-usuarios-datalist");
+
+  const loadPersonasUsuarios = async (empresaId) => {
+    if (!empresaId) {
+      personasUsuarios = [];
+      if (personasUsuariosList) personasUsuariosList.innerHTML = "";
+      return;
+    }
+    try {
+      const [pers, usrs] = await Promise.all([
+        personasApi.listByEmpresa(empresaId),
+        usuariosApi.listByEmpresa(empresaId)
+      ]);
+      personasUsuarios = [
+        ...pers.map((p) => ({ id: p.id, label: `${p.nombres || ""} ${p.apellidos || ""}`.trim() })),
+        ...usrs.map((u) => ({ id: u.id, label: `${u.nombres || ""} ${u.apellidos || ""}`.trim() }))
+      ].filter((x) => x.label);
+      if (personasUsuariosList) {
+        personasUsuariosList.innerHTML = personasUsuarios
+          .map((p) => `<option value="${p.label}" data-id="${p.id}">${p.label}</option>`)
+          .join("");
+      }
+    } catch (err) {
+      if (personasUsuariosList) personasUsuariosList.innerHTML = "";
+    }
+  };
 
   const datalists = {
     tipos: document.querySelector("#tipos-datalist"),
@@ -117,15 +185,38 @@ async function main() {
     discos: document.querySelector("#discos-datalist"),
     so: document.querySelector("#so-datalist"),
     office: document.querySelector("#office-datalist"),
-    usuarios: document.querySelector("#usuarios-datalist")
+    personasUsuarios: personasUsuariosList
   };
 
   
   try {
-    const clientes = await clientesApi.list();
-    clienteSelect.innerHTML = `<option value=\"\">Seleccione cliente</option>` + clientes.map(c => `<option value=\"${c.id}\">${c.nombre ?? c.razonSocial ?? c.id}</option>`).join("");
+    empresas = await empresasApi.list();
+    if (empresaSelect) {
+      empresaSelect.innerHTML = `<option value="">Seleccione empresa</option>` + empresas.map((c) => `<option value="${c.id}">${c.nombre ?? c.razonSocial ?? c.id}</option>`).join("");
+    }
+    await loadPersonasUsuarios(empresaSelect?.value || "");
+    await loadUbicacionesByEmpresa(empresaSelect?.value || "", ubicacionSelect, () => {
+      const pending = ubicacionSelect?.dataset.pendingValue;
+      if (pending) {
+        ubicacionSelect.value = pending;
+        syncUbicacionUsuario();
+      }
+    });
   } catch (err) {
-    showError("No se pudo cargar clientes: " + err.message);
+    showError("No se pudo cargar empresas: " + err.message);
+  }
+
+  if (empresaSelect) {
+    empresaSelect.addEventListener("change", () => {
+      loadUbicacionesByEmpresa(empresaSelect.value, ubicacionSelect, () => {
+        ubicacionSelect.dataset.pendingValue = "";
+        syncUbicacionUsuario();
+      });
+      loadPersonasUsuarios(empresaSelect.value);
+    });
+  }
+  if (ubicacionSelect) {
+    ubicacionSelect.addEventListener("change", syncUbicacionUsuario);
   }
 
   
@@ -142,17 +233,23 @@ async function main() {
     datalists.discos.innerHTML = uniq(equipos.map(e => e.disco)).map(v => `<option value="${v}">`).join("");
     datalists.so.innerHTML = uniq(equipos.map(e => e.so || e.sistemaOperativo)).map(v => `<option value="${v}">`).join("");
     datalists.office.innerHTML = uniq(equipos.map(e => e.office)).map(v => `<option value="${v}">`).join("");
-    datalists.usuarios.innerHTML = uniq(equipos.map(e => e.nombreUsuario)).map(v => `<option value="${v}">`).join("");
   } catch (err) {
     
   }
 
   const id = getId();
   if (id) {
-    const titleEl = form.querySelector("[data-form-title]");
+    const titleEl = document.querySelector("[data-form-title]");
     if (titleEl) titleEl.textContent = "Editar equipo";
     try {
-      await loadEquipo(id, form);
+      const data = await loadEquipo(id, form);
+      await loadPersonasUsuarios(data?.empresaId || form.empresaId?.value || "");
+      await loadUbicacionesByEmpresa(data?.empresaId || data?.idCliente || form.empresaId?.value || "", ubicacionSelect, () => {
+        if (ubicacionSelect && ubicacionSelect.dataset.pendingValue) {
+          ubicacionSelect.value = ubicacionSelect.dataset.pendingValue;
+          syncUbicacionUsuario();
+        }
+      });
     } catch (err) {
       showError(err.message);
     }
@@ -169,8 +266,8 @@ async function main() {
 
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    if (!form.idCliente.value) {
-      showError("Selecciona un cliente (multiempresa).");
+    if (!form.empresaId.value) {
+      showError("Selecciona una empresa (multiempresa).");
       showStep(1);
       return;
     }
@@ -183,9 +280,13 @@ async function main() {
     const v = (el) => (el && el.value ? el.value.trim() : "");
     const valOrEmpty = (el) => v(el);
 
-    
+    const empresaSeleccionada = empresas.find((e) => String(e.id) === String(form.empresaId.value));
+    const empresaId = form.empresaId.value ? Number(form.empresaId.value) : null;
+    const clienteId = empresaSeleccionada?.clienteId ? Number(empresaSeleccionada.clienteId) : empresaId;
+
     const payload = {
-      idCliente: form.idCliente.value ? Number(form.idCliente.value) : null,
+      idCliente: clienteId,
+      empresaId,
       codigoInterno: v(form.codigoInterno),
       activo: v(form.codigoInterno),
       serie: v(form.serie),
@@ -211,7 +312,8 @@ async function main() {
       contactoProveedor: valOrEmpty(form.correoProveedor),
       notas: valOrEmpty(form.notas),
       ciudad: valOrEmpty(form.ciudad),
-      ubicacionUsuario: valOrEmpty(form.ubicacionUsuario),
+      ubicacionActualId: form.ubicacionActualId?.value ? Number(form.ubicacionActualId.value) : null,
+      ubicacionUsuario: valOrEmpty(form.ubicacionUsuario) || (ubicacionSelect?.selectedOptions?.[0]?.textContent ?? ""),
       departamentoUsuario: valOrEmpty(form.departamentoUsuario),
       nombreUsuario: valOrEmpty(form.nombreUsuario)
     };

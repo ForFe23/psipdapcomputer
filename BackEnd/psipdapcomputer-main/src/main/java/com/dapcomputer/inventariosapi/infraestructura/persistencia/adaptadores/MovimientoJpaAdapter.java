@@ -6,8 +6,10 @@ import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.ActaJpa;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.jpa.MovimientoJpa;
 import com.dapcomputer.inventariosapi.infraestructura.persistencia.mapeadores.MovimientoMapper;
 import com.dapcomputer.inventariosapi.infraestructura.repositorios.ActaSpringRepository;
+import com.dapcomputer.inventariosapi.infraestructura.repositorios.EquipoSpringRepository;
 import com.dapcomputer.inventariosapi.infraestructura.repositorios.MovimientoSpringRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class MovimientoJpaAdapter implements MovimientoRepositorio {
     private final MovimientoSpringRepository repository;
     private final ActaSpringRepository actaRepository;
+    private final EquipoSpringRepository equipoRepository;
     private final MovimientoMapper mapper;
 
-    public MovimientoJpaAdapter(MovimientoSpringRepository repository, ActaSpringRepository actaRepository, MovimientoMapper mapper) {
+    public MovimientoJpaAdapter(MovimientoSpringRepository repository, ActaSpringRepository actaRepository, EquipoSpringRepository equipoRepository, MovimientoMapper mapper) {
         this.repository = repository;
         this.actaRepository = actaRepository;
+        this.equipoRepository = equipoRepository;
         this.mapper = mapper;
     }
 
@@ -32,6 +36,9 @@ public class MovimientoJpaAdapter implements MovimientoRepositorio {
             entidad.setEstadoInterno("ACTIVO_INTERNAL");
         }
         MovimientoJpa guardado = repository.save(entidad);
+        if (guardado.getIdEquipo() != null && guardado.getUbicacionDestinoId() != null) {
+            equipoRepository.actualizarUbicacion(guardado.getIdEquipo(), guardado.getUbicacionDestinoId(), guardado.getUbicacionDestino());
+        }
         return mapper.toDomain(guardado);
     }
 
@@ -52,6 +59,21 @@ public class MovimientoJpaAdapter implements MovimientoRepositorio {
 
     @Override
     @Transactional(readOnly = true)
+    public java.util.Optional<Movimiento> buscarPorId(Integer id) {
+        return repository.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Movimiento> buscarPorActa(Integer idActa) {
+        if (idActa == null) {
+            return Optional.empty();
+        }
+        return repository.findFirstByActa_IdOrderByIdDesc(idActa).map(mapper::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Movimiento> listarPorUsuario(Integer idUsuario) {
         return repository.findByIdUsuarioOrigenOrIdUsuarioDestino(idUsuario, idUsuario).stream().map(mapper::toDomain).toList();
     }
@@ -60,5 +82,23 @@ public class MovimientoJpaAdapter implements MovimientoRepositorio {
     @Transactional
     public void actualizarEstadoInternoPorEquipo(Integer idEquipo, String estadoInterno) {
         repository.actualizarEstadoInternoPorEquipo(idEquipo, estadoInterno);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstadoInterno(Integer id, String estadoInterno) {
+        repository.actualizarEstadoInterno(id, estadoInterno);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstadoInternoPorCliente(Long idCliente, String estadoInterno) {
+        repository.actualizarEstadoInternoPorCliente(idCliente, estadoInterno);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstadoInternoPorActa(Integer idActa, String estadoInterno) {
+        repository.actualizarEstadoInternoPorActa(idActa, estadoInterno);
     }
 }

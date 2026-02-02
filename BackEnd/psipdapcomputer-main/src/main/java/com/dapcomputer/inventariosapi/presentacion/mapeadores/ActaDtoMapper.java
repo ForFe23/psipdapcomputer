@@ -22,7 +22,7 @@ public interface ActaDtoMapper {
         }
         Integer actaId = origen.id();
         return origen.items().stream()
-                .map(item -> new ActaItem(item.id(), actaId, item.itemNumero(), item.tipo(), item.serie(), item.modelo(), item.observacion(), item.equipoId(), item.equipoSerie()))
+                .map(item -> new ActaItem(item.id(), actaId, item.itemNumero(), item.tipo(), item.serie(), item.modelo(), item.observacion(), item.equipoId(), item.equipoSerie(), item.estadoInterno()))
                 .toList();
     }
 
@@ -31,7 +31,7 @@ public interface ActaDtoMapper {
             return List.of();
         }
         return origen.items().stream()
-                .map(item -> new ActaItemDto(item.id(), item.itemNumero(), item.tipo(), item.serie(), item.modelo(), item.observacion(), item.equipoId(), item.equipoSerie()))
+                .map(item -> new ActaItemDto(item.id(), item.itemNumero(), item.tipo(), item.serie(), item.modelo(), item.observacion(), item.equipoId(), item.equipoSerie(), item.estadoInterno()))
                 .toList();
     }
 }

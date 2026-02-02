@@ -76,6 +76,14 @@ public class PerifericoJpaAdapter implements PerifericoRepositorio {
     }
 
     @Override
+    @Transactional
+    public void actualizarEstadoInternoPorCliente(Integer idCliente, String estadoInterno) {
+        if (idCliente != null) {
+            repository.actualizarEstadoInternoPorCliente(idCliente, estadoInterno);
+        }
+    }
+
+    @Override
     public void eliminar(Integer id) {
         if (id != null) {
             repository.deleteById(id);

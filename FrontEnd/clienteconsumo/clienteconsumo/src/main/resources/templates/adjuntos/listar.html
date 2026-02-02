@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Adjuntos · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0">Adjuntos</h1>
+      <small class="text-muted">Archivos asociados a actas</small>
+    </div>
+    <a class="btn btn-primary" th:href="@{/adjuntos/nuevo}"><i class="las la-plus mr-1"></i>Nuevo</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="adjuntos-filter" class="form-inline mb-3">
+        <label class="mr-2" for="actaId">ID Acta</label>
+        <input id="actaId" name="actaId" type="number" class="form-control mr-2" placeholder="Ej: 1" required>
+        <button class="btn btn-outline-primary" type="submit">Cargar</button>
+      </form>
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Acta</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>URL</th>
+          </tr>
+          </thead>
+          <tbody id="adjuntos-body">
+          <tr><td colspan="5" class="text-center text-muted">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarAdjuntos(event) {
+    if (event) event.preventDefault();
+    const tbody = document.getElementById('adjuntos-body');
+    const actaId = document.getElementById('actaId').value;
+    if (!actaId) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Ingrese un ID de acta</td></tr>';
+      return;
+    }
+    try {
+      const res = await apiFetch(`/actas/${actaId}/adjuntos`);
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan=\"5\" class=\"text-center text-muted\">Sin adjuntos</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(a => `
+        <tr>
+          <td>${a.id ?? ''}</td>
+          <td>${a.idActa ?? ''}</td>
+          <td>${a.nombre ?? ''}</td>
+          <td>${a.tipo ?? ''}</td>
+          <td><a href="${a.url ?? '#'}" target="_blank">Ver</a></td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan=\"5\" class=\"text-danger text-center\">No se pudo cargar (' + err.message + ')</td></tr>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('adjuntos-filter').addEventListener('submit', cargarAdjuntos);
+  });
+</script>
+</body>
+</html>

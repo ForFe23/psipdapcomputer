@@ -3,6 +3,8 @@ package com.dapcomputer.inventariosapi.aplicacion.casosuso.impl;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.BajaLogicaEquipoCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.excepciones.RecursoNoEncontradoException;
 import com.dapcomputer.inventariosapi.dominio.repositorios.ActaRepositorio;
+import com.dapcomputer.inventariosapi.dominio.repositorios.ActaAdjuntoRepositorio;
+import com.dapcomputer.inventariosapi.dominio.repositorios.ActaItemRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.EquipoRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.IncidenteRepositorio;
 import com.dapcomputer.inventariosapi.dominio.repositorios.MantenimientoRepositorio;
@@ -19,6 +21,8 @@ public class BajaLogicaEquipoServicio implements BajaLogicaEquipoCasoUso {
     private final PerifericoRepositorio perifericoRepositorio;
     private final ActaRepositorio actaRepositorio;
     private final MovimientoRepositorio movimientoRepositorio;
+    private final ActaAdjuntoRepositorio adjuntoRepositorio;
+    private final ActaItemRepositorio itemRepositorio;
 
     public BajaLogicaEquipoServicio(
             EquipoRepositorio equipoRepositorio,
@@ -26,13 +30,17 @@ public class BajaLogicaEquipoServicio implements BajaLogicaEquipoCasoUso {
             IncidenteRepositorio incidenteRepositorio,
             PerifericoRepositorio perifericoRepositorio,
             ActaRepositorio actaRepositorio,
-            MovimientoRepositorio movimientoRepositorio) {
+            MovimientoRepositorio movimientoRepositorio,
+            ActaAdjuntoRepositorio adjuntoRepositorio,
+            ActaItemRepositorio itemRepositorio) {
         this.equipoRepositorio = equipoRepositorio;
         this.mantenimientoRepositorio = mantenimientoRepositorio;
         this.incidenteRepositorio = incidenteRepositorio;
         this.perifericoRepositorio = perifericoRepositorio;
         this.actaRepositorio = actaRepositorio;
         this.movimientoRepositorio = movimientoRepositorio;
+        this.adjuntoRepositorio = adjuntoRepositorio;
+        this.itemRepositorio = itemRepositorio;
     }
 
     @Override
@@ -51,5 +59,7 @@ public class BajaLogicaEquipoServicio implements BajaLogicaEquipoCasoUso {
         perifericoRepositorio.actualizarEstadoInternoPorEquipo(equipo.id(), ESTADO_INACTIVO);
         actaRepositorio.actualizarEstadoInternoPorEquipo(equipo.id(), ESTADO_INACTIVO);
         movimientoRepositorio.actualizarEstadoInternoPorEquipo(equipo.id(), ESTADO_INACTIVO);
+        adjuntoRepositorio.actualizarEstadoInternoPorEquipo(equipo.id(), ESTADO_INACTIVO);
+        itemRepositorio.actualizarEstadoInternoPorEquipo(equipo.id(), ESTADO_INACTIVO);
     }
 }

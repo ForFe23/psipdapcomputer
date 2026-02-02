@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Actas · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0">Actas</h1>
+      <small class="text-muted">Listado consumiendo /api/actas</small>
+    </div>
+    <a class="btn btn-primary" th:href="@{/actas/nuevo}"><i class="las la-plus mr-1"></i>Nueva</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Cliente</th>
+            <th>Entregado por</th>
+            <th>Recibido por</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="actas-body">
+          <tr><td colspan="8" class="text-center text-muted">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarActas() {
+    const tbody = document.getElementById('actas-body');
+    try {
+      const res = await apiFetch('/actas');
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan=\"8\" class=\"text-center text-muted\">Sin actas</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(a => `
+        <tr>
+          <td>${a.id ?? ''}</td>
+          <td>${a.codigo ?? ''}</td>
+          <td>${(a.cliente && a.cliente.nombre) || a.idCliente || ''}</td>
+          <td>${a.entregadoPor ?? ''}</td>
+          <td>${a.recibidoPor ?? ''}</td>
+          <td><span class="badge ${estadoBadge(a.estado)}">${a.estado ?? ''}</span></td>
+          <td>${a.fechaActa ?? ''}</td>
+          <td class="text-right">
+            <a class="btn btn-sm btn-outline-primary" href="/actas/nuevo?id=${a.id}">Editar</a>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan=\"8\" class=\"text-danger text-center\">No se pudo cargar (' + err.message + ')</td></tr>';
+    }
+  }
+
+  function estadoBadge(estado) {
+    const e = (estado || '').toUpperCase();
+    if (e.includes('EMIT')) return 'badge-success';
+    if (e.includes('REG')) return 'badge-warning';
+    if (e.includes('ANU')) return 'badge-danger';
+    return 'badge-light';
+  }
+
+  document.addEventListener('DOMContentLoaded', cargarActas);
+</script>
+</body>
+</html>

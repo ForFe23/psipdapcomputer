@@ -1,6 +1,6 @@
 import { loadLayout } from "../ui/render.js";
 import { mantenimientosApi } from "../api/mantenimientos.api.js";
-import { clientesApi } from "../api/clientes.api.js";
+import { empresasApi } from "../api/empresas.api.js";
 import { equiposApi } from "../api/equipos.api.js";
 import { showError, showSuccess } from "../ui/alerts.js";
 
@@ -14,16 +14,16 @@ function isoLocalNow() {
 async function main() {
   await loadLayout("mantenimientos");
   const form = document.querySelector("#mant-form");
-  const clienteSelect = document.querySelector("#clienteSelect");
+  const empresaSelect = document.querySelector("#empresaSelect");
   const seriesList = document.querySelector("#seriesList");
   const serieInput = form?.serieEquipo;
   const equipoHidden = document.querySelector("#equipoId");
   const estadoSelect = document.querySelector("#estadoSelect");
   const id = getParam("id");
   const serieParam = getParam("serie");
-  const clienteParam = getParam("idCliente");
+  const empresaParam = getParam("empresaId") || getParam("idCliente");
   const sugerenciaCards = document.querySelectorAll("[data-plan]");
-  let clientePreset = clienteParam || "";
+  let empresaPreset = empresaParam || "";
   let mantenimientoData = null;
 
   
@@ -32,22 +32,22 @@ async function main() {
   const presetEstado = getParam("estado");
 
   let equipos = [];
-  let clientesCache = [];
+  let empresasCache = [];
 
   
-  const loadClientes = async () => {
+  const loadEmpresas = async () => {
     try {
-      const clientes = await clientesApi.list();
-      clientesCache = clientes;
-      if (clienteSelect) {
-        clienteSelect.innerHTML =
+      const empresas = await empresasApi.list();
+      empresasCache = empresas;
+      if (empresaSelect) {
+        empresaSelect.innerHTML =
           `<option value="">Seleccione empresa</option>` +
-          clientes.map((c) => `<option value="${c.id}">${c.nombre || c.razonSocial || c.id}</option>`).join("");
-        if (clientePreset) clienteSelect.value = clientePreset;
+          empresas.map((c) => `<option value="${c.id}">${c.nombre || c.razonSocial || c.id}</option>`).join("");
+        if (empresaPreset) empresaSelect.value = empresaPreset;
       }
-      return clientes;
+      return empresas;
     } catch (err) {
-      showError("No se pudo cargar clientes");
+      showError("No se pudo cargar empresas");
     }
     return [];
   };
@@ -60,9 +60,9 @@ async function main() {
     }
   };
 
-  const renderSeries = (clienteId) => {
+  const renderSeries = (empresaId) => {
     if (!seriesList) return;
-    const filtered = clienteId ? equipos.filter((e) => String(e.idCliente) === String(clienteId)) : equipos;
+    const filtered = empresaId ? equipos.filter((e) => String(e.empresaId || e.idCliente) === String(empresaId)) : equipos;
     const sugerencia = `<option value="⬇SUGERENCIAS⬇"></option>`;
     seriesList.innerHTML = sugerencia + filtered
       .map((e) => {
@@ -72,16 +72,16 @@ async function main() {
       .join("");
   };
 
-  const syncClienteFromSerie = (serieVal) => {
+  const syncEmpresaFromSerie = (serieVal) => {
     if (!serieVal) {
-      if (clienteSelect) clienteSelect.value = "";
+      if (empresaSelect) empresaSelect.value = "";
       if (equipoHidden) equipoHidden.value = "";
       return;
     }
     const eq = equipos.find((e) => String(e.serie || e.serieEquipo || "").toUpperCase() === serieVal.toUpperCase());
-    if (eq && clienteSelect) {
-      clienteSelect.value = eq.idCliente ?? "";
-      renderSeries(eq.idCliente);
+    if (eq && empresaSelect) {
+      empresaSelect.value = eq.empresaId ?? eq.idCliente ?? "";
+      renderSeries(eq.empresaId ?? eq.idCliente);
       if (equipoHidden) equipoHidden.value = eq.id ?? "";
     } else if (equipoHidden) {
       equipoHidden.value = "";
@@ -126,7 +126,7 @@ async function main() {
     document.getElementById("form-title").textContent = "Editar mantenimiento";
     try {
       mantenimientoData = await mantenimientosApi.getById(id);
-      clientePreset = mantenimientoData.idCliente ?? clientePreset;
+      empresaPreset = mantenimientoData.empresaId ?? mantenimientoData.idCliente ?? empresaPreset;
       if (serieInput) serieInput.value = toUpper(mantenimientoData.serieSnapshot || mantenimientoData.serieEquipo || serieInput.value);
       if (equipoHidden) equipoHidden.value = mantenimientoData.equipoId ?? "";
       form.fechaProgramada.value = mantenimientoData.fechaProgramada
@@ -142,14 +142,18 @@ async function main() {
 
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    if (!clienteSelect?.value) {
+    if (!empresaSelect?.value) {
       showError("El mantenimiento requiere la empresa del equipo.");
       return;
     }
+    const empresaSeleccionada = empresasCache.find((e) => String(e.id) === String(empresaSelect?.value || ""));
+    const empresaId = empresaSelect?.value ? Number(empresaSelect.value) : null;
+    const clienteId = empresaSeleccionada?.clienteId ? Number(empresaSeleccionada.clienteId) : (empresaId ?? Number(mantenimientoData?.idCliente || 0));
     const payload = {
       equipoId: equipoHidden?.value ? Number(equipoHidden.value) : null,
       serieSnapshot: form.serieEquipo.value.trim(),
-      idCliente: Number(clienteSelect?.value || mantenimientoData?.idCliente || 0),
+      idCliente: clienteId,
+      empresaId,
       fechaProgramada: form.fechaProgramada.value ? form.fechaProgramada.value + ":00" : null,
       frecuenciaDias: form.frecuenciaDias.value === "" ? null : Number(form.frecuenciaDias.value),
       descripcion: form.descripcion.value.trim() || null,
@@ -192,36 +196,36 @@ async function main() {
   });
 
   
-  await Promise.all([loadClientes(), loadEquipos()]);
+  await Promise.all([loadEmpresas(), loadEquipos()]);
   if (mantenimientoData) {
-    if (clienteSelect) clienteSelect.value = clientePreset || "";
-    renderSeries(clientePreset);
+    if (empresaSelect) empresaSelect.value = empresaPreset || "";
+    renderSeries(empresaPreset);
     if (serieInput) {
       serieInput.value = toUpper(mantenimientoData.serieEquipo || serieInput.value);
-      syncClienteFromSerie(serieInput.value);
+      syncEmpresaFromSerie(serieInput.value);
       serieInput.readOnly = true;
     }
-    if (clienteSelect) {
-      clienteSelect.disabled = true;
+    if (empresaSelect) {
+      empresaSelect.disabled = true;
     }
   } else {
     if (serieParam && equipos.length) {
       serieInput.value = toUpper(serieParam);
-      syncClienteFromSerie(serieParam);
+      syncEmpresaFromSerie(serieParam);
     }
-    if (clienteSelect) clienteSelect.disabled = false;
-    renderSeries(clienteSelect?.value || clienteParam);
+    if (empresaSelect) empresaSelect.disabled = false;
+    renderSeries(empresaSelect?.value || empresaParam);
   }
 
-  if (clienteSelect) {
-    clienteSelect.addEventListener("change", (ev) => {
+  if (empresaSelect) {
+    empresaSelect.addEventListener("change", (ev) => {
       renderSeries(ev.target.value);
       const currentSerie = form.serieEquipo.value.trim();
       if (currentSerie) {
         const belongs = equipos.some(
           (e) =>
             String(e.serie || e.serieEquipo || "").toUpperCase() === currentSerie.toUpperCase() &&
-            String(e.idCliente) === String(ev.target.value || "")
+            String(e.empresaId || e.idCliente) === String(ev.target.value || "")
         );
         if (!belongs) {
           form.serieEquipo.value = "";
@@ -237,10 +241,10 @@ async function main() {
     serieInput.value = toUpper(serieInput.value);
     const serieVal = serieInput.value.trim();
     if (!serieVal) {
-      if (clienteSelect) clienteSelect.value = "";
+      if (empresaSelect) empresaSelect.value = "";
       return;
     }
-    syncClienteFromSerie(serieVal);
+    syncEmpresaFromSerie(serieVal);
   });
 }
 

@@ -55,6 +55,15 @@ public class EquipoJpaAdapter implements EquipoRepositorio {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Equipo> listarPorCliente(Long idCliente) {
+        if (idCliente == null) {
+            return List.of();
+        }
+        return repository.findByIdCliente(idCliente).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<Equipo> buscarPorSerie(String serie) {
         if (serie == null) {
             return Optional.empty();
@@ -70,6 +79,12 @@ public class EquipoJpaAdapter implements EquipoRepositorio {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Equipo> listarPorEmpresa(Long empresaId) {
+        return repository.findByEmpresaId(empresaId).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Equipo> listarPorUbicacion(String ubicacion) {
         return repository.findByUbicacionUsuarioIgnoreCase(ubicacion).stream().map(mapper::toDomain).toList();
     }
@@ -79,6 +94,22 @@ public class EquipoJpaAdapter implements EquipoRepositorio {
     public void actualizarEstadoInterno(Integer id, String estadoInterno) {
         if (id != null) {
             repository.actualizarEstadoInterno(id, estadoInterno);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstadoInternoPorCliente(Long idCliente, String estadoInterno) {
+        if (idCliente != null) {
+            repository.actualizarEstadoInternoPorCliente(idCliente, estadoInterno);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstadoInternoPorEmpresa(Long empresaId, String estadoInterno) {
+        if (empresaId != null) {
+            repository.actualizarEstadoInternoPorEmpresa(empresaId, estadoInterno);
         }
     }
 

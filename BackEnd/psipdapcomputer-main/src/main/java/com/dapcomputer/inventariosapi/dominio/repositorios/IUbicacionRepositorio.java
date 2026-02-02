@@ -9,4 +9,7 @@ public interface IUbicacionRepositorio {
     Ubicacion actualizar(Ubicacion ubicacion);
     Optional<Ubicacion> buscarPorId(Long id);
     List<Ubicacion> listarPorEmpresa(Long empresaId);
+    List<Ubicacion> listar();
+    void actualizarEstadoInternoPorEmpresa(Long empresaId, String estadoInterno);
+    void eliminar(Long id);
 }

@@ -15,6 +15,8 @@ public record ActaDto(
         String estadoInterno,
         @NotNull Integer idCliente,
         @NotNull Integer idEquipo,
+        @NotNull Long empresaId,
+        Long ubicacionId,
         @NotNull LocalDate fechaActa,
         @NotBlank String tema,
         @NotBlank String entregadoPor,

@@ -1,6 +1,6 @@
 import { loadLayout } from "../ui/render.js";
 import { mantenimientosApi } from "../api/mantenimientos.api.js";
-import { clientesApi } from "../api/clientes.api.js";
+import { empresasApi } from "../api/empresas.api.js";
 import { showError, showSuccess } from "../ui/alerts.js";
 
 const INACTIVO_INTERNAL = "INACTIVO_INTERNAL";
@@ -30,12 +30,12 @@ function computeStats(items) {
   return { total, recurrentes, unicos, proximos7 };
 }
 
-const clienteNombre = (id, clientes) => {
-  const c = clientes.find((cl) => String(cl.id) === String(id));
+const empresaNombre = (id, empresas) => {
+  const c = empresas.find((cl) => String(cl.id) === String(id));
   return c ? c.nombre || c.razonSocial || c.id : id;
 };
 
-function rowTemplate(m, clientes) {
+function rowTemplate(m, empresas) {
   const fecha = fmtDateTime(m.fechaProgramada);
   const prox = m.frecuenciaDias ? fmtDateTime(addDays(parseDate(m.fechaProgramada), m.frecuenciaDias)) : "";
   const estado = (m.estado || "").toUpperCase();
@@ -53,7 +53,7 @@ function rowTemplate(m, clientes) {
       </td>
       <td>${m.id ?? ""}</td>
       <td>${m.serieEquipo ?? ""}</td>
-      <td>${clienteNombre(m.idCliente, clientes) ?? ""}</td>
+      <td>${empresaNombre(m.empresaId ?? m.idCliente, empresas) ?? ""}</td>
       <td>${fecha}</td>
       <td>${m.frecuenciaDias ?? ""}</td>
       <td>${m.estado ?? ""}</td>
@@ -67,11 +67,11 @@ async function main() {
   await loadLayout("mantenimientos");
   const serieParam = getParam("serie");
   const inputSerie = document.querySelector("#serieFilter");
-  const selectCliente = document.querySelector("#clienteFilter");
+  const selectEmpresa = document.querySelector("#fEmpresa");
   if (inputSerie) inputSerie.value = serieParam;
 
   const tbody = document.querySelector("#mantenimientos-tbody");
-  let clientes = [];
+  let empresas = [];
   let datos = [];
 
   const renderStats = (items) => {
@@ -92,16 +92,16 @@ async function main() {
       tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">Sin datos</td></tr>`;
       return;
     }
-    tbody.innerHTML = items.map((m) => rowTemplate(m, clientes)).join("");
+    tbody.innerHTML = items.map((m) => rowTemplate(m, empresas)).join("");
   };
 
   const applyFilters = () => {
     const serie = (inputSerie?.value || "").trim().toUpperCase();
-    const clienteSel = selectCliente?.value || "";
+    const empresaSel = selectEmpresa?.value || "";
     const estadoSel = document.querySelector("#estadoFilter")?.value || "";
     let filtered = [...datos];
     if (serie) filtered = filtered.filter((m) => (m.serieEquipo || "").toUpperCase().includes(serie));
-    if (clienteSel) filtered = filtered.filter((m) => String(m.idCliente) === clienteSel);
+    if (empresaSel) filtered = filtered.filter((m) => String(m.empresaId ?? m.idCliente) === empresaSel);
     if (estadoSel) filtered = filtered.filter((m) => (m.estado || "").toUpperCase() === estadoSel.toUpperCase());
     renderTable(filtered);
     renderStats(filtered);
@@ -119,11 +119,12 @@ async function main() {
     }
   };
 
-  const loadClientes = async () => {
+  const loadEmpresas = async () => {
     try {
-      clientes = await clientesApi.list();
-      if (selectCliente) {
-        selectCliente.innerHTML = `<option value="">Todos los clientes</option>` + clientes.map((c) => `<option value="${c.id}">${c.nombre || c.razonSocial || c.id}</option>`).join("");
+      empresas = await empresasApi.list();
+      if (selectEmpresa) {
+        selectEmpresa.innerHTML =
+          `<option value="">Todas las empresas</option>` + empresas.map((c) => `<option value="${c.id}">${c.nombre || c.razonSocial || c.id}</option>`).join("");
       }
     } catch (err) {
       
@@ -139,7 +140,7 @@ async function main() {
   }
   document.querySelector("#estadoFilter")?.addEventListener("change", applyFilters);
   inputSerie?.addEventListener("input", applyFilters);
-  selectCliente?.addEventListener("change", applyFilters);
+  selectEmpresa?.addEventListener("change", applyFilters);
 
   document.addEventListener("click", async (ev) => {
     const btn = ev.target.closest(".btn-del");
@@ -179,7 +180,7 @@ async function main() {
     }
   });
 
-  await loadClientes();
+  await loadEmpresas();
   await load();
   applyFilters();
 }

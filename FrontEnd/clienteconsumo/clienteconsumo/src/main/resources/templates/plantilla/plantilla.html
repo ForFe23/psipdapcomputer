@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="api-base-url" th:content="${@environment.getProperty('app.api.base-url')}" />
+  <title th:text="${pageTitle} ?: 'PSIPDAP Inventario'">PSIPDAP Inventario</title>
+  <link th:href="@{/assets/css/vendors/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/css/vendors/line-awesome.min.css}" rel="stylesheet">
+  <link th:href="@{/assets/css/pages/layout.css}" rel="stylesheet">
+  <style>
+    body { background: #f5f7fb; }
+    .nav-link.active { font-weight: 600; }
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+  </style>
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.API_BASE_URL = /*[[${@environment.getProperty('app.api.base-url')}]]*/ '/api';
+    window.apiFetch = function(path, opts) {
+      const base = window.API_BASE_URL || '/api';
+      const safePath = path || '';
+      const url = safePath.startsWith('http')
+              ? safePath
+              : `${base}${safePath.startsWith('/') ? '' : '/'}${safePath}`;
+      return fetch(url, opts);
+    };
+    window.getIdParam = function(name = 'id') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    };
+    window.toDateInputValue = function(value) {
+      if (!value) return '';
+      return value.split('T')[0];
+    };
+    window.toDateTimeInputValue = function(value) {
+      if (!value) return '';
+      const normalized = value.replace(' ', 'T');
+      return normalized.length > 16 ? normalized.slice(0, 16) : normalized;
+    };
+    /*]]>*/
+  </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-3">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/}">
+      <span class="brand-mark mr-2"><i class="las la-layer-group"></i></span>
+      <span>PSIPDAP Computer</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/}">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/clientes}">Clientes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/equipos}">Equipos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/actas}">Actas</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="opsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Operación</a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="opsDropdown">
+            <a class="dropdown-item" th:href="@{/perifericos}">Periféricos</a>
+            <a class="dropdown-item" th:href="@{/movimientos}">Movimientos</a>
+            <a class="dropdown-item" th:href="@{/mantenimientos}">Mantenimientos</a>
+            <a class="dropdown-item" th:href="@{/adjuntos}">Adjuntos</a>
+            <a class="dropdown-item" th:href="@{/incidentes}">Incidentes</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/app/index.html" target="_blank">App Completa</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container mb-4" layout:fragment="contenido">
+  <!-- El contenido específico de cada página se inyecta aquí -->
+</main>
+
+<footer class="border-top py-3 text-center text-muted">
+  <small>PSIPDAP Inventario TI · 2026</small>
+</footer>
+
+<script th:src="@{/assets/js/vendors/jquery.min.js}"></script>
+<script th:src="@{/assets/js/vendors/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

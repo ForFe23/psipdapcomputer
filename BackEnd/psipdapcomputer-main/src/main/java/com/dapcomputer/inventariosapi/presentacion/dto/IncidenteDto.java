@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 public record IncidenteDto(
         Integer id,
-        @NotNull Integer equipoId,
+        Integer equipoId,
+        String serieEquipo,
         @NotNull Integer idUsuario,
         @NotNull Long idCliente,
         @NotNull LocalDateTime fechaIncidente,

@@ -22,11 +22,13 @@ public interface ActaMapper {
     @Mapping(target = "actaId", expression = "java(origen.getActa() != null ? origen.getActa().getId() : null)")
     @Mapping(target = "equipoId", source = "equipoId")
     @Mapping(target = "equipoSerie", source = "equipoSerie")
+    @Mapping(target = "estadoInterno", source = "estadoInterno")
     ActaItem toDomain(ActaItemJpa origen);
 
     @Mapping(target = "acta", ignore = true)
     @Mapping(target = "equipo", ignore = true)
     @Mapping(target = "itemNumero", source = "itemNumero")
+    @Mapping(target = "estadoInterno", source = "estadoInterno")
     ActaItemJpa toJpa(ActaItem origen);
 
     @AfterMapping

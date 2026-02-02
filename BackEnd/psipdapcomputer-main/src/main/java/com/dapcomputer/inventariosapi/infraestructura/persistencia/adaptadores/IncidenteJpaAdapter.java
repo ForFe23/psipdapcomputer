@@ -70,6 +70,14 @@ public class IncidenteJpaAdapter implements IncidenteRepositorio {
 
     @Override
     @Transactional
+    public void actualizarEstadoInternoPorCliente(Long idCliente, String estadoInterno) {
+        if (idCliente != null) {
+            repository.actualizarEstadoInternoPorCliente(idCliente, estadoInterno);
+        }
+    }
+
+    @Override
+    @Transactional
     public void eliminar(Integer id) {
         repository.deleteById(id);
     }

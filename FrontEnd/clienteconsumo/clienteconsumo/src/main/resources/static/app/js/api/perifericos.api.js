@@ -12,8 +12,8 @@ export const perifericosApi = {
   list: (params = {}) => http.get(`/perifericos${buildQuery(params)}`),
   listBySerie: (serie) => http.get(`/perifericos${buildQuery({ serie })}`),
   listByCliente: (clienteId) => http.get(`/perifericos${buildQuery({ clienteId })}`),
-  get: (id, serie) => http.get(`/perifericos/${id}/${encodeURIComponent(serie)}`),
+  get: (id) => http.get(`/perifericos/${id}`),
   create: (payload) => http.post("/perifericos", payload),
-  update: (id, serie, payload) => http.put(`/perifericos/${id}/${encodeURIComponent(serie)}`, payload),
-  remove: (id, serie) => http.del(`/perifericos/${id}/${encodeURIComponent(serie)}`)
+  update: (id, payload) => http.put(`/perifericos/${id}`, payload),
+  remove: (id) => http.del(`/perifericos/${id}`)
 };

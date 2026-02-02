@@ -7,4 +7,5 @@ public record ActaAdjuntoDto(
         Integer idActa,
         @NotBlank String nombre,
         @NotBlank String url,
-        @NotBlank String tipo) {}
+        @NotBlank String tipo,
+        String estadoInterno) {}

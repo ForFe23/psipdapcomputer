@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Clientes · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0">Clientes</h1>
+      <small class="text-muted">Listado consumiendo /api/clientes</small>
+    </div>
+    <a class="btn btn-primary" th:href="@{/clientes/nuevo}"><i class="las la-plus mr-1"></i>Nuevo</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Licencia</th>
+            <th>Ciudad</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="clientes-body">
+          <tr><td colspan="7" class="text-center text-muted">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarClientes() {
+    const tbody = document.getElementById('clientes-body');
+    try {
+      const res = await apiFetch('/clientes');
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan=\"7\" class=\"text-center text-muted\">Sin clientes</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(c => `
+        <tr>
+          <td>${c.id ?? ''}</td>
+          <td>${c.nombre ?? ''}</td>
+          <td>${c.email ?? ''}</td>
+          <td>${c.licencia ?? ''}</td>
+          <td>${c.ciudad ?? ''}</td>
+          <td><span class="badge ${estadoBadge(c.estadoInterno)}">${c.estadoInterno ?? ''}</span></td>
+          <td class="text-right">
+            <a class="btn btn-sm btn-outline-primary" href="/clientes/nuevo?id=${c.id}">Editar</a>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan=\"7\" class=\"text-danger text-center\">No se pudo cargar (' + err.message + ')</td></tr>';
+    }
+  }
+
+  function estadoBadge(estado) {
+    const e = (estado || '').toUpperCase();
+    if (e.includes('ACTIVO')) return 'badge-success';
+    if (e.includes('INACT')) return 'badge-secondary';
+    return 'badge-light';
+  }
+
+  document.addEventListener('DOMContentLoaded', cargarClientes);
+</script>
+</body>
+</html>

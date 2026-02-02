@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../../../assets/css/vendors/bootstrap.min.css">
   <link rel="stylesheet" href="../../../assets/css/vendors/line-awesome.min.css">
   <link rel="stylesheet" href="../../../assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
 </head>
 <body>
   <div data-include="header"></div>
@@ -25,35 +26,58 @@
               <form id="movimiento-form">
                 <div class="form-row">
                   <div class="form-group col-md-4">
-                    <label for="equipoId">Equipo ID</label>
-                    <input class="form-control" type="text" id="equipoId" name="equipoId" required>
+                    <label for="empresaSelect">Empresa</label>
+                    <select class="form-control" id="empresaSelect" name="empresaId" required>
+                      <option value="">Seleccione empresa</option>
+                    </select>
+                    <small class="form-text text-muted">Usa la flecha para ver sugeridos.</small>
                   </div>
                   <div class="form-group col-md-4">
-                    <label for="usuarioId">Usuario ID</label>
-                    <input class="form-control" type="text" id="usuarioId" name="usuarioId" required>
+                    <label for="serieEquipo">Serie equipo</label>
+                    <input class="form-control" type="text" id="serieEquipo" name="serieEquipo" list="seriesList" autocomplete="off" required>
+                    <datalist id="seriesList">
+                      <option value="⬇SUGERENCIAS⬇"></option>
+                    </datalist>
+                    <input type="hidden" id="equipoId" name="equipoId">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="usuarioId">Usuario (ejecuta)</label>
+                    <input class="form-control" type="text" id="usuarioId" name="usuarioId" list="personas-usuarios-datalist" required placeholder="ID o nombre">
+                    <small class="form-text text-muted">Personas/usuarios de la empresa seleccionada.</small>
                   </div>
                   <div class="form-group col-md-4">
                     <label for="actaId">Acta ID</label>
-                    <input class="form-control" type="text" id="actaId" name="actaId">
+                    <div class="d-flex">
+                      <input class="form-control" type="text" id="actaId" name="actaId" list="actasList" autocomplete="off">
+                      <button class="btn btn-outline-info ml-2" type="button" id="btnActasLibres" title="Ver actas sin movimiento">Actas libres</button>
+                    </div>
+                    <small class="form-text text-muted">Sugerencias: tema de actas de esta semana y la siguiente.</small>
+                    <datalist id="actasList"></datalist>
                   </div>
                 </div>
                 <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="tipo">Tipo</label>
+            <select class="form-control" id="tipo" name="tipo" required>
+              <option value="ENTREGA">ENTREGA</option>
+              <option value="TRASLADO">TRASLADO</option>
+              <option value="RETIRO">RETIRO / BAJA</option>
+              <option value="ANULACION">ANULACION</option>
+            </select>
+          </div>
                   <div class="form-group col-md-4">
-                    <label for="tipo">Tipo</label>
-                    <select class="form-control" id="tipo" name="tipo" required>
-                      <option value="ENTREGA">ENTREGA</option>
-                      <option value="TRASLADO">TRASLADO</option>
-                      <option value="RETIRO">RETIRO</option>
-                      <option value="ANULACION">ANULACION</option>
+                    <label for="origenId">Ubicación origen</label>
+                    <select class="form-control" id="origenId" name="origenId">
+                      <option value="">Seleccione ubicación</option>
                     </select>
+                    <input class="form-control mt-2" type="text" id="origen" name="origen" placeholder="Origen manual (opcional)">
                   </div>
                   <div class="form-group col-md-4">
-                    <label for="origen">Origen</label>
-                    <input class="form-control" type="text" id="origen" name="origen">
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for="destino">Destino</label>
-                    <input class="form-control" type="text" id="destino" name="destino">
+                    <label for="destinoId">Ubicación destino</label>
+                    <select class="form-control" id="destinoId" name="destinoId">
+                      <option value="">Seleccione ubicación</option>
+                    </select>
+                    <input class="form-control mt-2" type="text" id="destino" name="destino" placeholder="Destino manual (opcional)">
                   </div>
                 </div>
                 <div class="form-row">
@@ -82,10 +106,10 @@
                 </div>
                 <div class="card-body">
                   <ul class="list-group list-group-flush">
-                    <li class="list-group-item">ENTREGA: alta a usuario/área con acta.</li>
-                    <li class="list-group-item">TRASLADO: cambio de ubicación entre sedes.</li>
-                    <li class="list-group-item">RETIRO: salida a almacén o baja.</li>
-                    <li class="list-group-item">ANULACION: corrección de un movimiento previo.</li>
+                    <li class="list-group-item"><strong>ENTREGA</strong>: asigna o entrega equipo; mueve ubicación al destino.</li>
+                    <li class="list-group-item"><strong>TRASLADO</strong>: mueve el equipo entre sedes/áreas; actualiza ubicación.</li>
+                    <li class="list-group-item"><strong>RETIRO / BAJA</strong>: marca el equipo y sus dependencias como INACTIVO_INTERNAL y opcionalmente lo mueve a la ubicación destino (almacén/baja).</li>
+                    <li class="list-group-item"><strong>ANULACION</strong>: revierte un movimiento; si viene de un acta anulada devuelve el equipo a su ubicación de origen.</li>
                   </ul>
                 </div>
               </div>
@@ -115,13 +139,62 @@
   <script src="../../../assets/js/vendors/bootstrap.bundle.min.js"></script>
   <script src="../../../assets/js/global.js"></script>
   <script type="module" src="../../js/pages/movimientos.form.js"></script>
+  <datalist id="personas-usuarios-datalist"></datalist>
+
+  <style>
+    #panel-actas-libres {
+      position: fixed;
+      right: 20px;
+      top: 80px;
+      width: 340px;
+      max-height: 65vh;
+      background: #ffffff;
+      border: 1px solid #dee2e6;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      border-radius: 8px;
+      display: none;
+      z-index: 1050;
+    }
+    #panel-actas-libres header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #panel-actas-libres .body {
+      max-height: 55vh;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+    #panel-actas-libres button.close {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      line-height: 1;
+      color: #6c757d;
+    }
+    #panel-actas-libres .acta-item {
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    #panel-actas-libres .acta-item:hover {
+      background: #f8f9fa;
+    }
+    #panel-actas-libres small {
+      color: #6c757d;
+    }
+  </style>
+
+  <div id="panel-actas-libres" aria-label="Actas sin movimiento">
+    <header>
+      <strong>Actas sin movimiento</strong>
+      <button class="close" type="button" id="closeActasLibres">&times;</button>
+    </header>
+    <div class="body" id="actasLibresBody">
+      <p class="text-muted mb-0">Cargando...</p>
+    </div>
+  </div>
 </body>
 </html>
-
-
-
-
-
-
-
-

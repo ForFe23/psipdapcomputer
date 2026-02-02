@@ -11,5 +11,6 @@ public interface IncidenteRepositorio {
     List<Incidente> listarPorUsuario(Integer idUsuario);
     java.util.Optional<Incidente> buscarPorId(Integer id);
     void actualizarEstadoInternoPorEquipo(Integer equipoId, String estadoInterno);
+    void actualizarEstadoInternoPorCliente(Long idCliente, String estadoInterno);
     void eliminar(Integer id);
 }

@@ -1,5 +1,7 @@
 package com.dapcomputer.inventariosapi.presentacion.controladores;
 
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ActualizarActaCasoUso;
+import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.EliminarActaCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarActasCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarActasPorClienteCasoUso;
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarActasPorEstadoCasoUso;
@@ -16,12 +18,14 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,6 +38,8 @@ public class ActaControlador {
     private final ListarActasPorRangoFechaCasoUso listarPorRango;
     private final ListarActasPorClienteCasoUso listarPorCliente;
     private final ListarActasPorUsuarioCasoUso listarPorUsuario;
+    private final ActualizarActaCasoUso actualizarActa;
+    private final EliminarActaCasoUso eliminarActa;
     private final ActaDtoMapper mapper;
 
     public ActaControlador(
@@ -44,6 +50,8 @@ public class ActaControlador {
             ListarActasPorRangoFechaCasoUso listarPorRango,
             ListarActasPorClienteCasoUso listarPorCliente,
             ListarActasPorUsuarioCasoUso listarPorUsuario,
+            ActualizarActaCasoUso actualizarActa,
+            EliminarActaCasoUso eliminarActa,
             ActaDtoMapper mapper) {
         this.registrarActa = registrarActa;
         this.listarActas = listarActas;
@@ -52,6 +60,8 @@ public class ActaControlador {
         this.listarPorRango = listarPorRango;
         this.listarPorCliente = listarPorCliente;
         this.listarPorUsuario = listarPorUsuario;
+        this.actualizarActa = actualizarActa;
+        this.eliminarActa = eliminarActa;
         this.mapper = mapper;
     }
 
@@ -98,5 +108,42 @@ public class ActaControlador {
     @GetMapping("/usuario")
     public List<ActaDto> listarPorUsuario(@RequestParam String nombre) {
         return listarPorUsuario.ejecutar(nombre).stream().map(mapper::toDto).toList();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ActaDto> actualizar(@PathVariable Integer id, @Valid @RequestBody ActaDto solicitud) {
+        var entrada = new ActaDto(
+                id,
+                solicitud.codigo(),
+                solicitud.estado(),
+                solicitud.estadoInterno(),
+                solicitud.idCliente(),
+                solicitud.idEquipo(),
+                solicitud.empresaId(),
+                solicitud.ubicacionId(),
+                solicitud.fechaActa(),
+                solicitud.tema(),
+                solicitud.entregadoPor(),
+                solicitud.recibidoPor(),
+                solicitud.cargoEntrega(),
+                solicitud.cargoRecibe(),
+                solicitud.departamentoUsuario(),
+                solicitud.ciudadEquipo(),
+                solicitud.ubicacionUsuario(),
+                solicitud.observacionesGenerales(),
+                solicitud.equipoTipo(),
+                solicitud.equipoSerie(),
+                solicitud.equipoModelo(),
+                solicitud.creadoEn(),
+                solicitud.creadoPor(),
+                solicitud.items());
+        var actualizado = actualizarActa.ejecutar(mapper.toDomain(entrada));
+        return ResponseEntity.ok(mapper.toDto(actualizado));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+        eliminarActa.ejecutar(id);
+        return ResponseEntity.noContent().build();
     }
 }

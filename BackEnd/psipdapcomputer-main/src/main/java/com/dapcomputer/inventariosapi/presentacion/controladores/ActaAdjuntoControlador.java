@@ -30,7 +30,7 @@ public class ActaAdjuntoControlador {
 
     @PostMapping
     public ResponseEntity<ActaAdjuntoDto> crear(@PathVariable Integer idActa, @Valid @RequestBody ActaAdjuntoDto solicitud) {
-        var entrada = new ActaAdjuntoDto(solicitud.id(), idActa, solicitud.nombre(), solicitud.url(), solicitud.tipo());
+        var entrada = new ActaAdjuntoDto(solicitud.id(), idActa, solicitud.nombre(), solicitud.url(), solicitud.tipo(), solicitud.estadoInterno());
         var creado = agregarAdjunto.ejecutar(mapper.toDomain(entrada));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(creado));
     }

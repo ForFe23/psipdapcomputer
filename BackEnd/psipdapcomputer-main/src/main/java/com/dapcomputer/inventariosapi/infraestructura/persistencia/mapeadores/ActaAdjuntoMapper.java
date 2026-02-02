@@ -13,6 +13,7 @@ public interface ActaAdjuntoMapper {
     @Mapping(target = "nombre", source = "origen.nombre")
     @Mapping(target = "url", source = "origen.url")
     @Mapping(target = "tipo", source = "origen.tipo")
+    @Mapping(target = "estadoInterno", source = "origen.estadoInterno")
     ActaAdjuntoJpa toJpa(ActaAdjunto origen, ActaJpa acta);
 
     @Mapping(target = "idActa", expression = "java(origen.getActa() != null ? origen.getActa().getId() : null)")
@@ -20,5 +21,6 @@ public interface ActaAdjuntoMapper {
     @Mapping(target = "nombre", source = "origen.nombre")
     @Mapping(target = "url", source = "origen.url")
     @Mapping(target = "tipo", source = "origen.tipo")
+    @Mapping(target = "estadoInterno", source = "origen.estadoInterno")
     ActaAdjunto toDomain(ActaAdjuntoJpa origen);
 }

@@ -9,6 +9,8 @@ import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ListarPerifer
 import com.dapcomputer.inventariosapi.aplicacion.casosuso.entradas.ObtenerPerifericoCasoUso;
 import com.dapcomputer.inventariosapi.presentacion.dto.PerifericoDto;
 import com.dapcomputer.inventariosapi.presentacion.mapeadores.PerifericoDtoMapper;
+import com.dapcomputer.inventariosapi.dominio.entidades.Periferico;
+import com.dapcomputer.inventariosapi.dominio.repositorios.EquipoRepositorio;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,7 @@ public class PerifericoControlador {
     private final ObtenerPerifericoCasoUso obtenerPeriferico;
     private final EliminarPerifericoCasoUso eliminarPeriferico;
     private final PerifericoDtoMapper mapper;
+    private final EquipoRepositorio equipoRepositorio;
 
     public PerifericoControlador(
             CrearPerifericoCasoUso crearPeriferico,
@@ -43,7 +46,8 @@ public class PerifericoControlador {
             ListarPerifericosPorClienteCasoUso listarPorCliente,
             ObtenerPerifericoCasoUso obtenerPeriferico,
             EliminarPerifericoCasoUso eliminarPeriferico,
-            PerifericoDtoMapper mapper) {
+            PerifericoDtoMapper mapper,
+            EquipoRepositorio equipoRepositorio) {
         this.crearPeriferico = crearPeriferico;
         this.actualizarPeriferico = actualizarPeriferico;
         this.listarPerifericos = listarPerifericos;
@@ -52,11 +56,42 @@ public class PerifericoControlador {
         this.obtenerPeriferico = obtenerPeriferico;
         this.eliminarPeriferico = eliminarPeriferico;
         this.mapper = mapper;
+        this.equipoRepositorio = equipoRepositorio;
     }
 
     @PostMapping
     public ResponseEntity<PerifericoDto> crear(@Valid @RequestBody PerifericoDto solicitud) {
-        var creado = crearPeriferico.ejecutar(mapper.toDomain(solicitud));
+        Integer equipoId = resolverEquipoId(solicitud.equipoId(), solicitud.serieEquipo());
+        if (equipoId == null) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "equipoId o serieEquipo requerido");
+        }
+        var creado = crearPeriferico.ejecutar(new Periferico(
+                solicitud.id(),
+                equipoId,
+                solicitud.serieEquipo(),
+                solicitud.serieMonitor(),
+                solicitud.activoMonitor(),
+                solicitud.marcaMonitor(),
+                solicitud.modeloMonitor(),
+                solicitud.observacionMonitor(),
+                solicitud.serieTeclado(),
+                solicitud.activoTeclado(),
+                solicitud.marcaTeclado(),
+                solicitud.modeloTeclado(),
+                solicitud.observacionTeclado(),
+                solicitud.serieMouse(),
+                solicitud.activoMouse(),
+                solicitud.marcaMouse(),
+                solicitud.modeloMouse(),
+                solicitud.observacionMouse(),
+                solicitud.serieTelefono(),
+                solicitud.activoTelefono(),
+                solicitud.marcaTelefono(),
+                solicitud.modeloTelefono(),
+                solicitud.observacionTelefono(),
+                solicitud.clientePerifericos(),
+                solicitud.idCliente(),
+                solicitud.estadoInterno()));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(creado));
     }
 
@@ -86,9 +121,13 @@ public class PerifericoControlador {
 
     @PutMapping("/{id}")
     public ResponseEntity<PerifericoDto> actualizar(@PathVariable Integer id, @Valid @RequestBody PerifericoDto solicitud) {
+        Integer equipoId = resolverEquipoId(solicitud.equipoId(), solicitud.serieEquipo());
+        if (equipoId == null) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "equipoId o serieEquipo requerido");
+        }
         var entrada = new PerifericoDto(
                 id,
-                solicitud.equipoId(),
+                equipoId,
                 solicitud.serieEquipo(),
                 solicitud.serieMonitor(),
                 solicitud.activoMonitor(),
@@ -118,8 +157,12 @@ public class PerifericoControlador {
     }
 
     @GetMapping("/equipo/{equipoId}")
-    public List<PerifericoDto> listarPorEquipo(@PathVariable Integer equipoId) {
-        return listarPorEquipo.ejecutar(equipoId, null).stream().map(mapper::toDto).toList();
+    public List<PerifericoDto> listarPorEquipo(@PathVariable String equipoId) {
+        Integer id = resolverEquipoId(resolverId(equipoId), equipoId);
+        if (id == null) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "equipoId o serie inválido");
+        }
+        return listarPorEquipo.ejecutar(id, null).stream().map(mapper::toDto).toList();
     }
 
     @GetMapping("/equipo/serie/{serie}")
@@ -136,5 +179,26 @@ public class PerifericoControlador {
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         eliminarPeriferico.ejecutar(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    private Integer resolverEquipoId(Integer equipoId, String serie) {
+        if (equipoId != null) {
+            return equipoId;
+        }
+        if (serie != null && !serie.isBlank()) {
+            return equipoRepositorio.buscarPorSerie(serie.trim().toUpperCase()).map(e -> e.id()).orElse(null);
+        }
+        return null;
+    }
+
+    private Integer resolverId(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(valor);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 }

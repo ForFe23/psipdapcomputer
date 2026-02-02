@@ -1,13 +1,25 @@
 import { loadLayout } from "../ui/render.js";
 import { equiposApi } from "../api/equipos.api.js";
-import { clientesApi } from "../api/clientes.api.js";
+import { empresasApi } from "../api/empresas.api.js";
 import { showError, showSuccess } from "../ui/alerts.js";
 
 const INACTIVO_INTERNAL = "INACTIVO_INTERNAL";
 const KPI_IDS = { activos: "kpi-activos", mantenimiento: "kpi-mantenimiento", traslado: "kpi-traslado", baja: "kpi-baja" };
+const qrCache = new Map();
+const QR_SCALE = 4;
 
 const COLUMNAS = [
-  { id: "qr", label: "QR", render: (e) => `<button class="btn btn-link p-0 qr-cell" data-label-id="${e.id}" title="Imprimir etiqueta"><img src="${qrUrl(e)}" alt="QR" style="width:64px;height:64px;"></button>` },
+  {
+    id: "qr",
+    label: "QR",
+    render: (e) => {
+      const payload = qrPayload(e);
+      return `
+        <button class="btn btn-link p-0 qr-cell" data-label-id="${e.id}" title="Imprimir etiqueta">
+          <img class="lazy-qr" data-qr="${payload}" alt="QR" width="64" height="64" loading="lazy" decoding="async">
+        </button>`;
+    }
+  },
   { id: "id", label: "ID", render: (e) => e.id ?? "" },
   { id: "activo", label: "Activo", render: (e) => getVal(e, ["activo", "codigoInterno"]) },
   { id: "alias", label: "Alias", render: (e) => getVal(e, ["alias"]) },
@@ -21,7 +33,7 @@ const COLUMNAS = [
   { id: "memoria", label: "Memoria", render: (e) => getVal(e, ["memoria"]) },
   { id: "hdd", label: "HDD", render: (e) => getVal(e, ["disco"]) },
   { id: "estado", label: "Estado", render: (e) => getVal(e, ["estado", "status", "statusequipo", "statusEquipo"]) },
-  { id: "cliente", label: "Cliente", render: (e) => getVal(e, ["cliente", "nombreCliente", "razonSocial"]) || nombreCliente(e.idCliente) },
+  { id: "cliente", label: "Empresa", render: (e) => getVal(e, ["empresa", "nombreEmpresa", "cliente", "nombreCliente", "razonSocial"]) || nombreEmpresa(e.empresaId ?? e.idCliente) },
   { id: "usuario", label: "Usuario", render: (e) => getVal(e, ["nombreUsuario", "usuario"]) },
   { id: "departamento", label: "Departamento", render: (e) => getVal(e, ["departamentoUsuario"]) },
   { id: "ubicacion", label: "Ubicación", render: (e) => getVal(e, ["ubicacionUsuario"]) },
@@ -47,7 +59,7 @@ const COLUMNAS = [
 ];
 
 let equipos = [];
-let clientes = [];
+let empresas = [];
 let filtrosAvanzados = {};
 let visibleColumns = new Set(COLUMNAS.map((c) => c.id));
 let ultimoFiltrado = [];
@@ -64,13 +76,33 @@ const getVal = (obj, keys) => {
   return "";
 };
 
-const qrUrl = (e) => {
-  const data = getVal(e, ["codigoInterno", "activo", "codigo", "activoEquipo", "serie", "serieEquipo", "id"]);
-  return `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(data)}`;
-};
+const qrPayload = (e) => getVal(e, ["codigoInterno", "activo", "codigo", "activoEquipo", "serie", "serieEquipo", "id"]) || String(e.id || "");
 
-function nombreCliente(id) {
-  const c = clientes.find((cl) => cl.id === id);
+const qrUrl = (e) => qrDataUrl(qrPayload(e));
+
+function qrDataUrl(data) {
+  if (!data) return "";
+  if (qrCache.has(data)) return qrCache.get(data);
+  let url = "";
+  try {
+    if (typeof window.qrcode === "function") {
+      const qr = window.qrcode(0, "L");
+      qr.addData(data);
+      qr.make();
+      url = qr.createDataURL(QR_SCALE);
+    }
+  } catch (err) {
+    console.warn("QR local gen fallo, usando remoto", err);
+  }
+  if (!url) {
+    url = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(data)}`;
+  }
+  qrCache.set(data, url);
+  return url;
+}
+
+function nombreEmpresa(id) {
+  const c = empresas.find((cl) => String(cl.id) === String(id));
   return c ? (c.nombre || c.razonSocial || c.id) : "";
 }
 
@@ -242,12 +274,11 @@ function renderTable(data) {
   document.querySelectorAll("[data-delete-id]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.deleteId;
-      const serie = btn.dataset.deleteSerie || "";
       if (!confirm("¿Eliminar equipo " + id + "?")) return;
       try {
-        await equiposApi.remove(id, serie);
+        await equiposApi.remove(id);
         showSuccess("Equipo eliminado");
-        equipos = equipos.filter((eq) => !(String(eq.id) === String(id) && getVal(eq, ["serie", "serieEquipo"]).toUpperCase() === serie.toUpperCase()));
+        equipos = equipos.filter((eq) => String(eq.id) !== String(id));
         applyFilters();
       } catch (err) {
         showError(err.message);
@@ -262,13 +293,15 @@ function renderTable(data) {
       if (eq) openLabel(eq);
     });
   });
+
+  initLazyQrRender();
 }
 
 function applyFilters() {
   const serie = (document.querySelector("#fSerie")?.value || "").trim().toLowerCase();
   const tipo = (document.querySelector("#fTipo")?.value || "").trim().toLowerCase();
   const estado = (document.querySelector("#fEstado")?.value || "").trim().toLowerCase();
-  const clienteId = (document.querySelector("#fCliente")?.value || "").trim();
+  const empresaId = (document.querySelector("#fEmpresa")?.value || "").trim();
   const text = (document.querySelector("#fTexto")?.value || "").trim().toLowerCase();
 
   const filtered = equipos.filter((e) => {
@@ -277,7 +310,7 @@ function applyFilters() {
     const matchesSerie = !serie || getVal(e, ["serie", "serieEquipo"]).toLowerCase().includes(serie);
     const matchesTipo = !tipo || getVal(e, ["tipo", "tipoEquipo"]).toLowerCase().includes(tipo);
     const matchesEstado = !estado || getVal(e, ["estado", "status", "statusequipo", "statusEquipo"]).toLowerCase() === estado;
-    const matchesCliente = !clienteId || (e.idCliente && String(e.idCliente) === clienteId);
+    const matchesEmpresa = !empresaId || String(e.empresaId ?? e.idCliente) === empresaId;
     const hayTexto =
       !text ||
       getVal(e, ["codigoInterno", "codigo", "activo", "activoEquipo"]).toLowerCase().includes(text) ||
@@ -290,13 +323,47 @@ function applyFilters() {
       return current && values.includes(current);
     });
 
-    return matchesSerie && matchesTipo && matchesEstado && matchesCliente && hayTexto && advancedOk;
+    return matchesSerie && matchesTipo && matchesEstado && matchesEmpresa && hayTexto && advancedOk;
   });
 
   renderTable(filtered);
   const totalEl = document.querySelector("#total-equipos");
   if (totalEl) totalEl.textContent = filtered.length;
   updateKpis(equipos);
+}
+
+function initLazyQrRender() {
+  const images = Array.from(document.querySelectorAll("img[data-qr]"));
+  if (!images.length) return;
+
+  const renderImg = (img) => {
+    const data = img.dataset.qr;
+    if (!data) return;
+    img.src = qrDataUrl(data);
+    img.removeAttribute("data-qr");
+  };
+
+  if (!("IntersectionObserver" in window)) {
+    images.forEach(renderImg);
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          renderImg(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { rootMargin: "120px 0px", threshold: 0.1 }
+  );
+
+  images.forEach((img, idx) => {
+    img.style.setProperty("--reveal-delay", `${0.01 * idx}s`);
+    observer.observe(img);
+  });
 }
 
 function bindFilters() {
@@ -307,19 +374,19 @@ function bindFilters() {
       applyFilters();
     });
   }
-  ["fSerie", "fTipo", "fEstado", "fCliente", "fTexto"].forEach((id) => {
+  ["fSerie", "fTipo", "fEstado", "fEmpresa", "fTexto"].forEach((id) => {
     const el = document.querySelector("#" + id);
     if (el) el.addEventListener("input", applyFilters);
   });
 }
 
-async function loadClientes() {
+async function loadEmpresas() {
   try {
-    clientes = await clientesApi.list();
-    const sel = document.querySelector("#fCliente");
-    if (sel) sel.innerHTML = `<option value="">Todos los clientes</option>` + clientes.map((c) => `<option value="${c.id}">${c.nombre ?? c.razonSocial ?? c.id}</option>`).join("");
+    empresas = await empresasApi.list();
+    const sel = document.querySelector("#fEmpresa");
+    if (sel) sel.innerHTML = `<option value="">Todas las empresas</option>` + empresas.map((c) => `<option value="${c.id}">${c.nombre ?? c.razonSocial ?? c.id}</option>`).join("");
   } catch (err) {
-    showError("No se pudo cargar clientes: " + err.message);
+    showError("No se pudo cargar empresas: " + err.message);
   }
 }
 
@@ -346,6 +413,8 @@ async function loadEquipos() {
 }
 
 function openLabel(e) {
+  const payload = qrPayload(e);
+  const qrImg = qrDataUrl(payload);
   const html = `
     <html>
     <head>
@@ -360,7 +429,7 @@ function openLabel(e) {
     </head>
     <body onload="window.print()">
       <div class="label">
-        <div class="qr"><img src="${qrUrl(e)}" /></div>
+        <div class="qr"><img src="${qrImg}" /></div>
         <div class="meta">
           <p class="title">${getVal(e, ["codigoInterno", "serie", "serieEquipo"]) || "Equipo"}</p>
           <p class="small">Serie: ${getVal(e, ["serie", "serieEquipo"]) || "-"}</p>
@@ -379,7 +448,7 @@ function openLabel(e) {
 async function main() {
   await loadLayout("equipos");
   bindFilters();
-  await loadClientes();
+  await loadEmpresas();
   await loadEquipos();
 
   paginationBar = document.getElementById("pagination-bar");
