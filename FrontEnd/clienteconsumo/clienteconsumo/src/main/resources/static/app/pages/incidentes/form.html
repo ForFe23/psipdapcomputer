@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrar incidente</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
+</head>
+<body class="bg-light">
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav shadow-sm"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Registrar incidente</h4>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="incidente-form">
+                <input type="hidden" id="serieEquipo" name="serieEquipo">
+                <input type="hidden" id="idCliente" name="idCliente">
+                <input type="hidden" id="idUsuario" name="idUsuario" value="1">
+                <input type="hidden" id="fechaIncidente" name="fechaIncidente">
+
+                <div class="summary-card mb-3">
+                  <div class="d-flex flex-wrap align-items-center">
+                    <div class="mr-4 mb-2">
+                      <small class="text-muted d-block">Equipo</small>
+                      <strong id="res-serie">-</strong>
+                    </div>
+                    <div class="mr-4 mb-2">
+                      <small class="text-muted d-block">Cliente</small>
+                      <strong id="res-cliente">-</strong>
+                    </div>
+                    <div class="mr-4 mb-2">
+                      <small class="text-muted d-block">Usuario</small>
+                      <strong id="res-usuario">Usuario fijo</strong>
+                    </div>
+                    <div class="mr-4 mb-2">
+                      <small class="text-muted d-block">Fecha</small>
+                      <strong id="res-fecha">-</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="detalle">Detalle</label>
+                    <textarea class="form-control" id="detalle" name="detalle" rows="3" required></textarea>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="tecnico">Técnico</label>
+                    <input class="form-control" type="text" id="tecnico" name="tecnico">
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="responsable">Responsable</label>
+                    <input class="form-control" type="text" id="responsable" name="responsable">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="costo">Costo (opcional)</label>
+                    <input class="form-control" type="text" id="costo" name="costo">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit">Guardar incidente</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/incidentes.form.js"></script>
+</body>
+</html>
+
+
+
+

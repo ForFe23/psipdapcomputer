@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Equipos del cliente</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div class="container py-3">
+    <h5 class="mb-3">Equipos</h5>
+    <div class="input-group mb-3">
+      <input class="form-control" id="filtro" placeholder="Buscar serie, nombre, marca">
+      <button class="btn btn-primary" id="buscar">Buscar</button>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr><th>Serie</th><th>Nombre</th><th>Empresa</th><th></th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <script type="module">
+    import { enforceRole } from "../../../js/auth.js";
+    import { equiposApi } from "../../../js/api/equipos.api.js";
+    const session = enforceRole(["CLIENTE_VISOR"]);
+    const tbody = document.getElementById("tbody");
+    const filtro = document.getElementById("filtro");
+    const render = (items) => {
+      if (!items.length) { tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Sin equipos</td></tr>`; return; }
+      tbody.innerHTML = items.slice(0,100).map(e => `
+        <tr>
+          <td>${e.serie || e.serieEquipo || ""}</td>
+          <td>${e.nombreequipo || e.alias || ""}</td>
+          <td>${e.empresaId || ""}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="../../actas/form.html?equipoId=${e.id}">Acta</a>
+            <a class="btn btn-sm btn-outline-secondary" href="../../mantenimientos/form.html?equipoId=${e.id}">Mto</a>
+            <a class="btn btn-sm btn-outline-danger" href="../../incidentes/form.html?equipoId=${e.id}">Inc</a>
+          </td>
+        </tr>`).join("");
+    };
+    const load = async () => {
+      const term = filtro.value.trim().toUpperCase();
+      const list = await equiposApi.list({ clienteId: session?.clienteId });
+      const filtered = term ? list.filter(e =>
+        [e.serie, e.nombreequipo, e.marcaequipo, e.alias].some(v => (v || "").toUpperCase().includes(term))
+      ) : list;
+      render(filtered);
+    };
+    document.getElementById("buscar").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>
+
+

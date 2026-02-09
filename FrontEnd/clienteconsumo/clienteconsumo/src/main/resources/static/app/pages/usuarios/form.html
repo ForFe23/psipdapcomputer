@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuario</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" data-form-title>Nuevo usuario</h4>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="usuario-form">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="clienteId">Cliente</label>
+                    <select class="form-control" id="clienteId" name="clienteId">
+                      <option value="">Seleccione cliente</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="empresaId">Empresa</label>
+                    <select class="form-control" id="empresaId" name="empresaId">
+                      <option value="">Todas las empresas del cliente</option>
+                    </select>
+                    <small class="form-text text-muted">Déjalo en blanco para que el usuario vea todas las empresas del cliente.</small>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="rolId">Rol</label>
+                    <select class="form-control" id="rolId" name="rolId" required>
+                      <option value="">Seleccione rol</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="estatus">Estatus</label>
+                    <select class="form-control" id="estatus" name="estatus" required>
+                      <option value="ACTIVO">ACTIVO</option>
+                    <option value="INACTIVO">INACTIVO</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="esGenerico" name="esGenerico">
+                    <label class="form-check-label" for="esGenerico">Usuario interno genérico de la empresa</label>
+                  </div>
+                </div>
+              </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="cedula">Cédula</label>
+                    <input class="form-control" type="text" id="cedula" name="cedula" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="apellidos">Apellidos</label>
+                    <input class="form-control" type="text" id="apellidos" name="apellidos" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="nombres">Nombres</label>
+                    <input class="form-control" type="text" id="nombres" name="nombres" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="correo">Correo</label>
+                    <input class="form-control" type="email" id="correo" name="correo">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="telefono">Teléfono</label>
+                    <input class="form-control" type="text" id="telefono" name="telefono">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="solfrnrf">SOLFRNRF</label>
+                    <input class="form-control" type="text" id="solfrnrf" name="solfrnrf">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/usuarios.form.js"></script>
+</body>
+</html>
+
+

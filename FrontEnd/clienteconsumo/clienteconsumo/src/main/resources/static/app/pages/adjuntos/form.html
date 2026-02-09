@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cargar adjunto</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" data-form-title>Cargar adjunto</h4>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="adjunto-form">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="actaId">Acta ID</label>
+                    <input class="form-control" type="text" id="actaId" name="actaId" required>
+                  </div>
+                  <div class="form-group col-md-8">
+                    <label for="file">Archivo</label>
+                    <input class="form-control-file" type="file" id="file" name="file" required>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit">Subir</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Formatos permitidos</h6>
+                  <span class="badge badge-info text-white">Referencia</span>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">PDF para actas firmadas y guías.</li>
+                    <li class="list-group-item">JPG/PNG para evidencias fotográficas.</li>
+                    <li class="list-group-item">Máx 5 MB por archivo.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Buenas prácticas</h6>
+                  <span class="badge badge-primary">Soportes</span>
+                </div>
+                <div class="card-body">
+                  <p class="text-muted mb-2">Incluye siempre firma y guía de remisión en la emisión y cierre de actas.</p>
+                  <p class="text-muted mb-0">Nombrar archivos con: ACT-YYYY-NNN_tipo.ext (ej. ACT-2026-0012_firma.pdf).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/adjuntos.form.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

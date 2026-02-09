@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actas</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+  
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.7.0/css/colReorder.dataTables.min.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Actas</h4>
+              <small class="text-muted">Generación y seguimiento</small>
+            </div>
+            <a class="btn btn-primary" href="./form.html"><i class="las la-plus mr-1"></i>Nueva acta</a>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-4 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-primary"><i class="las la-file-alt la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Actas emitidas</p>
+                    <h5 class="mb-0" id="kpi-emitidas">0</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-warning"><i class="las la-clock la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Registradas</p>
+                    <h5 class="mb-0" id="kpi-registradas">0</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-danger"><i class="las la-ban la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Anuladas</p>
+                    <h5 class="mb-0" id="kpi-anuladas">0</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="filtros-actas" class="form-row">
+                <div class="form-group col-md-3">
+                  <label for="fCodigo">Código</label>
+                  <input class="form-control" type="text" id="fCodigo" placeholder="ACT-2026-0012">
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fEmpresa">Empresa</label>
+                  <select class="form-control" id="fEmpresa">
+                    <option value="">Todas</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fEquipo">Equipo</label>
+                  <input class="form-control" type="text" id="fEquipo" placeholder="ID equipo">
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fEstado">Estado</label>
+                  <select class="form-control" id="fEstado">
+                    <option value="">Todos</option>
+                    <option>REGISTRADA</option>
+                    <option>EMITIDA</option>
+                    <option>ANULADA</option>
+                  </select>
+                </div>
+                <div class="col-12 d-flex justify-content-end mt-2">
+                  <button class="btn btn-primary mr-2" type="submit"><i class="las la-filter mr-1"></i>Filtrar</button>
+                  <button class="btn btn-outline-secondary" type="button" id="btnClearFilters"><i class="las la-undo mr-1"></i>Limpiar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table id="actasTable" class="table table-hover mb-0 actas-table actions-first">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Acciones</th>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Estado</th>
+                    <th>Empresa</th>
+                    <th>Equipo</th>
+                    <th>Fecha</th>
+                    <th>Tema</th>
+                  </tr>
+                </thead>
+                <tbody id="actas-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+  <script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/actas.list.js"></script>
+  <div class="modal fade" id="estadoModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cambiar estado de acta</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted mb-2" id="estadoModalInfo"></p>
+          <div class="form-group">
+            <label for="estadoSelect">Nuevo estado</label>
+            <select class="form-control" id="estadoSelect">
+              <option value="EMITIDA">EMITIDA</option>
+              <option value="CERRADA">CERRADA</option>
+              <option value="ANULADA">ANULADA</option>
+            </select>
+          </div>
+          <div class="alert alert-info small mb-0">
+            <ul class="mb-0 pl-3">
+              <li>EMITIDA: activa movimiento y mantiene ubicación destino.</li>
+              <li>CERRADA: marca movimiento como completado.</li>
+              <li>ANULADA: anula movimiento asociado y revierte ubicación al origen.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="confirmEstadoBtn">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+

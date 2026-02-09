@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Nuevo equipo · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0" id="titulo-form">Nuevo equipo</h1>
+      <small class="text-muted">Alta rápida contra /api/equipos</small>
+    </div>
+    <a class="btn btn-outline-secondary" th:href="@{/equipos}">Volver</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form id="equipo-form">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="serie">Serie *</label>
+            <input id="serie" name="serie" class="form-control" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="idCliente">ID Cliente *</label>
+            <input id="idCliente" name="idCliente" type="number" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado" class="form-control">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+              <option value="BAJA">BAJA</option>
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="estadoInterno">Estado interno</label>
+            <select id="estadoInterno" name="estadoInterno" class="form-control">
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO_INTERNAL">INACTIVO_INTERNAL</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="nombre">Nombre / Alias visible</label>
+            <input id="nombre" name="nombre" class="form-control" placeholder="Equipo de oficina 3">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="ubicacionUsuario">Ubicación usuario</label>
+            <input id="ubicacionUsuario" name="ubicacionUsuario" class="form-control" placeholder="Quito, Piso 2">
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <span id="status" class="text-muted ml-2"></span>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarEquipo(id) {
+    const res = await apiFetch('/equipos/' + id);
+    if (!res.ok) throw new Error('Error ' + res.status);
+    const e = await res.json();
+    serie.value = e.serie ?? '';
+    idCliente.value = e.idCliente ?? '';
+    estado.value = e.estado ?? '';
+    estadoInterno.value = e.estadoInterno ?? '';
+    nombre.value = e.nombre ?? e.alias ?? '';
+    ubicacionUsuario.value = e.ubicacionUsuario ?? '';
+  }
+
+  async function guardarEquipo(event) {
+    event.preventDefault();
+    const status = document.getElementById('status');
+    status.textContent = 'Guardando...';
+    const id = getIdParam();
+    const body = {
+      serie: serie.value,
+      idCliente: idCliente.value ? Number(idCliente.value) : null,
+      estado: estado.value,
+      estadoInterno: estadoInterno.value,
+      nombre: nombre.value || null,
+      ubicacionUsuario: ubicacionUsuario.value || null
+    };
+    try {
+      const res = await apiFetch(id ? '/equipos/' + id : '/equipos', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error('Error ' + res.status);
+      status.textContent = id ? 'Actualizado' : 'Creado';
+      setTimeout(() => window.location.href = '/equipos', 800);
+    } catch (err) {
+      status.textContent = 'No se pudo guardar: ' + err.message;
+      status.classList.replace('text-muted', 'text-danger');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const id = getIdParam();
+    if (id) {
+      document.getElementById('titulo-form').textContent = 'Editar equipo';
+      cargarEquipo(id).catch(err => {
+        document.getElementById('status').textContent = 'No se pudo cargar: ' + err.message;
+      });
+    }
+    document.getElementById('equipo-form').addEventListener('submit', guardarEquipo);
+  });
+</script>
+</body>
+</html>
+

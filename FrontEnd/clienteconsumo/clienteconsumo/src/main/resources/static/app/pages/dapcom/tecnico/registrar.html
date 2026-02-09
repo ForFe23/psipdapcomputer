@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrar equipo</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body class="dark-portal">
+  <div class="card-shell">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="mb-0 text-white">Registrar equipo</h5>
+        <small class="text-muted">Selecciona cliente y empresa</small>
+      </div>
+      <a class="btn btn-link text-light" href="menu.html">Volver</a>
+    </div>
+    <div class="form-group">
+      <label>Cliente</label>
+      <select class="form-control" id="cliente"></select>
+    </div>
+    <div class="form-group mt-2">
+      <label>Empresa</label>
+      <select class="form-control" id="empresa"></select>
+    </div>
+    <button class="btn btn-main btn-block mt-3" id="continuar">Continuar</button>
+    <div class="alert alert-warning mt-3 d-none" id="confirm-box">
+      <div class="d-flex flex-column">
+        <span class="text-dark">No seleccionaste empresa. ¿Continuar y crear el equipo sólo con cliente?</span>
+        <div class="d-flex mt-2">
+          <button class="btn btn-main btn-sm flex-fill mr-2" id="btn-confirm-yes">Continuar</button>
+          <button class="btn btn-secondary btn-sm flex-fill" id="btn-confirm-no">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { enforceRole, getAccessScope } from "../../../js/auth.js";
+    import { clientesApi } from "../../../js/api/clientes.api.js";
+    import { empresasApi } from "../../../js/api/empresas.api.js";
+    const session = enforceRole(["TECNICO_GLOBAL", "TECNICO_CLIENTE"]);
+    const scope = getAccessScope();
+    const role = (session?.rol || "").toUpperCase();
+    const clienteSel = document.getElementById("cliente");
+    const empresaSel = document.getElementById("empresa");
+    const confirmBox = document.getElementById("confirm-box");
+    const btnConfirmYes = document.getElementById("btn-confirm-yes");
+    const btnConfirmNo = document.getElementById("btn-confirm-no");
+    let selectedCliente = scope.clienteId || null;
+    let pendingParams = null;
+
+    const renderClientes = (list) => {
+      clienteSel.innerHTML = `<option value=\"\">Seleccione</option>` + list.map(c => `<option value=\"${c.id}\">${c.nombre || c.razonSocial || c.id}</option>`).join("");
+    };
+
+    const loadClientes = async () => {
+      const data = await clientesApi.list();
+      const filtered = scope.clienteId ? data.filter(c => String(c.id) === String(scope.clienteId)) : data;
+      renderClientes(filtered);
+      if (scope.clienteId && filtered.length) {
+        clienteSel.value = scope.clienteId;
+        clienteSel.disabled = true;
+      }
+    };
+
+    const loadEmpresas = async (clienteId) => {
+      selectedCliente = clienteId || null;
+      if (!clienteId) {
+        empresaSel.innerHTML = `<option value=\"\">Seleccione cliente primero</option>`;
+        empresaSel.disabled = true;
+        return;
+      }
+      empresaSel.disabled = true;
+      empresaSel.innerHTML = `<option value=\"\">Cargando...</option>`;
+      const data = await empresasApi.listByCliente(clienteId);
+      const filtered = scope.empresaId ? data.filter(e => String(e.id) === String(scope.empresaId)) : data;
+      empresaSel.innerHTML = `<option value=\"\">Cliente completo (sin empresa)</option>` + filtered.map(e => `<option value=\"${e.id}\">${e.nombre || e.razonSocial || e.id}</option>`).join("");
+      empresaSel.disabled = false;
+      if (scope.empresaId && filtered.length) {
+        empresaSel.value = scope.empresaId;
+        empresaSel.disabled = true;
+      } else {
+        empresaSel.value = "";
+      }
+    };
+    clienteSel.addEventListener("change", () => {
+      const cli = clienteSel.value;
+      empresaSel.value = "";
+      loadEmpresas(cli);
+      confirmBox.classList.add("d-none");
+    });
+
+    const navegar = (clienteId, empresaId) => {
+      const params = new URLSearchParams();
+      params.set("clienteId", clienteId);
+      if (empresaId) params.set("empresaId", empresaId);
+      params.set("costoDefault", "0");
+      window.location.href = `../../equipos/form.html?${params.toString()}`;
+    };
+
+    document.getElementById("continuar").addEventListener("click", () => {
+      confirmBox.classList.add("d-none");
+      const c = scope.clienteId || selectedCliente || clienteSel.value;
+      const e = scope.empresaId || empresaSel.value;
+      if (!c) { alert("Seleccione cliente"); return; }
+      if (!e) {
+        pendingParams = { c, e: null };
+        confirmBox.classList.remove("d-none");
+        return;
+      }
+      navegar(c, e);
+    });
+
+    btnConfirmYes.addEventListener("click", () => {
+      if (pendingParams?.c) {
+        navegar(pendingParams.c, pendingParams.e);
+      }
+    });
+
+    btnConfirmNo.addEventListener("click", () => {
+      pendingParams = null;
+      confirmBox.classList.add("d-none");
+    });
+    const start = async () => {
+      await loadClientes();
+      const baseCliente = scope.clienteId || clienteSel.value || selectedCliente;
+      if (baseCliente) {
+        await loadEmpresas(baseCliente);
+      }
+    };
+    start();
+  </script>
+</body>
+</html>
+
+

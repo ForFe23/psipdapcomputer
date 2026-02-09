@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visión Global</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid py-4">
+        <div class="d-flex align-items-center mb-3">
+          <div>
+            <h4 class="mb-0">Visión Global</h4>
+            <small class="text-muted">Clientes, empresas y actividad consolidada</small>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-4 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="avatar bg-primary-soft text-primary mr-3"><i class="las la-globe la-lg"></i></div>
+                  <div>
+                    <div class="text-muted small">Clientes</div>
+                    <div class="h4 mb-0" id="stat-clientes">--</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                  <div class="avatar bg-info-soft text-info mr-3"><i class="las la-city la-lg"></i></div>
+                  <div>
+                    <div class="text-muted small">Empresas</div>
+                    <div class="h4 mb-0" id="stat-empresas">--</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div class="avatar bg-success-soft text-success mr-3"><i class="las la-desktop la-lg"></i></div>
+                  <div>
+                    <div class="text-muted small">Equipos</div>
+                    <div class="h4 mb-0" id="stat-equipos">--</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8 mb-3">
+            <div class="card h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>Clientes y empresas</strong>
+                  <div class="text-muted small">Totales y relación jerárquica</div>
+                </div>
+                <div class="form-inline">
+                  <input class="form-control form-control-sm mr-2" id="filter-cliente" placeholder="Filtrar cliente...">
+                  <button class="btn btn-sm btn-outline-secondary" id="btn-clear">Limpiar</button>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush" id="clientes-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/app/js/pages/global.overview.js"></script>
+</body>
+</html>
+
+

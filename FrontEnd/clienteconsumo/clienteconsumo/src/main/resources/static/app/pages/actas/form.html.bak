@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acta</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" data-form-title>Acta de Entrega / Recepción</h4>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <div id="lock-banner" class="alert alert-warning d-none" role="alert">
+                <strong>Acta bloqueada.</strong> Este acta está CERRADA o ANULADA; no se permite editar ni agregar ítems.
+              </div>
+              <form id="acta-form">
+                <input type="hidden" id="equipoId" name="equipoId">
+
+                <div class="form-row mb-3">
+                  <div class="form-group col-md-5">
+                    <label for="clienteSelect">Empresa</label>
+                    <select class="form-control" id="clienteSelect" name="clienteId" required>
+                      <option value="">Seleccione empresa</option>
+                    </select>
+                    <small class="form-text text-muted">Sugerencias filtradas por empresa.</small>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="serieEquipo">Serie equipo</label>
+                    <input class="form-control" type="text" id="serieEquipo" name="serieEquipo" list="seriesList" autocomplete="off" required>
+                    <datalist id="seriesList">
+                      <option value="⬇SUGERENCIAS⬇"></option>
+                    </datalist>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="estado">Estado</label>
+                    <select class="form-control" id="estado" name="estado" required>
+                      <option value="REGISTRADA">REGISTRADA</option>
+                      <option value="EMITIDA">EMITIDA</option>
+                      <option value="CERRADA">CERRADA</option>
+                      <option value="ANULADA">ANULADA</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="fechaActa">Fecha del acta</label>
+                  <div class="d-flex">
+                    <input class="form-control" type="date" id="fechaActa" name="fechaActa" required>
+                    <button class="btn btn-outline-secondary ml-2" type="button" id="btnFechaHoyActa" title="Usar fecha actual">Hoy</button>
+                  </div>
+                  <small class="form-text text-muted">Se toma la fecha actual automáticamente.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="tema">Tema</label>
+                  <input class="form-control" type="text" id="tema" name="tema" placeholder="Ej. ENTREGA DE EQUIPO A USUARIO" required>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="entregadoPor">Entregado por</label>
+                    <input class="form-control" type="text" id="entregadoPor" name="entregadoPor" list="personas-usuarios-datalist" placeholder="Selecciona o escribe nombre" required>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="recibidoPor">Recibido por</label>
+                    <input class="form-control" type="text" id="recibidoPor" name="recibidoPor" list="personas-usuarios-datalist" placeholder="Selecciona o escribe nombre" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="cargoEntrega">Cargo (entrega)</label>
+                    <input class="form-control" type="text" id="cargoEntrega" name="cargoEntrega" list="cargos-list" placeholder="Cargo del emisor">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="cargoRecibe">Cargo (recibe)</label>
+                    <input class="form-control" type="text" id="cargoRecibe" name="cargoRecibe" list="cargos-list" placeholder="Cargo del receptor">
+                  </div>
+                </div>
+
+                <div class="p-3 mb-3 bg-light rounded">
+                  <h6 class="text-muted">Ubicación de asignación</h6>
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="departamentoUsuario">Departamento</label>
+                      <input class="form-control" type="text" id="departamentoUsuario" name="departamentoUsuario" placeholder="Área/Depto.">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="ciudadEquipo">Ciudad</label>
+                      <input class="form-control" type="text" id="ciudadEquipo" name="ciudadEquipo" placeholder="Ciudad">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="ubicacionId">Ubicación (catálogo)</label>
+                      <select class="form-control" id="ubicacionId" name="ubicacionId">
+                        <option value="">Seleccione ubicación del cliente</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="ubicacionUsuario">Ubicación / área específica</label>
+                    <input class="form-control" type="text" id="ubicacionUsuario" name="ubicacionUsuario" placeholder="Piso, oficina o área">
+                    <input class="form-control mt-2" type="text" id="ubicacion" name="ubicacion" placeholder="Ubicación manual (opcional)">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="observaciones">Observación general</label>
+                  <input class="form-control" type="text" id="observaciones" name="observaciones" placeholder="Notas generales o instrucciones">
+                </div>
+
+                <hr class="my-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="mb-0">Ítems</h6>
+                  <div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnAddItem">+ Añadir accesorio</button>
+                  </div>
+                </div>
+                <p class="text-muted small" id="items-helper">Guarda el acta para poder agregar ítems.</p>
+                <div id="item-form-inline" class="form-row d-none">
+                  <div class="form-group col-md-2">
+                    <label for="itemNumero">Ítem</label>
+                    <input class="form-control" type="number" id="itemNumero" min="1" value="1" readonly>
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="itemTipo">Tipo</label>
+                    <input class="form-control" type="text" id="itemTipo" placeholder="CPU, MONITOR">
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="itemMarca">Marca</label>
+                    <input class="form-control" type="text" id="itemMarca" placeholder="Marca">
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="itemSerie">Serie</label>
+                    <input class="form-control" type="text" id="itemSerie" placeholder="Serie o 'NO SERIALIZADO'">
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="itemModelo">Modelo</label>
+                    <input class="form-control" type="text" id="itemModelo" placeholder="Modelo">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="itemObs">Observación</label>
+                    <input class="form-control" type="text" id="itemObs" placeholder="Obs.">
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered" id="items-table">
+                    <thead class="thead-light">
+                      <tr>
+                        <th style="width:60px">Ítem</th>
+                        <th>Tipo</th>
+                        <th>Marca</th>
+                        <th>Serie</th>
+                        <th>Modelo</th>
+                        <th>Observación</th>
+                        <th style="width:90px">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="items-tbody">
+                      <tr><td colspan="6" class="text-center text-muted">Sin ítems</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+              <datalist id="cargos-list"></datalist>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/actas.form.js"></script>
+  <datalist id="personas-usuarios-datalist"></datalist>
+</body>
+</html>
+
+

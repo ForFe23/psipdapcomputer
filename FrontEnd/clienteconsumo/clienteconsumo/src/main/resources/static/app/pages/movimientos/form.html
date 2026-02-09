@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Movimiento</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+  <link rel="stylesheet" href="../../css/custom.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" data-form-title>Registrar movimiento</h4>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="movimiento-form">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="empresaSelect">Empresa</label>
+                    <select class="form-control" id="empresaSelect" name="empresaId" required>
+                      <option value="">Seleccione empresa</option>
+                    </select>
+                    <small class="form-text text-muted">Usa la flecha para ver sugeridos.</small>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="serieEquipo">Serie equipo</label>
+                    <input class="form-control" type="text" id="serieEquipo" name="serieEquipo" list="seriesList" autocomplete="off" required>
+                    <datalist id="seriesList">
+                      <option value="⬇SUGERENCIAS⬇"></option>
+                    </datalist>
+                    <input type="hidden" id="equipoId" name="equipoId">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="usuarioId">Usuario (ejecuta)</label>
+                    <input class="form-control" type="text" id="usuarioId" name="usuarioId" list="personas-usuarios-datalist" required placeholder="ID o nombre">
+                    <small class="form-text text-muted">Personas/usuarios de la empresa seleccionada.</small>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="actaId">Acta ID</label>
+                    <div class="d-flex">
+                      <input class="form-control" type="text" id="actaId" name="actaId" list="actasList" autocomplete="off">
+                      <button class="btn btn-outline-info ml-2" type="button" id="btnActasLibres" title="Ver actas sin movimiento">Actas libres</button>
+                    </div>
+                    <small class="form-text text-muted">Sugerencias: tema de actas de esta semana y la siguiente.</small>
+                    <datalist id="actasList"></datalist>
+                  </div>
+                </div>
+                <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="tipo">Tipo</label>
+            <select class="form-control" id="tipo" name="tipo" required>
+              <option value="ENTREGA">ENTREGA</option>
+              <option value="TRASLADO">TRASLADO</option>
+              <option value="RETIRO">RETIRO / BAJA</option>
+              <option value="ANULACION">ANULACION</option>
+            </select>
+          </div>
+                  <div class="form-group col-md-4">
+                    <label for="origenId">Ubicación origen</label>
+                    <select class="form-control" id="origenId" name="origenId">
+                      <option value="">Seleccione ubicación</option>
+                    </select>
+                    <input class="form-control mt-2" type="text" id="origen" name="origen" placeholder="Origen manual (opcional)">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="destinoId">Ubicación destino</label>
+                    <select class="form-control" id="destinoId" name="destinoId">
+                      <option value="">Seleccione ubicación</option>
+                    </select>
+                    <input class="form-control mt-2" type="text" id="destino" name="destino" placeholder="Destino manual (opcional)">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="fecha">Fecha</label>
+                    <input class="form-control" type="date" id="fecha" name="fecha" required>
+                  </div>
+                  <div class="form-group col-md-8">
+                    <label for="observaciones">Observaciones</label>
+                    <input class="form-control" type="text" id="observaciones" name="observaciones">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Tipos de movimiento</h6>
+                  <span class="badge badge-info text-white">Referencia</span>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>ENTREGA</strong>: asigna o entrega equipo; mueve ubicación al destino.</li>
+                    <li class="list-group-item"><strong>TRASLADO</strong>: mueve el equipo entre sedes/áreas; actualiza ubicación.</li>
+                    <li class="list-group-item"><strong>RETIRO / BAJA</strong>: marca el equipo y sus dependencias como INACTIVO_INTERNAL y opcionalmente lo mueve a la ubicación destino (almacén/baja).</li>
+                    <li class="list-group-item"><strong>ANULACION</strong>: revierte un movimiento; si viene de un acta anulada devuelve el equipo a su ubicación de origen.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Consejos</h6>
+                  <span class="badge badge-primary">Flujo</span>
+                </div>
+                <div class="card-body">
+                  <p class="text-muted mb-2">Relaciona el movimiento con acta cuando exista, para mantener trazabilidad y auditoría.</p>
+                  <div class="d-flex">
+                    <a class="btn btn-outline-primary mr-2" href="../actas/list.html"><i class="las la-file-alt mr-2"></i>Ver actas</a>
+                    <a class="btn btn-outline-secondary" href="../adjuntos/list.html"><i class="las la-paperclip mr-2"></i>Adjuntos</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/movimientos.form.js"></script>
+  <datalist id="personas-usuarios-datalist"></datalist>
+
+  <div id="panel-actas-libres" aria-label="Actas sin movimiento">
+    <header>
+      <strong>Actas sin movimiento</strong>
+      <button class="close" type="button" id="closeActasLibres">&times;</button>
+    </header>
+    <div class="body" id="actasLibresBody">
+      <p class="text-muted mb-0">Cargando...</p>
+    </div>
+  </div>
+</body>
+</html>
+
+

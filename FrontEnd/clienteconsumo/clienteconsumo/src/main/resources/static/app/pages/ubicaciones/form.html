@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ubicación</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" data-form-title>Nueva ubicación</h4>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="ubicacion-form">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="clienteId">Cliente</label>
+                    <select class="form-control" id="clienteId" name="clienteId">
+                      <option value="">Seleccione cliente</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="empresaId">Empresa</label>
+                    <select class="form-control" id="empresaId" name="empresaId">
+                      <option value="">Seleccione empresa (opcional)</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="nombre">Nombre</label>
+                    <input class="form-control" type="text" id="nombre" name="nombre" required>
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="estado">Estado</label>
+                    <select class="form-control" id="estado" name="estado">
+                      <option value="ACTIVO">ACTIVO</option>
+                      <option value="INACTIVO">INACTIVO</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label for="direccion">Dirección</label>
+                    <input class="form-control" type="text" id="direccion" name="direccion">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/ubicaciones.form.js"></script>
+</body>
+</html>
+
+

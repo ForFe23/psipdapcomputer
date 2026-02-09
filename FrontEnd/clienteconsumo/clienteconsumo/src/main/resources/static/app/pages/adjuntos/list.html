@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adjuntos</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Adjuntos</h4>
+              <small class="text-muted">Consulta por acta</small>
+            </div>
+            <a class="btn btn-primary" href="./form.html">Cargar adjunto</a>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-4 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-primary"><i class="las la-cloud-upload-alt la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Subidos hoy</p>
+                    <h5 class="mb-0">5</h5>
+                    <small class="text-success">Sin errores</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-success"><i class="las la-file-alt la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">PDF</p>
+                    <h5 class="mb-0">28</h5>
+                    <small class="text-muted">Guías y actas</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-warning"><i class="las la-image la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Imágenes</p>
+                    <h5 class="mb-0">14</h5>
+                    <small class="text-muted">Evidencias</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="buscar-adjuntos" class="form-inline">
+                <label class="mr-2" for="actaId">Acta ID</label>
+                <input class="form-control mr-2" type="text" id="actaId" name="actaId" placeholder="Ej. 100">
+                <button class="btn btn-outline-primary" type="submit">Buscar</button>
+              </form>
+            </div>
+          </div>
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Tamaño</th>
+                  </tr>
+                </thead>
+                <tbody id="adjuntos-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/adjuntos.list.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

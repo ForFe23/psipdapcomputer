@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buscar equipo</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body class="dark-portal">
+  <div class="card-shell">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="mb-0 text-white">Buscar por serie</h5>
+        <small class="text-muted">Ingresa el código/serie</small>
+      </div>
+      <a class="btn btn-link text-light" href="menu.html">Volver</a>
+    </div>
+    <div class="form-group">
+      <input class="form-control form-control-lg" id="serie" placeholder="Serie o código">
+    </div>
+    <button class="btn btn-main btn-block mt-3" id="buscar">Buscar</button>
+  </div>
+  <script type="module">
+    import { enforceRole, getAccessScope } from "../../../js/auth.js";
+    const session = enforceRole(["TECNICO_GLOBAL", "TECNICO_CLIENTE"]);
+    const scope = getAccessScope();
+    const buildUrl = (serie) => {
+      const params = new URLSearchParams();
+      params.set("serie", serie);
+      if (scope.clienteId) params.set("clienteId", scope.clienteId);
+      if (scope.empresaId) params.set("empresaId", scope.empresaId);
+      return `detalle.html?${params.toString()}`;
+    };
+    document.getElementById("buscar").addEventListener("click", () => {
+      const serie = document.getElementById("serie").value.trim();
+      if (!serie) return;
+      window.location.href = buildUrl(serie);
+    });
+  </script>
+</body>
+</html>
+
+

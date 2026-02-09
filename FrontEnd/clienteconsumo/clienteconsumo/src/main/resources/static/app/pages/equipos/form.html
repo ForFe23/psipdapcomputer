@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Equipo</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0" data-form-title>Nuevo equipo</h4>
+            <a class="btn btn-outline-secondary" href="./list.html">Volver</a>
+          </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <form id="equipo-form">
+                <div class="wizard-step active" data-step="1">
+                  <p class="subtitle">Datos Marca</p>
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="clienteId">Cliente</label>
+                      <select class="form-control" id="clienteId" name="clienteId">
+                        <option value="">Seleccione cliente</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="empresaId">Empresa</label>
+                      <select class="form-control" id="empresaId" name="empresaId" required>
+                        <option value="">Cargando...</option>
+                      </select>
+                      <small class="form-text text-muted" id="cliente-context"></small>
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="codigoInterno">Código interno / Activo</label>
+                      <input class="form-control" type="text" id="codigoInterno" name="codigoInterno" required maxlength="50">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="serie">Serie del equipo</label>
+                      <input class="form-control" type="text" id="serie" name="serie" required maxlength="50">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="marca">Marca</label>
+                      <input class="form-control" type="text" id="marca" name="marca" list="marcas-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="modelo">Modelo</label>
+                      <input class="form-control" type="text" id="modelo" name="modelo" list="modelos-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="tipo">Tipo</label>
+                      <input class="form-control" type="text" id="tipo" name="tipo" list="tipos-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="nombreEquipo">Nombre del equipo</label>
+                      <input class="form-control" type="text" id="nombreEquipo" name="nombreEquipo" list="nombres-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="alias">Alias</label>
+                      <input class="form-control" type="text" id="alias" name="alias" list="alias-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="estado">Estado</label>
+                      <select class="form-control" id="estado" name="estado" required>
+                        <option value="">Selecciona estado</option>
+                        <option>OPERATIVO</option>
+                        <option>REGISTRADO</option>
+                        <option>ACTIVO</option>
+                        <option>BAJA</option>
+                        <option>INACTIVO</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary" type="button" data-next>Continuar</button>
+                  </div>
+                </div>
+
+                <div class="wizard-step" data-step="2">
+                  <p class="subtitle">Hardware</p>
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="procesador">Procesador</label>
+                      <input class="form-control" type="text" id="procesador" name="procesador" list="procesadores-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="memoria">Memoria</label>
+                      <input class="form-control" type="text" id="memoria" name="memoria" list="memorias-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="disco">Disco</label>
+                      <input class="form-control" type="text" id="disco" name="disco" list="discos-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="ip">Dirección IP</label>
+                      <input class="form-control" type="text" id="ip" name="ip">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="so">Sistema Operativo</label>
+                      <input class="form-control" type="text" id="so" name="so" list="so-datalist">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="office">Versión de Office</label>
+                      <input class="form-control" type="text" id="office" name="office" list="office-datalist">
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary" type="button" data-prev>Atrás</button>
+                    <button class="btn btn-primary" type="button" data-next>Continuar</button>
+                  </div>
+                </div>
+
+                <div class="wizard-step" data-step="3">
+                  <p class="subtitle">Seguimiento</p>
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="fechaCompra">Fecha de compra
+                        <button class="btn btn-sm btn-outline-primary inline-action" type="button" id="btnFechaHoy">Fecha actual</button>
+                      </label>
+                      <input class="form-control" type="date" id="fechaCompra" name="fechaCompra">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="costo">Costo</label>
+                      <input class="form-control" type="number" id="costo" name="costo" step="0.01" value="0">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="factura">Número de factura</label>
+                      <input class="form-control" type="text" id="factura" name="factura">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="proveedor">Proveedor</label>
+                      <input class="form-control" type="text" id="proveedor" name="proveedor">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="direccionProveedor">Dirección proveedor</label>
+                      <input class="form-control" type="text" id="direccionProveedor" name="direccionProveedor">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="telefonoProveedor">Teléfono proveedor</label>
+                      <input class="form-control" type="text" id="telefonoProveedor" name="telefonoProveedor">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="correoProveedor">Email proveedor
+                        <button class="btn btn-sm btn-outline-secondary inline-action" type="button" id="btnCorreoNobrinda">Sin correo</button>
+                      </label>
+                      <input class="form-control" type="email" id="correoProveedor" name="correoProveedor">
+                    </div>
+                    <div class="form-group col-md-12">
+                      <label for="notas">Notas</label>
+                      <input class="form-control" type="text" id="notas" name="notas" placeholder="Notas internas (opcional)">
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary" type="button" data-prev>Atrás</button>
+                    <button class="btn btn-primary" type="button" data-next>Continuar</button>
+                  </div>
+                </div>
+
+                <div class="wizard-step" data-step="4">
+                  <p class="subtitle">Área / ubicación</p>
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="ubicacionActualId">Ubicación (cliente)</label>
+                      <select class="form-control" id="ubicacionActualId" name="ubicacionActualId">
+                        <option value="">Seleccione según empresa</option>
+                      </select>
+                      <small class="form-text text-muted">Se cargan las ubicaciones de la empresa seleccionada.</small>
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="ciudad">Ciudad</label>
+                      <input class="form-control" type="text" id="ciudad" name="ciudad">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="ubicacionUsuario">Ubicación usuario</label>
+                      <input class="form-control" type="text" id="ubicacionUsuario" name="ubicacionUsuario">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="departamentoUsuario">Departamento</label>
+                      <input class="form-control" type="text" id="departamentoUsuario" name="departamentoUsuario">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="nombreUsuario">Nombre usuario</label>
+                      <input class="form-control" type="text" id="nombreUsuario" name="nombreUsuario" list="personas-usuarios-datalist">
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary" type="button" data-prev>Atrás</button>
+                    <button class="btn btn-success" type="submit">Guardar</button>
+                  </div>
+                </div>
+              </form>
+              <div class="alert alert-warning mt-3 d-none" id="confirm-save">
+                <div class="d-flex flex-column">
+                  <span class="text-dark">Guardar sin empresa: se asociará solo al cliente (matriz). ¿Confirmas?</span>
+                  <div class="d-flex mt-2">
+                    <button class="btn btn-main btn-sm mr-2 flex-fill" id="btn-confirm-save-yes" type="button">Sí, guardar</button>
+                    <button class="btn btn-secondary btn-sm flex-fill" id="btn-confirm-save-no" type="button">Cancelar</button>
+                  </div>
+                </div>
+              </div>
+              <datalist id="tipos-datalist"></datalist>
+              <datalist id="marcas-datalist"></datalist>
+              <datalist id="modelos-datalist"></datalist>
+              <datalist id="nombres-datalist"></datalist>
+              <datalist id="alias-datalist"></datalist>
+              <datalist id="procesadores-datalist"></datalist>
+              <datalist id="memorias-datalist"></datalist>
+              <datalist id="discos-datalist"></datalist>
+              <datalist id="so-datalist"></datalist>
+              <datalist id="office-datalist"></datalist>
+              <datalist id="personas-usuarios-datalist"></datalist>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Validaciones sugeridas</h6>
+                  <span class="badge badge-info text-white">Referencia</span>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Serie única y obligatoria</li>
+                    <li class="list-group-item">Código interno único</li>
+                    <li class="list-group-item">Estado inicial: Operativo o Registrado</li>
+                    <li class="list-group-item">Marca/Modelo opcionales pero recomendados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6 mb-3">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">Contexto de negocio</h6>
+                  <span class="badge badge-primary">Inventario</span>
+                </div>
+                <div class="card-body">
+                  <p class="text-muted mb-2">Recuerda asociar el equipo a actas y movimientos para mantener la trazabilidad completa.</p>
+                  <div class="d-flex">
+                    <a class="btn btn-outline-primary mr-2" href="../actas/list.html"><i class="las la-file-alt mr-2"></i>Ir a actas</a>
+                    <a class="btn btn-outline-secondary" href="../movimientos/list.html"><i class="las la-random mr-2"></i>Ver movimientos</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/equipos.form.js"></script>
+</body>
+</html>
+
+
+
+
+
+

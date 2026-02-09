@@ -1,0 +1,788 @@
+import { loadLayout } from "../ui/render.js";
+import { actasApi } from "../api/actas.api.js";
+import { empresasApi } from "../api/empresas.api.js";
+import { clientesApi } from "../api/clientes.api.js";
+import { equiposApi } from "../api/equipos.api.js";
+import { ubicacionesApi } from "../api/ubicaciones.api.js";
+import { personasApi } from "../api/personas.api.js";
+import { usuariosApi } from "../api/usuarios.api.js";
+import { actaItemsApi } from "../api/acta-items.api.js";
+import { showError, showSuccess } from "../ui/alerts.js";
+import { enforceRole, getAccessScope } from "../auth.js";
+import { API_BASE_URL } from "../config.js";
+
+function getId() {
+  const url = new URL(window.location.href);
+  return url.searchParams.get("id") || url.searchParams.get("actaId");
+}
+
+let ubicaciones = [];
+let actaActual = null;
+const LOCK_STATES = ["CERRADA", "ANULADA"];
+let itemsDraft = [];
+let itemsPersisted = [];
+let empresasCache = [];
+let clientesCache = [];
+const mostrarPdf = (actaId) => {
+  if (!actaId) return;
+  const url = `${API_BASE_URL}/actas/${actaId}/pdf`;
+  window.open(url, "_blank", "noopener");
+};
+const cargosGenericos = [
+  "Administrador",
+  "Analista",
+  "Analista Senior",
+  "Analista Junior",
+  "Arquitecto TI",
+  "Asesor Comercial",
+  "Asistente Administrativo",
+  "Asistente Contable",
+  "Asistente de Bodega",
+  "Asistente de Compras",
+  "Asistente de Logistica",
+  "Asistente de Marketing",
+  "Asistente de Operaciones",
+  "Asistente de RRHH",
+  "Auditor Interno",
+  "Auxiliar Administrativo",
+  "Auxiliar de Limpieza",
+  "Auxiliar de Sistemas",
+  "Bodeguero",
+  "Cajero",
+  "Capacitador",
+  "Chofer",
+  "Cliente",
+  "Coordinador Comercial",
+  "Coordinador de Calidad",
+  "Coordinador de Logistica",
+  "Coordinador de Operaciones",
+  "Coordinador de Proyectos",
+  "Coordinador de RRHH",
+  "Coordinador de Soporte",
+  "Despachador",
+  "Director Comercial",
+  "Director Financiero",
+  "Director General",
+  "Director Operativo",
+  "Encargado de Almacen",
+  "Encargado de Compras",
+  "Encargado de Inventarios",
+  "Encargado de Mantenimiento",
+  "Especialista BI",
+  "Especialista Cloud",
+  "Especialista DevOps",
+  "Especialista Redes",
+  "Especialista Seguridad",
+  "Especialista Soporte",
+  "Gerente Administrativo",
+  "Gerente Comercial",
+  "Gerente de Almacen",
+  "Gerente de Calidad",
+  "Gerente de Infraestructura",
+  "Gerente de Logistica",
+  "Gerente de Operaciones",
+  "Gerente de Producto",
+  "Gerente de Proyectos",
+  "Gerente de RRHH",
+  "Gerente Financiero",
+  "Gerente General",
+  "Ingeniero Campo",
+  "Ingeniero de Datos",
+  "Ingeniero de Redes",
+  "Ingeniero de Soporte",
+  "Ingeniero DevOps",
+  "Ingeniero Preventa",
+  "Jefe Comercial",
+  "Jefe de Almacen",
+  "Jefe de Calidad",
+  "Jefe de Compras",
+  "Jefe de Infraestructura",
+  "Jefe de Logistica",
+  "Jefe de Mantenimiento",
+  "Jefe de Operaciones",
+  "Jefe de Proyectos",
+  "Jefe de RRHH",
+  "Lider de Equipo",
+  "Mensajero",
+  "Operador",
+  "Operador de Monitoreo",
+  "Practicante",
+  "Product Owner",
+  "Programador",
+  "Recepcionista",
+  "Representante de Ventas",
+  "Responsable de Cuenta",
+  "Seguridad Fisica",
+  "Soporte Nivel 1",
+  "Soporte Nivel 2",
+  "Soporte Nivel 3",
+  "Supervisor",
+  "Supervisor de Almacen",
+  "Supervisor de Campo",
+  "Supervisor de Operaciones",
+  "Supervisor de Produccion",
+  "Tecnico Campo",
+  "Tecnico de Mantenimiento",
+  "Tecnico de Redes",
+  "Tecnico de Soporte",
+  "Tester QA",
+  "Tesorero",
+  "Usuario Interno",
+  "Ventas Internas",
+  "Vicepresidente Comercial",
+  "Vicepresidente Operaciones",
+  "Visitador"
+];
+let personasUsuarios = [];
+let personasUsuariosList;
+
+function renderCargos() {
+  const dl = document.querySelector("#cargos-list");
+  if (!dl) return;
+  dl.innerHTML = cargosGenericos.map((c) => `<option value="${c}">`).join("");
+}
+
+async function loadActa(id, form) {
+  const data = await actasApi.getById(id);
+  actaActual = data;
+  if (form.clienteId && data.idCliente) form.clienteId.value = data.idCliente;
+  if (form.empresaId) form.empresaId.value = data.empresaId ?? "";
+  form.entregadoPor.value = data.entregadoPor ?? data.emisor ?? "";
+  form.recibidoPor.value = data.recibidoPor ?? data.receptor ?? "";
+  if (form.cargoEntrega) form.cargoEntrega.value = data.cargoEntrega ?? "";
+  if (form.cargoRecibe) form.cargoRecibe.value = data.cargoRecibe ?? "";
+  form.ubicacion.value = data.ubicacionDestino ?? data.ubicacion ?? "";
+  if (form.ubicacionId) {
+    form.ubicacionId.dataset.pendingValue = data.ubicacionId ?? "";
+  }
+  form.observaciones.value = data.observaciones ?? data.observacionesGenerales ?? "";
+  if (form.departamentoUsuario) form.departamentoUsuario.value = data.departamentoUsuario ?? "";
+  if (form.ciudadEquipo) form.ciudadEquipo.value = data.ciudadEquipo ?? "";
+  if (form.ubicacionUsuario) form.ubicacionUsuario.value = data.ubicacionUsuario ?? data.ubicacionDestino ?? "";
+  form.estado.value = data.estado ?? "";
+  form.fechaActa.value = data.fechaActa ?? data.fecha ?? "";
+  form.tema.value = data.tema ?? "";
+  form.entregadoPor.value = data.entregadoPor ?? "";
+  form.recibidoPor.value = data.recibidoPor ?? "";
+  if (data.equipoSerie && form.serieEquipo) form.serieEquipo.value = data.equipoSerie;
+  if (data.idEquipo && form.equipoId) form.equipoId.value = data.idEquipo;
+  return data;
+}
+
+async function loadUbicaciones(clienteId, empresaId, select, afterRender) {
+  if (!select) return;
+  try {
+    if (empresaId) {
+      ubicaciones = await ubicacionesApi.listByEmpresa(empresaId);
+    } else if (clienteId) {
+      ubicaciones = await ubicacionesApi.listByCliente(clienteId);
+    } else {
+      ubicaciones = [];
+    }
+    const placeholder = empresaId ? "Seleccione ubicación de la empresa" : "Seleccione ubicación del cliente";
+    select.innerHTML =
+      `<option value=\"\">${placeholder}</option>` +
+      ubicaciones.map((u) => `<option value=\"${u.id}\">${u.nombre || u.id}</option>`).join("");
+    if (afterRender) afterRender();
+  } catch (err) {
+    select.innerHTML = `<option value=\"\">Sin ubicaciones</option>`;
+    showError("No se pudieron cargar ubicaciones: " + err.message);
+  }
+}
+
+async function main() {
+  const url = new URL(window.location.href);
+  const previewMobile = url.searchParams.get("previewMobile") === "1";
+  const session = previewMobile
+    ? { rolCodigo: "TECNICO_GLOBAL" }
+    : enforceRole(["ADMIN_GLOBAL", "TECNICO_GLOBAL", "TECNICO_CLIENTE", "CLIENTE_ADMIN"]);
+  const scope = previewMobile ? {} : getAccessScope();
+  const isTech = ["TECNICO_GLOBAL", "TECNICO_CLIENTE"].includes((session?.rolCodigo || "").toUpperCase()) || previewMobile;
+  if (isTech && !previewMobile) {
+    url.searchParams.set("previewMobile", "1");
+    window.location.replace(url.toString());
+    return;
+  }
+  if (isTech) {
+    document.documentElement.classList.add("tech-mobile");
+    document.body.classList.add("tech-mobile");
+  }
+  await loadLayout("actas");
+  renderCargos();
+  if (isTech) {
+    document.querySelectorAll(".side-nav, .app-header").forEach((el) => el?.classList?.add("d-none"));
+  }
+  const actaId = getId();
+  const form = document.querySelector("#acta-form");
+  const clienteSelect = document.querySelector("#clienteSelect");
+  const empresaSelect = document.querySelector("#empresaSelect");
+  const serieInput = document.querySelector("#serieEquipo");
+  const seriesList = document.querySelector("#seriesList");
+  const equipoHidden = document.querySelector("#equipoId");
+  const ubicacionSelect = document.querySelector("#ubicacionId");
+  const ubicacionInput = document.querySelector("#ubicacion");
+  const departamentoInput = document.querySelector("#departamentoUsuario");
+  const ciudadInput = document.querySelector("#ciudadEquipo");
+  const ubicacionUsuarioInput = document.querySelector("#ubicacionUsuario");
+  personasUsuariosList = document.querySelector("#personas-usuarios-datalist");
+  const entregadoPorInput = document.querySelector("#entregadoPor");
+  const recibidoPorInput = document.querySelector("#recibidoPor");
+  const personaInputs = [entregadoPorInput, recibidoPorInput];
+  const itemsTbody = document.querySelector("#items-tbody");
+  const btnAddItem = document.querySelector("#btnAddItem");
+  const itemsHelper = document.querySelector("#items-helper");
+  const itemFormInline = document.querySelector("#item-form-inline");
+  const itemNumeroInput = document.querySelector("#itemNumero");
+  const itemTipoInput = document.querySelector("#itemTipo");
+  const itemMarcaInput = document.querySelector("#itemMarca");
+  const itemSerieInput = document.querySelector("#itemSerie");
+  const itemModeloInput = document.querySelector("#itemModelo");
+  const itemObsInput = document.querySelector("#itemObs");
+  let equipos = [];
+  const params = new URLSearchParams(window.location.search);
+  const serieParam = params.get("serie") || "";
+  const clienteParam = params.get("clienteId") || params.get("idCliente") || "";
+  const empresaParam = params.get("empresaId") || params.get("idEmpresa") || "";
+  const returnParam = params.get("return");
+  const fallbackReturn = serieParam
+    ? `/app/pages/dapcom/tecnico/detalle.html?serie=${encodeURIComponent(serieParam)}`
+    : "/app/pages/dapcom/tecnico/menu.html";
+  const targetReturn = returnParam && returnParam.startsWith("/app/pages/dapcom/tecnico/") ? returnParam : fallbackReturn;
+
+  if (isTech) {
+    document.querySelectorAll('a[href*="/actas/list"], a[href*="list.html"]').forEach((a) => a.remove());
+  }
+  if (serieParam && serieInput) {
+    serieInput.value = serieParam;
+    serieInput.readOnly = true;
+  }
+  const clienteVal = clienteParam || (scope?.clienteId ? String(scope.clienteId) : "");
+  if (clienteVal && form.clienteId) {
+    form.clienteId.value = clienteVal;
+    form.clienteId.readOnly = true;
+  }
+  const empresaVal = empresaParam || (scope?.empresaId ? String(scope.empresaId) : "") || clienteVal;
+  if (empresaVal && form.empresaId) {
+    form.empresaId.value = empresaVal;
+    form.empresaId.readOnly = true;
+  }
+  const getEquipoSeleccionado = () => {
+    const hiddenId = form.equipoId?.value ? Number(form.equipoId.value) : null;
+    const serieVal = (form.serieEquipo?.value || "").trim().toUpperCase();
+    if (hiddenId) {
+      const byId = equipos.find((e) => Number(e.id) === hiddenId);
+      if (byId) return byId;
+    }
+    if (serieVal) {
+      const bySerie = equipos.find((e) => (e.serie || e.serieEquipo || "").toUpperCase() === serieVal);
+      if (bySerie) return bySerie;
+    }
+    return null;
+  };
+
+  const syncEquipoHidden = () => {
+    const equipo = getEquipoSeleccionado();
+    if (equipo && form.equipoId) {
+      form.equipoId.value = equipo.id ?? "";
+    }
+    return equipo;
+  };
+
+  const syncBaseItemDraft = () => {
+    if (getId()) return;
+    const equipo = syncEquipoHidden();
+    if (!equipo) return;
+    const baseSerie = (equipo.serie || equipo.serieEquipo || "").trim() || form.serieEquipo.value.trim();
+    const baseModelo = (equipo.modelo || equipo.modeloEquipo || "").trim() || "";
+    const baseTipo = (equipo.tipo || equipo.tipoEquipo || "").trim() || "EQUIPO";
+    const existingIndex = itemsDraft.findIndex((i) => Number(i.itemNumero) === 1);
+    const baseItem = {
+      id: null,
+      itemNumero: 1,
+      tipo: baseTipo,
+      serie: baseSerie || "NO SERIALIZADO",
+      marca: equipo.marca || equipo.marcas || "",
+      modelo: baseModelo,
+      observacion: "",
+      equipoId: equipo.id || null,
+      equipoSerie: baseSerie || "NO SERIALIZADO",
+      estadoInterno: "ACTIVO_INTERNAL"
+    };
+    if (existingIndex >= 0) {
+      itemsDraft[existingIndex] = baseItem;
+    } else {
+      itemsDraft.unshift(baseItem);
+    }
+    renderItems(itemsDraft);
+    if (itemNumeroInput) itemNumeroInput.value = itemsDraft.length + 1;
+  };
+  const syncUbicacionInput = () => {
+    if (!ubicacionSelect || !ubicacionInput) return;
+    const opt = ubicacionSelect.selectedOptions[0];
+    if (opt && opt.value) {
+      ubicacionInput.value = opt.textContent;
+    } else {
+      ubicacionInput.value = "";
+    }
+  };
+
+  const loadPersonasUsuarios = async (clienteId, empresaId) => {
+    if (!clienteId && !empresaId) {
+      personasUsuarios = [];
+      if (personasUsuariosList) personasUsuariosList.innerHTML = `<option value="⬇SUGERENCIAS⬇"></option>`;
+      personaInputs.forEach((i) => i && (i.value = ""));
+      return;
+    }
+    try {
+      const [pers, usrs] = await Promise.all([
+        empresaId ? personasApi.listByEmpresa(empresaId) : personasApi.listByCliente(clienteId),
+        empresaId ? usuariosApi.listByEmpresa(empresaId) : usuariosApi.listByCliente(clienteId)
+      ]);
+      personasUsuarios = [
+        ...pers.map((p) => ({ id: p.id, label: `${p.nombres || ""} ${p.apellidos || ""}`.trim() })),
+        ...usrs.map((u) => ({ id: u.id, label: `${u.nombres || ""} ${u.apellidos || ""}`.trim() }))
+      ].filter((x) => x.label);
+      if (personasUsuariosList) {
+        personasUsuariosList.innerHTML =
+          `<option value="⬇SUGERENCIAS⬇"></option>` +
+          personasUsuarios.map((p) => `<option value="${p.label}" data-id="${p.id}">${p.label}</option>`).join("");
+      }
+      personaInputs.forEach((i) => i && personaInputs && (i.placeholder = "Selecciona o escribe nombre"));
+    } catch (err) {
+      if (personasUsuariosList) personasUsuariosList.innerHTML = `<option value="⬇SUGERENCIAS⬇"></option>`;
+    }
+  };
+
+  const loadClientes = async () => {
+    try {
+      clientesCache = await clientesApi.list();
+      if (clienteSelect) {
+        clienteSelect.innerHTML =
+          `<option value="">Seleccione cliente</option>` +
+          clientesCache.map((c) => `<option value="${c.id}">${c.nombre || c.razonSocial || c.id}</option>`).join("");
+      }
+    } catch (err) {
+      showError("No se pudieron cargar clientes");
+    }
+  };
+
+  const loadEmpresas = async (clienteId) => {
+    try {
+      empresasCache = clienteId ? await empresasApi.listByCliente(clienteId) : await empresasApi.list();
+      if (empresaSelect) {
+        empresaSelect.innerHTML =
+          `<option value="">Matriz (sólo cliente)</option>` +
+          empresasCache.map((e) => `<option value="${e.id}">${e.nombre || e.razonSocial || e.id}</option>`).join("");
+      }
+    } catch (err) {
+      showError("No se pudieron cargar las empresas");
+    }
+  };
+
+  const loadEquipos = async () => {
+    try {
+      equipos = await equiposApi.list();
+    } catch (err) {
+      showError("No se pudieron cargar equipos");
+    }
+  };
+
+  const enableItemsSection = (enabled) => {
+    if (!btnAddItem || !itemsHelper || !itemFormInline) return;
+    itemsHelper.textContent = enabled ? "Añade los accesorios/periféricos entregados con este acta." : "Guarda el acta para poder agregar ítems.";
+    itemFormInline.classList.toggle("d-none", !enabled);
+    btnAddItem.disabled = !enabled;
+    [itemNumeroInput, itemTipoInput, itemMarcaInput, itemSerieInput, itemModeloInput, itemObsInput].forEach((el) => {
+      if (!el) return;
+      el.disabled = !enabled;
+      el.readOnly = !enabled;
+    });
+  };
+
+  const renderItems = (items = []) => {
+    if (!itemsTbody) return;
+    if (!items.length) {
+      itemsTbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Sin ítems</td></tr>`;
+      return;
+    }
+    itemsTbody.innerHTML = items
+      .map(
+        (it) => `
+        <tr>
+          <td>${it.itemNumero ?? ""}</td>
+          <td>${it.tipo ?? ""}</td>
+          <td>${it.marca ?? ""}</td>
+          <td>${it.serie ?? it.equipoSerie ?? ""}</td>
+          <td>${it.modelo ?? ""}</td>
+          <td>${it.observacion ?? ""}</td>
+          <td class="text-center">
+            ${Number(it.itemNumero) === 1 ? "" : `<button class="btn btn-sm btn-outline-danger" data-del="${it.id}">Eliminar</button>`}
+          </td>
+        </tr>`
+      )
+      .join("");
+  };
+
+  const loadItems = async (idActa) => {
+    if (!idActa || !itemsTbody) return;
+    try {
+      const data = await actaItemsApi.list(idActa);
+      itemsPersisted = data;
+      renderItems(itemsPersisted);
+      const next = data.reduce((m, i) => Math.max(m, Number(i.itemNumero || 0)), 0) + 1;
+      if (itemNumeroInput) itemNumeroInput.value = next;
+    } catch (err) {
+      renderItems(itemsDraft);
+    }
+  };
+
+  const lockForm = (estado) => {
+    const locked = LOCK_STATES.includes((estado || "").toUpperCase());
+    const controls = form.querySelectorAll("input, select, textarea, button");
+    controls.forEach((el) => {
+      if (el.id === "btnFechaHoyActa" || el.type === "submit") {
+        el.disabled = locked;
+      } else if (el.tagName === "INPUT" || el.tagName === "SELECT" || el.tagName === "TEXTAREA") {
+        el.readOnly = locked;
+        el.disabled = locked;
+      }
+    });
+    if (btnAddItem) btnAddItem.disabled = locked;
+    if (itemsHelper && locked) itemsHelper.textContent = "Acta cerrada/anulada: no se pueden editar ítems.";
+    const banner = document.getElementById("lock-banner");
+    if (banner) {
+      banner.classList.toggle("d-none", !locked);
+    }
+  };
+
+  const buildPayload = () => {
+    const clienteSel = form.clienteId.value.trim();
+    const clienteNum = clienteSel ? Number(clienteSel) : null;
+    const empresaSel = form.empresaId?.value?.trim() || "";
+    const empresaNum = empresaSel ? Number(empresaSel) : null;
+    const ubicacionTexto =
+      (form.ubicacion?.value || "").trim() ||
+      (form.ubicacionId?.selectedOptions?.[0]?.textContent || "");
+    const equipoSel = getEquipoSeleccionado();
+    const equipoIdVal = form.equipoId.value.trim()
+      ? Number(form.equipoId.value.trim())
+      : equipoSel?.id
+        ? Number(equipoSel.id)
+        : null;
+    return {
+      empresaId: empresaNum || null,
+      clienteId: clienteNum,
+      idCliente: clienteNum,
+      idEquipo: equipoIdVal,
+      equipoSerie: form.serieEquipo.value.trim(),
+      equipoTipo: equipoSel?.tipo || equipoSel?.tipoEquipo || "",
+      equipoModelo: equipoSel?.modelo || equipoSel?.modeloEquipo || "",
+      cargoEntrega: form.cargoEntrega?.value.trim() || "",
+      cargoRecibe: form.cargoRecibe?.value.trim() || "",
+      ubicacionId: form.ubicacionId?.value ? Number(form.ubicacionId.value) : null,
+      observacionesGenerales: form.observaciones.value.trim(),
+      ubicacionUsuario: (form.ubicacionUsuario?.value || ubicacionTexto).trim(),
+      departamentoUsuario: (form.departamentoUsuario?.value || "").trim(),
+      ciudadEquipo: (form.ciudadEquipo?.value || "").trim(),
+      estado: form.estado.value.trim() || "REGISTRADA",
+      fechaActa: form.fechaActa.value,
+      tema: form.tema.value.trim() || `Acta ${new Date().toISOString().slice(0, 10)}`,
+      entregadoPor: form.entregadoPor.value.trim(),
+      recibidoPor: form.recibidoPor.value.trim()
+    };
+  };
+
+  const handleAddItem = async () => {
+    const idActa = getId();
+    const equipo = getEquipoSeleccionado();
+    const baseEquipoId = actaActual?.idEquipo || equipo?.id || Number(form.equipoId?.value || 0) || null;
+    const baseSerie = (actaActual?.equipoSerie || equipo?.serie || equipo?.serieEquipo || form.serieEquipo?.value || "").trim();
+    if (!equipo && !actaActual?.idEquipo) {
+      showError("Selecciona un equipo para definir el ítem 1.");
+      return;
+    }
+    if (!itemTipoInput.value.trim()) {
+      showError("Completa el tipo del accesorio");
+      return;
+    }
+    if (!idActa) {
+      syncBaseItemDraft();
+      const next = itemsDraft.reduce((m, i) => Math.max(m, Number(i.itemNumero || 0)), 0) + 1;
+      const equipoIdSafe = baseEquipoId;
+      if (!equipoIdSafe) {
+        showError("Falta identificar el equipo; selecciona la serie de un equipo válido.");
+        return;
+      }
+      const newItem = {
+        id: null,
+        itemNumero: next,
+        tipo: itemTipoInput.value.trim(),
+        marca: itemMarcaInput?.value.trim() || "",
+        serie: itemSerieInput.value.trim() || "NO SERIALIZADO",
+        modelo: itemModeloInput.value.trim() || null,
+        observacion: itemObsInput.value.trim() || null,
+        equipoId: equipoIdSafe,
+        equipoSerie: baseSerie || "NO SERIALIZADO",
+        estadoInterno: "ACTIVO_INTERNAL"
+      };
+      itemsDraft.push(newItem);
+      renderItems(itemsDraft);
+      itemTipoInput.value = "";
+      if (itemMarcaInput) itemMarcaInput.value = "";
+      itemSerieInput.value = "";
+      itemModeloInput.value = "";
+      itemObsInput.value = "";
+      itemNumeroInput.value = next + 1;
+      return;
+    }
+
+    const payload = {
+      itemNumero: Number(itemNumeroInput.value || 1),
+      tipo: itemTipoInput.value.trim(),
+      marca: itemMarcaInput?.value.trim() || "",
+      serie: itemSerieInput.value.trim() || "NO SERIALIZADO",
+      modelo: itemModeloInput.value.trim() || null,
+      observacion: itemObsInput.value.trim() || null,
+      equipoId: baseEquipoId,
+      equipoSerie: baseSerie || "NO SERIALIZADO",
+      estadoInterno: "ACTIVO_INTERNAL"
+    };
+    try {
+      if (!payload.equipoId) {
+        showError("Falta identificar el equipo base del acta.");
+        return;
+      }
+      await actaItemsApi.create(idActa, payload);
+      showSuccess("Ítem agregado");
+      itemTipoInput.value = "";
+      if (itemMarcaInput) itemMarcaInput.value = "";
+      itemSerieInput.value = "";
+      itemModeloInput.value = "";
+      itemObsInput.value = "";
+      await loadItems(idActa);
+    } catch (err) {
+      showError(err.message);
+    }
+  };
+
+  const renderSeries = (clienteId) => {
+    if (!seriesList) return;
+    const filtered = clienteId ? equipos.filter((e) => String(e.empresaId || e.idCliente) === String(clienteId)) : equipos;
+    const sugerencia = `<option value=\"⬇SUGERENCIAS⬇\"></option>`;
+    seriesList.innerHTML =
+      sugerencia +
+      filtered
+        .map((e) => {
+          const serie = (e.serie || e.serieEquipo || "").trim();
+          return serie ? `<option value=\"${serie}\">${serie}</option>` : "";
+        })
+        .join("");
+  };
+
+  const syncClienteFromSerie = async (serieVal) => {
+    if (!serieVal) {
+      if (equipoHidden) equipoHidden.value = "";
+      return;
+    }
+    const eq = equipos.find((e) => (e.serie || e.serieEquipo || "").toUpperCase() === serieVal.toUpperCase());
+    if (eq) {
+      if (clienteSelect) clienteSelect.value = eq.idCliente ?? "";
+      await loadEmpresas(eq.idCliente ?? "");
+      if (empresaSelect) {
+        empresaSelect.value = eq.empresaId ?? "";
+      }
+      if (equipoHidden) equipoHidden.value = eq.id ?? "";
+      renderSeries(eq.idCliente, eq.empresaId);
+      loadUbicaciones(eq.idCliente, eq.empresaId, ubicacionSelect, syncUbicacionInput);
+      syncBaseItemDraft();
+    } else if (equipoHidden) {
+      equipoHidden.value = "";
+    }
+  };
+
+  await Promise.all([loadClientes(), loadEquipos()]);
+  await loadEmpresas(clienteVal || scope?.clienteId || "");
+  const desiredCliente = clienteVal || (scope?.clienteId ? String(scope.clienteId) : "");
+  if (clienteSelect) {
+    if (desiredCliente) {
+      const cliObj = clientesCache.find((c) => String(c.id) === String(desiredCliente));
+      const label = cliObj ? (cliObj.nombre || cliObj.razonSocial || cliObj.id) : desiredCliente;
+      const exists = Array.from(clienteSelect.options).some((o) => o.value === desiredCliente);
+      if (!exists) {
+        clienteSelect.insertAdjacentHTML("beforeend", `<option value="${desiredCliente}">${label}</option>`);
+      }
+      clienteSelect.value = desiredCliente;
+      clienteSelect.disabled = true;
+      await loadEmpresas(desiredCliente);
+      if (empresaSelect && empresaParam) {
+        empresaSelect.value = empresaParam;
+      }
+      renderSeries(desiredCliente, empresaSelect?.value || "");
+      loadUbicaciones(desiredCliente, empresaSelect?.value || "", ubicacionSelect, syncUbicacionInput);
+      loadPersonasUsuarios(desiredCliente, empresaSelect?.value || "");
+    }
+  }
+  if (serieInput && serieInput.value) {
+    serieInput.readOnly = true;
+    seriesList?.setAttribute("disabled", "disabled");
+  }
+  renderSeries(clienteSelect?.value || "", empresaSelect?.value || "");
+  if (serieInput && serieInput.value) {
+    const match = equipos.find((e) => (e.serie || e.serieEquipo || "").toUpperCase() === serieInput.value.toUpperCase());
+    if (match && form.equipoId) form.equipoId.value = match.id ?? "";
+  }
+  syncBaseItemDraft();
+  await loadUbicaciones(clienteSelect?.value || "", empresaSelect?.value || "", ubicacionSelect, () => {
+    const pending = ubicacionSelect?.dataset.pendingValue;
+    if (pending) {
+      ubicacionSelect.value = pending;
+      syncUbicacionInput();
+    }
+  });
+  await loadPersonasUsuarios(clienteSelect?.value || "", empresaSelect?.value || "");
+
+  let id = getId();
+  if (id) {
+    const titleEl = document.querySelector("[data-form-title]");
+    if (titleEl) titleEl.textContent = "Editar acta";
+    try {
+      const data = await loadActa(id, form);
+      await loadUbicaciones(form.clienteId.value || "", form.empresaId.value || data?.empresaId, ubicacionSelect, () => {
+        if (ubicacionSelect && ubicacionSelect.dataset.pendingValue) {
+          ubicacionSelect.value = ubicacionSelect.dataset.pendingValue;
+          syncUbicacionInput();
+        }
+      });
+      await loadPersonasUsuarios(form.clienteId.value || "", form.empresaId.value || data?.empresaId);
+      enableItemsSection(true);
+      await loadItems(id);
+      lockForm(data.estado);
+    } catch (err) {
+      showError(err.message);
+    }
+  } else {
+    enableItemsSection(true);
+    renderItems(itemsDraft);
+  }
+
+  if (serieInput) {
+    serieInput.addEventListener("input", async () => {
+      await syncClienteFromSerie(serieInput.value);
+      syncEquipoHidden();
+      syncBaseItemDraft();
+    });
+  }
+  if (clienteSelect) {
+    clienteSelect.addEventListener("change", async () => {
+      await loadEmpresas(clienteSelect.value);
+      if (empresaSelect) {
+        empresaSelect.value = "";
+      }
+      renderSeries(clienteSelect.value, "");
+      loadUbicaciones(clienteSelect.value, "", ubicacionSelect, syncUbicacionInput);
+      loadPersonasUsuarios(clienteSelect.value, "");
+    });
+  }
+  if (empresaSelect) {
+    empresaSelect.addEventListener("change", () => {
+      renderSeries(clienteSelect?.value || "", empresaSelect.value);
+      loadUbicaciones(clienteSelect?.value || "", empresaSelect.value, ubicacionSelect, syncUbicacionInput);
+      loadPersonasUsuarios(clienteSelect?.value || "", empresaSelect.value);
+    });
+  }
+
+  const btnFechaHoy = document.querySelector("#btnFechaHoyActa");
+  if (btnFechaHoy && form.fechaActa) {
+    btnFechaHoy.addEventListener("click", () => {
+      const today = new Date().toISOString().slice(0, 10);
+      form.fechaActa.value = today;
+    });
+  }
+  if (ubicacionSelect) {
+    ubicacionSelect.addEventListener("change", syncUbicacionInput);
+  }
+
+  if (btnAddItem) {
+    btnAddItem.addEventListener("click", handleAddItem);
+  }
+  if (itemsTbody) {
+    itemsTbody.addEventListener("click", async (ev) => {
+      const btn = ev.target.closest("[data-del]");
+      const acta = getId();
+      if (!btn || !acta) return;
+      if (!confirm("¿Eliminar ítem?")) return;
+      try {
+        await actaItemsApi.remove(acta, btn.dataset.del);
+        await loadItems(acta);
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+  }
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const payload = buildPayload();
+    if (!payload.idCliente) {
+      showError("Selecciona un cliente antes de guardar el acta.");
+      return;
+    }
+    if (!payload.idEquipo) {
+      showError("Selecciona un equipo válido (serie de la lista) antes de guardar el acta.");
+      return;
+    }
+    const esNuevo = !getId();
+    if (esNuevo) {
+      syncBaseItemDraft();
+    }
+    try {
+      id = getId();
+      if (id) {
+        await actasApi.update(id, payload);
+        showSuccess("Acta actualizada");
+        await loadItems(id);
+        await mostrarPdf(id);
+        window.location.href = targetReturn;
+      } else {
+        const accesorios = itemsDraft.filter((i) => Number(i.itemNumero) !== 1);
+        const creada = await actasApi.create(payload);
+        const nuevaId = creada?.id;
+        if (nuevaId) {
+          actaActual = creada;
+          if (accesorios.length) {
+            let correlativo = 2;
+            for (const acc of accesorios) {
+              const numero = acc.itemNumero || correlativo;
+              const serieEquipoBase = creada.equipoSerie || acc.equipoSerie || acc.serie || "NO SERIALIZADO";
+              const equipoIdBase = creada.idEquipo || acc.equipoId;
+              if (!equipoIdBase) {
+                showError("No se pudo registrar accesorio: falta equipo base.");
+                return;
+              }
+              await actaItemsApi.create(nuevaId, {
+                itemNumero: Number(numero),
+                tipo: acc.tipo,
+                serie: acc.serie || "NO SERIALIZADO",
+                modelo: acc.modelo || null,
+                observacion: acc.observacion || null,
+                equipoId: equipoIdBase,
+                equipoSerie: serieEquipoBase,
+                estadoInterno: acc.estadoInterno || "ACTIVO_INTERNAL"
+              });
+              correlativo = Number(numero) + 1;
+            }
+          }
+          showSuccess("Acta creada");
+          await mostrarPdf(nuevaId);
+          window.location.href = targetReturn;
+        }
+      }
+    } catch (err) {
+      showError(err.message);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", main);
+
+

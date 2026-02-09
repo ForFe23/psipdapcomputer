@@ -1,0 +1,72 @@
+<header>
+  <nav class="navbar navbar-expand-lg app-header">
+    <div class="d-flex align-items-center">
+      <button class="btn btn-icon d-lg-none mr-2" type="button" aria-label="Abrir menú" data-sidebar-toggle>
+        <i class="las la-bars"></i>
+      </button>
+      <a class="navbar-brand" data-path="index.html" href="#">
+        <span class="brand-mark mr-2"><i class="las la-layer-group"></i></span>
+        <div>
+          <div>PSIPDAP Computer</div>
+          <small class="text-muted d-none d-sm-block">Inventario TI</small>
+        </div>
+      </a>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Alternar navegación">
+      <i class="las la-ellipsis-v"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav ml-auto align-items-center">
+        <li class="nav-item d-none d-lg-block mr-2">
+          <span class="badge badge-light text-uppercase">psipdapcomputer</span>
+        </li>
+        <li class="nav-item dropdown dropleft">
+          <a class="nav-link notification-dropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="badge badge-pill badge-primary" style="float:right;margin-bottom:-10px;"></span>
+            <i class="las la-bell"></i>
+          </a>
+          
+          <div class="dropdown-menu notification-dropdown-menu shadow-lg" aria-labelledby="notification-dropdown">
+            <div class="dropdown-title">
+              <a href="#">Notificaciones<span class="ml-2 notifications-count">(1)</span></a>
+              <a class="float-right" href="#">Marcar leído</a>
+            </div>
+            <div class="dropdown-body">
+              <ul class="list-unstyled">
+                <li class="media">
+                  <a class="notification-card" href="#">
+                    <img class="mr-3 rounded-circle" data-asset-src="assets/images/information.svg" src="" alt="info"/>
+                    <div class="media-body">
+                      <h6 class="mt-0 mb-1">Inventario</h6>
+                      <p>Nuevo movimiento registrado.</p>
+                      <small class="text-muted">Hace 2m</small>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="dropdown-footer text-center"><a href="#">Ver más</a></div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <div class="nav-link"><span class="vertical-divider"></span></div>
+        </li>
+        <li class="nav-item dropdown dropleft">
+          <a class="nav-link profile-dropdown d-flex align-items-center" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img class="rounded-circle mr-2" data-asset-src="assets/images/person.jpg" src="/assets/images/person.jpg" alt="Usuario" />
+            Admin
+          </a>
+          <div class="dropdown-menu shadow-lg" aria-labelledby="profile-dropdown">
+            <a class="dropdown-item" href="#"><i class="las la-user mr-2"></i>Perfil</a>
+            <a class="dropdown-item" href="#"><i class="las la-cog mr-2"></i>Configuración</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item text-danger" href="#" id="logout-btn" data-logout="true"><i class="las la-sign-out-alt mr-2"></i>Salir</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <script type="module" src="/app/js/auth.js"></script>
+</header>
+
+

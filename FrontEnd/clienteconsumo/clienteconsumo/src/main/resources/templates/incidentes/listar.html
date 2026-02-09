@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Incidentes · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0">Incidentes</h1>
+      <small class="text-muted">Tickets y soporte</small>
+    </div>
+    <a class="btn btn-primary" th:href="@{/incidentes/nuevo}"><i class="las la-plus mr-1"></i>Nuevo</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Equipo</th>
+            <th>Usuario</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Detalle</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="incidentes-body">
+          <tr><td colspan="8" class="text-center text-muted">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarIncidentes() {
+    const tbody = document.getElementById('incidentes-body');
+    try {
+      const res = await apiFetch('/incidentes');
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan=\"8\" class=\"text-center text-muted\">Sin incidentes</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(i => `
+        <tr>
+          <td>${i.id ?? ''}</td>
+          <td>${i.equipoId ?? ''}</td>
+          <td>${i.idUsuario ?? ''}</td>
+          <td>${i.idCliente ?? ''}</td>
+          <td>${i.fechaIncidente ?? ''}</td>
+          <td>${i.detalle ?? ''}</td>
+          <td><span class="badge ${estadoBadge(i.estadoInterno)}">${i.estadoInterno ?? ''}</span></td>
+          <td class="text-right">
+            <a class="btn btn-sm btn-outline-primary" href="/incidentes/nuevo?id=${i.id}">Editar</a>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan=\"8\" class=\"text-danger text-center\">No se pudo cargar (' + err.message + ')</td></tr>';
+    }
+  }
+
+  function estadoBadge(estado) {
+    const e = (estado || '').toUpperCase();
+    if (e.includes('ACT')) return 'badge-success';
+    if (e.includes('INACT')) return 'badge-secondary';
+    return 'badge-light';
+  }
+
+  document.addEventListener('DOMContentLoaded', cargarIncidentes);
+</script>
+</body>
+</html>
+

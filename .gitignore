@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Build outputs
+target/
+
+# Logs and runtime artifacts
+*.log
+*.out
+*.err
+
+# IDE settings
+.idea/
+.vscode/
+*.iml
+.settings/
+.classpath
+.project

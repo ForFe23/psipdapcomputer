@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reportería</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+  <style>
+    .report-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 16px; }
+    .report-card { border-radius: 14px; border: 1px solid #e5e7eb; box-shadow: 0 12px 30px rgba(15,23,42,0.08); }
+    .report-card .card-header { border-bottom: 1px solid #edf2f7; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #eef2ff; color: #4338ca; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; font-size: 12px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
+    .table-wrap { max-height: 420px; overflow: auto; }
+    .kpi { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 10px; }
+    .kpi .card { border-radius: 12px; }
+    .tag { padding: 6px 10px; border-radius: 10px; background: #f8fafc; font-weight: 600; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h4 class="mb-0">Reportería</h4>
+            <small class="text-muted">Filtros avanzados y exportes</small>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-outline-secondary" id="btn-export-equipos-global">Exportar equipos</button>
+            <button class="btn btn-outline-secondary" id="btn-export-incidentes-global">Exportar incidentes</button>
+            <button class="btn btn-dark" id="btn-print-global">PDF</button>
+          </div>
+        </div>
+
+        <section class="mb-4 report-grid">
+          <div class="card report-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="font-weight-bold">Filtrado por empresa cliente</span>
+              <span class="pill" id="badge-selected-cliente">Todos</span>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Empresa</label>
+                <select class="form-control" id="fEmpresaReporte"></select>
+              </div>
+              <div class="form-group mb-0">
+                <label>Cliente</label>
+                <select class="form-control" id="fClienteReporte"></select>
+              </div>
+              <div class="toolbar mt-3">
+                <button class="btn btn-outline-success" id="btn-export-filtro-excel">Excel</button>
+                <button class="btn btn-outline-dark" id="btn-export-filtro-pdf">PDF</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card report-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="font-weight-bold">Resumen rápido</span>
+              <span class="pill">HIGHLANDS ECUADOR</span>
+            </div>
+            <div class="card-body kpi" id="kpi-resumen"></div>
+          </div>
+
+          <div class="card report-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="font-weight-bold">Generar actas entrega</span>
+              <span class="pill">Actas</span>
+            </div>
+            <div class="card-body">
+              <p class="mb-3 text-muted">Atajo para registrar actas filtrando por empresa y cliente.</p>
+              <div class="toolbar">
+                <a class="btn btn-primary" id="btn-actas" href="../pages/actas/form.html">Nueva acta</a>
+                <a class="btn btn-outline-primary" id="btn-actas-list" href="../pages/actas/list.html">Ver actas</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="card report-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="font-weight-bold">Todos los equipos</span>
+              <span class="pill">Filtro avanzado</span>
+            </div>
+            <div class="card-body">
+              <div class="report-grid">
+                <div class="form-group">
+                  <label>Alias</label>
+                  <input class="form-control" id="fAlias" placeholder="Ej. HQ-LAP-01">
+                </div>
+                <div class="form-group">
+                  <label>Nombre</label>
+                  <input class="form-control" id="fNombre" placeholder="Nombre visible">
+                </div>
+                <div class="form-group">
+                  <label>Serie</label>
+                  <input class="form-control" id="fSerie" placeholder="Número de serie">
+                </div>
+                <div class="form-group">
+                  <label>Marca</label>
+                  <select class="form-control" id="fMarca"></select>
+                </div>
+                <div class="form-group">
+                  <label>Modelo</label>
+                  <input class="form-control" id="fModelo" placeholder="Modelo">
+                </div>
+                <div class="form-group">
+                  <label>Tipo</label>
+                  <select class="form-control" id="fTipo"></select>
+                </div>
+                <div class="form-group">
+                  <label>Estado</label>
+                  <select class="form-control" id="fStatus"></select>
+                </div>
+                <div class="form-group">
+                  <label>Sistema operativo</label>
+                  <input class="form-control" id="fSO" placeholder="Windows, macOS...">
+                </div>
+                <div class="form-group">
+                  <label>Procesador</label>
+                  <input class="form-control" id="fCpu" placeholder="i5, Ryzen...">
+                </div>
+                <div class="form-group">
+                  <label>Departamento</label>
+                  <select class="form-control" id="fDepto"></select>
+                </div>
+                <div class="form-group">
+                  <label>Ubicación</label>
+                  <select class="form-control" id="fUbicacion"></select>
+                </div>
+                <div class="form-group">
+                  <label>Ciudad</label>
+                  <select class="form-control" id="fCiudad"></select>
+                </div>
+                <div class="form-group">
+                  <label>Office</label>
+                  <input class="form-control" id="fOffice" placeholder="Office 365...">
+                </div>
+                <div class="form-group">
+                  <label>Nombre de usuario</label>
+                  <select class="form-control" id="fUsuario"></select>
+                </div>
+                <div class="form-group">
+                  <label>Cliente</label>
+                  <select class="form-control" id="fClienteEquipo"></select>
+                </div>
+              </div>
+              <div class="toolbar my-3">
+                <button class="btn btn-primary" id="btn-aplicar-equipos">Aplicar</button>
+                <button class="btn btn-outline-secondary" id="btn-limpiar-equipos">Limpiar</button>
+                <button class="btn btn-outline-success" id="btn-export-equipos-adv">Excel</button>
+                <button class="btn btn-outline-dark" id="btn-export-equipos-pdf">PDF</button>
+              </div>
+              <div class="table-wrap">
+                <table class="table table-sm table-striped" id="tabla-equipos">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>Empresa</th>
+                      <th>Cliente</th>
+                      <th>Serie</th>
+                      <th>Alias</th>
+                      <th>Nombre</th>
+                      <th>Marca</th>
+                      <th>Modelo</th>
+                      <th>Tipo</th>
+                      <th>Estado</th>
+                      <th>SO</th>
+                      <th>Procesador</th>
+                      <th>Departamento</th>
+                      <th>Ubicación</th>
+                      <th>Ciudad</th>
+                      <th>Office</th>
+                      <th>Usuario</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="card report-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="font-weight-bold">Todos los incidentes</span>
+              <span class="pill">Incidentes por empresa</span>
+            </div>
+            <div class="card-body">
+              <div class="report-grid">
+                <div class="form-group">
+                  <label>Empresa</label>
+                  <select class="form-control" id="fEmpresaInc"></select>
+                </div>
+                <div class="form-group">
+                  <label>Cliente</label>
+                  <select class="form-control" id="fClienteInc"></select>
+                </div>
+                <div class="form-group">
+                  <label>Status</label>
+                  <select class="form-control" id="fStatusInc"></select>
+                </div>
+              </div>
+              <div class="toolbar my-3">
+                <button class="btn btn-primary" id="btn-aplicar-inc">Aplicar</button>
+                <button class="btn btn-outline-secondary" id="btn-limpiar-inc">Limpiar</button>
+              </div>
+              <div class="table-wrap">
+                <table class="table table-sm table-striped" id="tabla-incidentes">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>Empresa</th>
+                      <th>Cliente</th>
+                      <th>Equipo</th>
+                      <th>Status</th>
+                      <th>Detalle</th>
+                      <th>Fecha</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="card report-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="font-weight-bold">Reporte de equipos por periférico</span>
+              <span class="pill">Periféricos</span>
+            </div>
+            <div class="card-body">
+              <div class="toolbar mb-3">
+                <button class="btn btn-outline-secondary" id="btn-export-perifericos">Exportar</button>
+              </div>
+              <div class="table-wrap">
+                <table class="table table-sm table-striped" id="tabla-perifericos">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Empresa</th>
+                      <th>Periférico / Equipo</th>
+                      <th>Marca</th>
+                      <th>Modelo</th>
+                      <th>Tipo</th>
+                      <th>Observación</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="./js/reporteria.js"></script>
+</body>
+</html>
+
+

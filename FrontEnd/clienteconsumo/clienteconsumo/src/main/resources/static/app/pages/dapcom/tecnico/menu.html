@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Técnico Global</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body class="dark-portal">
+  <div class="card-shell">
+    <div class="d-flex align-items-center mb-3">
+      <div class="hero-icon mr-3"><i class="las la-tools"></i></div>
+      <div>
+        <h5 class="mb-0 text-white">Técnico Global</h5>
+        <small class="text-muted">Acciones rápidas en campo</small>
+      </div>
+      <a class="btn btn-sm btn-outline-light ml-auto" href="#" data-logout>Salir</a>
+    </div>
+    <div class="d-grid gap-3">
+      <a class="btn btn-main d-flex align-items-center justify-content-between" href="scan.html">
+        <span><i class="las la-qrcode mr-2"></i> Escanear código</span><i class="las la-angle-right"></i>
+      </a>
+      <a class="btn btn-outline d-flex align-items-center justify-content-between" href="registrar.html">
+        <span><i class="las la-plus-circle mr-2"></i> Registrar equipo</span><i class="las la-angle-right"></i>
+      </a>
+      <a class="btn btn-outline d-flex align-items-center justify-content-between" href="buscar.html">
+        <span><i class="las la-search mr-2"></i> Buscar por serie</span><i class="las la-angle-right"></i>
+      </a>
+    </div>
+  </div>
+  <script type="module">
+    import "../../../js/auth.js";
+    import { enforceRole } from "../../../js/auth.js";
+    enforceRole(["TECNICO_GLOBAL"]);
+  </script>
+</body>
+</html>
+
+

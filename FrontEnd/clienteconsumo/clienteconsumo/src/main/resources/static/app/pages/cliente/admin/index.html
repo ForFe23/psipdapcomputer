@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administrador Cliente</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container py-4">
+        <div class="hero mb-4">
+          <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div>
+              <span class="badge badge-info text-white mb-2">Panel Cliente</span>
+              <h3 class="mb-1">Administrador del Cliente</h3>
+              <p class="text-muted mb-0">Accede rápido a inventario, incidencias y mantenimientos de tu organización.</p>
+            </div>
+            <div class="quick-actions d-flex flex-wrap">
+              <a href="../../equipos/list.html" class="btn btn-outline-primary mr-2 mb-2"><i class="las la-desktop mr-2"></i>Ver equipos</a>
+              <a href="../../incidentes/list.html" class="btn btn-outline-secondary mr-2 mb-2"><i class="las la-bug mr-2"></i>Incidentes</a>
+              <a href="../../mantenimientos/list.html" class="btn btn-outline-success mb-2"><i class="las la-tools mr-2"></i>Mantenimientos</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../equipos/list.html">
+              <div class="icon"><i class="las la-desktop"></i></div>
+              <div>
+                <h6 class="mb-1">Equipos</h6>
+                <small class="text-muted">Inventario, filtros avanzados y QR</small>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../incidentes/list.html">
+              <div class="icon" style="background:#fef3c7;color:#d97706;"><i class="las la-bug"></i></div>
+              <div>
+                <h6 class="mb-1">Incidentes</h6>
+                <small class="text-muted">Seguimiento y priorización</small>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../mantenimientos/list.html">
+              <div class="icon" style="background:#ecfccb;color:#65a30d;"><i class="las la-tools"></i></div>
+              <div>
+                <h6 class="mb-1">Mantenimientos</h6>
+                <small class="text-muted">Preventivos y correctivos</small>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../actas/list.html">
+              <div class="icon" style="background:#ffe4e6;color:#db2777;"><i class="las la-file-alt"></i></div>
+              <div>
+                <h6 class="mb-1">Actas</h6>
+                <small class="text-muted">Entrega/recepción con PDF</small>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../ubicaciones/list.html">
+              <div class="icon" style="background:#e0f2fe;color:#0369a1;"><i class="las la-map-marker-alt"></i></div>
+              <div>
+                <h6 class="mb-1">Ubicaciones</h6>
+                <small class="text-muted">Catalogo y áreas específicas</small>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../personas/list.html">
+              <div class="icon" style="background:#f3e8ff;color:#7c3aed;"><i class="las la-user-friends"></i></div>
+              <div>
+                <h6 class="mb-1">Personas</h6>
+                <small class="text-muted">Responsables y contactos</small>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../usuarios/list.html">
+              <div class="icon" style="background:#e5e7eb;color:#111827;"><i class="las la-user-shield"></i></div>
+              <div>
+                <h6 class="mb-1">Usuarios</h6>
+                <small class="text-muted">Accesos y roles del cliente</small>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-4 mb-3">
+            <a class="card-link d-flex align-items-center p-3" href="../../reporteria/index.html">
+              <div class="icon" style="background:#dbeafe;color:#1d4ed8;"><i class="las la-chart-line"></i></div>
+              <div>
+                <h6 class="mb-1">Reportes</h6>
+                <small class="text-muted">Descarga y métricas clave</small>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    import "../../../js/auth.js";
+    import { enforceRole } from "../../../js/auth.js";
+    enforceRole(["CLIENTE_ADMIN"]);
+  </script>
+</body>
+</html>
+
+

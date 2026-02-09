@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Mantenimientos · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0">Mantenimientos</h1>
+      <small class="text-muted">Programación y estado</small>
+    </div>
+    <a class="btn btn-primary" th:href="@{/mantenimientos/nuevo}"><i class="las la-plus mr-1"></i>Nuevo</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Equipo</th>
+            <th>Cliente</th>
+            <th>Fecha programada</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="mantenimientos-body">
+          <tr><td colspan="6" class="text-center text-muted">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarMantenimientos() {
+    const tbody = document.getElementById('mantenimientos-body');
+    try {
+      const res = await apiFetch('/mantenimientos');
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan=\"6\" class=\"text-center text-muted\">Sin mantenimientos</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(m => `
+        <tr>
+          <td>${m.id ?? ''}</td>
+          <td>${m.equipoId ?? ''}</td>
+          <td>${m.idCliente ?? ''}</td>
+          <td>${m.fechaProgramada ?? ''}</td>
+          <td><span class="badge ${estadoBadge(m.estadoInterno || m.estado)}">${m.estadoInterno ?? m.estado ?? ''}</span></td>
+          <td class="text-right">
+            <a class="btn btn-sm btn-outline-primary" href="/mantenimientos/nuevo?id=${m.id}">Editar</a>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan=\"6\" class=\"text-danger text-center\">No se pudo cargar (' + err.message + ')</td></tr>';
+    }
+  }
+
+  function estadoBadge(estado) {
+    const e = (estado || '').toUpperCase();
+    if (e.includes('ACT')) return 'badge-success';
+    if (e.includes('PROG')) return 'badge-warning';
+    if (e.includes('INACT')) return 'badge-secondary';
+    return 'badge-light';
+  }
+
+  document.addEventListener('DOMContentLoaded', cargarMantenimientos);
+</script>
+</body>
+</html>
+

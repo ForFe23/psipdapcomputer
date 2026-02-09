@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Items de acta</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Items de acta</h4>
+              <small class="text-muted" id="acta-info">Acta</small>
+            </div>
+            <a class="btn btn-outline-secondary" href="../actas/list.html">Volver a actas</a>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="item-form">
+                <input type="hidden" id="itemId">
+                <input type="hidden" id="baseEquipoId">
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label>Empresa</label>
+                    <input class="form-control" type="text" id="empresaTxt" readonly>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Equipo base</label>
+                    <input class="form-control" type="text" id="equipoBaseTxt" readonly>
+                  </div>
+                </div>
+                <div class="form-row mt-2">
+                  <div class="w-100"></div>
+                  <div class="form-group col-md-2">
+                    <label for="itemNumero">Item #</label>
+                    <input class="form-control" type="number" id="itemNumero" required min="1">
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="tipo">Tipo accesorio</label>
+                    <input class="form-control" type="text" id="tipo" required>
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="marca">Marca</label>
+                    <input class="form-control" type="text" id="marca">
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label for="modelo">Modelo accesorio</label>
+                    <input class="form-control" type="text" id="modelo">
+                  </div>
+                  <div class="form-group col-md-4 d-flex align-items-center">
+                    <div class="custom-control custom-checkbox mt-3 ml-2">
+                      <input type="checkbox" class="custom-control-input" id="registrarPeriferico" checked>
+                      <label class="custom-control-label" for="registrarPeriferico">Registrar como periférico al cerrar acta</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="equipoSerie">Serie accesorio</label>
+                    <input class="form-control" type="text" id="equipoSerie" list="seriesList" autocomplete="off" placeholder="Ej: NO SERIALIZADO">
+                    <datalist id="seriesList">
+                      <option value="⬇SUGERENCIAS⬇"></option>
+                    </datalist>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="observacion">Observación</label>
+                    <input class="form-control" type="text" id="observacion" placeholder="Notas sobre el accesorio">
+                  </div>
+                  <div class="form-group col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" type="submit">Guardar item</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>#</th>
+                    <th>Tipo</th>
+                    <th>Serie</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Equipo ID</th>
+                    <th>Observación</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="items-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/acta-items.list.js"></script>
+</body>
+</html>
+
+

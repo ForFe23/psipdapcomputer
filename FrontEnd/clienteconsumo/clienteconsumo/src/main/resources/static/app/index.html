@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario TI | Inicio</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+
+<body>
+  <div id="welcome-overlay">
+    <div class="welcome-content">
+      <span class="welcome-badge">Inventarios TI</span>
+      <h1>Bienvenido</h1>
+      <p>Conectando con tu tablero...</p>
+    </div>
+  </div>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="mb-4">
+              <div class="card hero-card p-4 animate-on-load">
+            <div class="row align-items-center">
+              <div class="col-lg-8">
+                <div class="d-flex align-items-start">
+                  <div class="mr-3">
+                    <span class="badge badge-pill mb-2">PSIPDAP Computer</span>
+                    <div class="d-flex align-items-center">
+                      <i class="las la-laptop-code la-3x mr-3"></i>
+                      <div>
+                        <h3 class="mb-1">Dashboard Inventario TI</h3>
+                        <p class="mb-2">Actas, equipos, movimientos y adjuntos en un panel único.</p>
+                      </div>
+                    </div>
+                    <div class="d-flex flex-wrap mt-3">
+                      <a class="btn btn-light text-primary mr-2 mb-2" href="./pages/equipos/list.html"><i class="las la-desktop mr-2"></i>Ir a Equipos</a>
+                      <a class="btn btn-outline-light mr-2 mb-2" href="./pages/perifericos/list.html"><i class="las la-keyboard mr-2"></i>Periféricos</a>
+                      <a class="btn btn-outline-light mr-2 mb-2" href="./pages/actas/form.html"><i class="las la-file-alt mr-2"></i>Nueva Acta</a>
+                      <a class="btn btn-outline-light mr-2 mb-2" href="./pages/movimientos/form.html"><i class="las la-random mr-2"></i>Registrar Movimiento</a>
+                      <a class="btn btn-outline-light mb-2" href="./pages/adjuntos/form.html"><i class="las la-paperclip mr-2"></i>Subir Adjunto</a>
+                      <a class="btn btn-outline-light mb-2 ml-0" href="./pages/mantenimientos/list.html"><i class="las la-tools mr-2"></i>Mantenimientos</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 text-lg-right text-center">
+                <img class="hero-illustration img-fluid" data-asset-src="assets/images/undraw_dashboard_nklg.svg" src="/assets/images/undraw_dashboard_nklg.svg" alt="Dashboard" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="row">
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.2s">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2 align-items-center">
+                    <span class="kpi-icon bg-primary text-white"><i class="las la-hdd"></i></span>
+                    <a class="btn btn-sm btn-outline-primary" data-kpi-link="ACTIVO">Ver</a>
+                  </div>
+                  <h5 class="mb-0" id="kpi-activos">--</h5>
+                  <small class="text-success" id="kpi-activos-delta">+0 hoy</small>
+                  <p class="text-muted mb-0 mt-2">Equipos activos</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.3s">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2 align-items-center">
+                    <span class="kpi-icon bg-warning text-white"><i class="las la-file-alt"></i></span>
+                    <a class="btn btn-sm btn-outline-warning" data-kpi-link="MANTENIMIENTO">Ver</a>
+                  </div>
+                  <h5 class="mb-0" id="kpi-mantenimiento">--</h5>
+                  <small class="text-muted" id="kpi-mantenimiento-delta">Programados</small>
+                  <p class="text-muted mb-0 mt-2">Mantenimiento</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.4s">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2 align-items-center">
+                    <span class="kpi-icon bg-info text-white"><i class="las la-random"></i></span>
+                    <a class="btn btn-sm btn-outline-info" data-kpi-link="TRASLADO">Ver</a>
+                  </div>
+                  <h5 class="mb-0" id="kpi-traslado">--</h5>
+                  <small class="text-muted" id="kpi-traslado-delta">Últimas 24h</small>
+                  <p class="text-muted mb-0 mt-2">En traslado</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.5s">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2 align-items-center">
+                    <span class="kpi-icon bg-danger text-white"><i class="las la-paperclip"></i></span>
+                    <a class="btn btn-sm btn-outline-danger" data-kpi-link="BAJA">Ver</a>
+                  </div>
+                  <h5 class="mb-0" id="kpi-baja">--</h5>
+                  <small class="text-muted" id="kpi-baja-delta">Pendientes de retiro</small>
+                  <p class="text-muted mb-0 mt-2">Baja / retiro</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.6s">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2 align-items-center">
+                    <span class="kpi-icon bg-success text-white"><i class="las la-user-shield"></i></span>
+                    <span class="chip">Usuarios</span>
+                  </div>
+                  <h5 class="mb-0" id="kpi-usuarios">--</h5>
+                  <small class="text-muted">Activos</small>
+                  <p class="text-muted mb-0 mt-2">Responsables</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+              <div class="card kpi-card animate-on-load" style="--anim-delay:0.7s">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2 align-items-center">
+                    <span class="kpi-icon bg-secondary text-white"><i class="las la-building"></i></span>
+                    <span class="chip">Clientes</span>
+                  </div>
+                  <h5 class="mb-0" id="kpi-clientes">--</h5>
+                  <small class="text-muted">con actas vigentes</small>
+                  <p class="text-muted mb-0 mt-2">Consolidados</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="row">
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.2s">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Inventario</p>
+                  <h5 class="mb-1">Equipos</h5>
+                  <p class="mb-3">Altas, edición y consulta por código interno y serie.</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <a class="btn btn-outline-primary btn-sm" href="./pages/equipos/list.html">Abrir</a>
+                    <span class="badge badge-pill badge-success">SLA 99%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.3s">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Operación</p>
+                  <h5 class="mb-1">Actas</h5>
+                  <p class="mb-3">Generación y actualización de actas con ítems y adjuntos.</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <a class="btn btn-outline-primary btn-sm" href="./pages/actas/list.html">Abrir</a>
+                    <span class="badge badge-pill badge-warning text-dark">3 en curso</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.4s">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Trazabilidad</p>
+                  <h5 class="mb-1">Movimientos</h5>
+                  <p class="mb-3">Transferencias, retiros y cambios de ubicación.</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <a class="btn btn-outline-primary btn-sm" href="./pages/movimientos/list.html">Abrir</a>
+                    <span class="badge badge-pill badge-info text-white">+4 hoy</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <div class="card mini-card h-100 animate-on-load" style="--anim-delay:0.5s">
+                <div class="card-body">
+                  <p class="text-muted mb-1">Soporte</p>
+                  <h5 class="mb-1">Adjuntos</h5>
+                  <p class="mb-3">Carga y consulta de archivos asociados a actas.</p>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <a class="btn btn-outline-primary btn-sm" href="./pages/adjuntos/list.html">Abrir</a>
+                    <span class="badge badge-pill badge-danger" id="kpi-adjuntos">--</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="row">
+            <div class="col-xl-8 mb-3">
+              <div class="card h-100 animate-on-load" style="--anim-delay:0.2s">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-0 section-title">Actas recientes</h6>
+                    <small class="text-muted">Estados y responsables</small>
+                  </div>
+                  <a class="btn btn-sm btn-primary" href="./pages/actas/list.html">Ver actas</a>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Código</th>
+                        <th>Cliente</th>
+                        <th>Emisor</th>
+                        <th>Receptor</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                      </tr>
+                    </thead>
+                    <tbody id="actas-recientes-body">
+                      <tr><td colspan="6" class="text-center text-muted">Cargando...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4 mb-3">
+              <div class="card h-100 animate-on-load" style="--anim-delay:0.3s">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Salud Operativa</h6>
+                  <span class="badge badge-success">Online</span>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1"><span>Backlog actas</span><span class="text-muted" id="backlog-actas">--</span></div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-primary" id="backlog-actas-bar" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1"><span>Movimientos hoy</span><span class="text-muted" id="movimientos-hoy">--</span></div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-info" id="movimientos-hoy-bar" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1"><span>Adjuntos pendientes</span><span class="text-muted" id="adjuntos-pendientes">--</span></div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-warning" id="adjuntos-pendientes-bar" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1"><span>Incidentes</span><span class="text-muted" id="incidentes-abiertos">--</span></div>
+                    <div class="progress" style="height: 6px;">
+                      <div class="progress-bar bg-danger" id="incidentes-abiertos-bar" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                  <div class="alert alert-light border mt-3 mb-0">
+                    <i class="las la-bolt text-warning mr-2"></i>
+                    Recuerda sincronizar equipos antes de cerrar actas.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="row">
+            <div class="col-xl-6 mb-3">
+              <div class="card h-100 animate-on-load" style="--anim-delay:0.4s">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Movimientos recientes</h6>
+                  <a class="btn btn-sm btn-outline-primary" href="./pages/movimientos/list.html">Ver todos</a>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush" id="movimientos-recientes-list">
+                    <li class="list-group-item text-muted text-center">Cargando...</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-6 mb-3">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Adjuntos recientes</h6>
+                  <a class="btn btn-sm btn-outline-primary" href="./pages/adjuntos/list.html">Ver adjuntos</a>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                      <thead class="thead-light">
+                        <tr>
+                          <th>Acta</th>
+                          <th>Archivo</th>
+                          <th>Tamaño</th>
+                          <th>Subido</th>
+                        </tr>
+                      </thead>
+                      <tbody id="adjuntos-recientes-body">
+                        <tr><td colspan="4" class="text-center text-muted">Cargando...</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="row">
+            <div class="col-xl-5 mb-3">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Incidentes y tickets</h6>
+                  <span class="badge badge-danger">Atención</span>
+                </div>
+                <div class="card-body">
+                  <div class="timeline" id="incidentes-list">
+                    <div class="timeline-item text-muted">Cargando...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-7 mb-3">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Resumen de operaciones</h6>
+                  <span class="badge badge-primary">Kardex TI</span>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="d-flex align-items-center mb-3">
+                        <div class="kpi-icon bg-primary text-white mr-3"><i class="las la-check-circle"></i></div>
+                        <div>
+                          <div class="text-muted small">Actas completadas</div>
+                          <h5 class="mb-0" id="actas-completadas">--</h5>
+                          <small class="text-success" id="actas-completadas-delta"></small>
+                        </div>
+                      </div>
+                      <div class="d-flex align-items-center mb-3">
+                        <div class="kpi-icon bg-info text-white mr-3"><i class="las la-random"></i></div>
+                        <div>
+                          <div class="text-muted small">Movimientos log</div>
+                          <h5 class="mb-0" id="movimientos-log">--</h5>
+                          <small class="text-muted">Últimos 30 días</small>
+                        </div>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <div class="kpi-icon bg-success text-white mr-3"><i class="las la-lock-open"></i></div>
+                        <div>
+                          <div class="text-muted small">Equipos liberados</div>
+                          <h5 class="mb-0" id="equipos-liberados">--</h5>
+                          <small class="text-success">En SLA</small>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="card mini-card mb-3">
+                        <div class="card-body">
+                          <p class="text-muted mb-1">Alertas</p>
+                          <h6 class="mb-2">Checklist de día</h6>
+                          <ul class="list-unstyled mb-0">
+                            <li><i class="las la-check text-success mr-2"></i>Validar adjuntos críticos</li>
+                            <li><i class="las la-check text-success mr-2"></i>Revisar movimientos con incidentes</li>
+                            <li><i class="las la-exclamation-circle text-warning mr-2"></i>Conciliar 2 actas pendientes</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="card mini-card">
+                        <div class="card-body">
+                          <p class="text-muted mb-1">Atajos rápidos</p>
+                          <div class="d-flex flex-wrap">
+                            <a class="btn btn-outline-primary btn-sm mr-2 mb-2" href="./pages/equipos/form.html"><i class="las la-plus mr-1"></i>Nuevo equipo</a>
+                            <a class="btn btn-outline-primary btn-sm mr-2 mb-2" href="./pages/actas/form.html"><i class="las la-file-alt mr-1"></i>Nueva acta</a>
+                            <a class="btn btn-outline-primary btn-sm mr-2 mb-2" href="./pages/movimientos/form.html"><i class="las la-random mr-1"></i>Movimiento</a>
+                            <a class="btn btn-outline-secondary btn-sm mr-2 mb-2" href="./pages/plantilla/reference.html"><i class="las la-layer-group mr-1"></i>Componentes</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4">
+          <div class="row">
+            <div class="col-xl-4 mb-3">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Resumen por cliente</h6>
+                  <span class="badge badge-primary" id="badge-clientes-total">--</span>
+                </div>
+                <div class="card-body scroll-list">
+                  <ul class="list-group list-group-flush" id="resumen-clientes">
+                    <li class="list-group-item text-muted text-center">Cargando...</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4 mb-3">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Ubicaciones destacadas</h6>
+                  <span class="badge badge-info text-white" id="badge-ubicaciones-total">--</span>
+                </div>
+                <div class="card-body scroll-list">
+                  <div class="list-group list-group-flush" id="ubicaciones-destacadas">
+                    <div class="list-group-item text-muted text-center">Cargando...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4 mb-3">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 section-title">Ilustraciones</h6>
+                  <span class="badge badge-light">Plantilla</span>
+                </div>
+                <div class="card-body">
+                  <img class="img-fluid rounded shadow-sm mb-3" data-asset-src="assets/images/undraw_dashboard_nklg.svg" src="/assets/images/undraw_dashboard_nklg.svg" alt="Dashboard">
+                  <img class="img-fluid rounded shadow-sm" data-asset-src="assets/images/undraw_medical_research_qg4d.svg" src="/assets/images/undraw_medical_research_qg4d.svg" alt="Research">
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="./js/auth.js"></script>
+  <script type="module" src="./js/pages/home.js"></script>
+  <script>
+    window.addEventListener("load", () => {
+      setTimeout(() => document.body.classList.add("welcome-hidden"), 1500);
+      document.querySelectorAll(".animate-on-load").forEach((el, i) => {
+        el.style.setProperty("--anim-delay", `${0.1 * i}s`);
+        requestAnimationFrame(() => el.classList.add("is-visible"));
+      });
+    });
+  </script>
+</body>
+
+</html>
+
+

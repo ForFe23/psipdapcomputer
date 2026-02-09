@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nuevo equipo rápido</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body class="dark-portal">
+  <div class="card-shell">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="mb-0 text-white">Registrar equipo</h5>
+        <small class="text-muted" id="context-info"></small>
+      </div>
+      <a class="btn btn-link text-light" href="menu.html">Volver</a>
+    </div>
+    <form id="form-equipo">
+      <div class="form-group">
+        <label>Serie*</label>
+        <input class="form-control" name="serie" required>
+      </div>
+      <div class="form-group mt-2">
+        <label>Nombre</label>
+        <input class="form-control" name="nombre">
+      </div>
+      <div class="form-group mt-2">
+        <label>Marca</label>
+        <input class="form-control" name="marca">
+      </div>
+      <div class="form-group mt-2">
+        <label>Modelo</label>
+        <input class="form-control" name="modelo">
+      </div>
+      <div class="form-group mt-2">
+        <label>Tipo</label>
+        <input class="form-control" name="tipo">
+      </div>
+      <div class="form-group mt-2">
+        <label>Estado</label>
+        <input class="form-control" name="estado" placeholder="Operativo / Registrado">
+      </div>
+      <div class="form-group mt-2">
+        <label>Correo responsable (opcional)</label>
+        <input class="form-control" name="correo" placeholder="correo@dominio.com">
+      </div>
+      <button class="btn btn-main mt-3" type="submit" id="btn-guardar">Guardar y volver</button>
+    </form>
+    <div class="alert alert-danger mt-3 d-none" id="msg-error"></div>
+    <div class="alert alert-success mt-3 d-none" id="msg-ok">Equipo creado</div>
+  </div>
+  <script type="module">
+    import { enforceRole } from "../../../js/auth.js";
+    import { equiposApi } from "../../../js/api/equipos.api.js";
+    import { ubicacionesApi } from "../../../js/api/ubicaciones.api.js";
+    const session = enforceRole(["TECNICO_GLOBAL","TECNICO_CLIENTE"]);
+    const params = new URLSearchParams(window.location.search);
+    const clienteId = Number(params.get("clienteId")) || session?.clienteId || null;
+    const empresaId = Number(params.get("empresaId")) || session?.empresaId || null;
+    const costoDefault = Number(params.get("costoDefault")) || 0;
+    const ctx = document.getElementById("context-info");
+    ctx.textContent = `Cliente ${clienteId ?? "-"} ${empresaId ? "· Empresa " + empresaId : ""}`;
+    const form = document.getElementById("form-equipo");
+    const btn = document.getElementById("btn-guardar");
+    const err = document.getElementById("msg-error");
+    const ok = document.getElementById("msg-ok");
+
+    const showError = (m) => { err.textContent = m; err.classList.remove("d-none"); ok.classList.add("d-none"); };
+    const showOk = () => { err.classList.add("d-none"); ok.classList.remove("d-none"); };
+
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      if (!clienteId) { showError("Falta cliente"); return; }
+      const data = new FormData(form);
+      const serie = data.get("serie")?.trim();
+      if (!serie) { showError("Serie es obligatoria"); return; }
+      const correo = data.get("correo")?.trim();
+      if (correo && !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(correo)) { showError("Correo inválido"); return; }
+      let ubicacionTexto = `MATRIZ - CLIENTE ${clienteId}`;
+      let ubicacionId = null;
+      try {
+        const ubicaciones = await ubicacionesApi.listByCliente(clienteId);
+        const matriz = ubicaciones[0];
+        if (matriz) {
+          ubicacionId = matriz.id;
+          ubicacionTexto = matriz.nombre || ubicacionTexto;
+        }
+      } catch (err) {
+      }
+      const payload = {
+        idCliente: clienteId,
+        empresaId: empresaId || null,
+        serie: serie,
+        marca: data.get("marca") || null,
+        modelo: data.get("modelo") || null,
+        tipo: data.get("tipo") || null,
+        estado: data.get("estado") || "REGISTRADO",
+        nombre: data.get("nombre") || null,
+        alias: data.get("nombre") || null,
+        costo: costoDefault,
+        contactoProveedor: correo || null,
+        ubicacionUsuario: ubicacionTexto,
+        ubicacionActualId: ubicacionId
+      };
+      btn.disabled = true; btn.textContent = "Guardando...";
+      try {
+        await equiposApi.create(payload);
+        showOk();
+        setTimeout(() => window.location.href = "menu.html", 600);
+      } catch (e) {
+        showError(e.message || "Error al crear");
+      } finally {
+        btn.disabled = false; btn.textContent = "Guardar y volver";
+      }
+    });
+  </script>
+</body>
+</html>
+
+

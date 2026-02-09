@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Equipo</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+  <style>
+    .data-grid { display:grid; grid-template-columns: 1fr; gap:8px; }
+    .data-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; }
+    .data-row span { color:#e9eef7; font-size:0.95rem; word-break:break-word; }
+    .copy-btn { border:none; background:rgba(255,255,255,0.08); color:#cfd6e3; border-radius:8px; padding:6px 10px; font-size:0.85rem; }
+    @media (max-width:480px) {
+      .data-row { flex-direction:column; align-items:flex-start; }
+      .copy-btn { width:100%; text-align:center; }
+    }
+  </style>
+</head>
+<body class="dark-portal">
+  <div class="card-shell">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="mb-0 text-white">Equipo</h5>
+        <small class="text-muted">Detalle rápido y acciones</small>
+      </div>
+      <a class="btn btn-link text-light" href="menu.html">Volver</a>
+    </div>
+    <div id="card-body">Cargando...</div>
+    <div class="d-grid gap-2 mt-3">
+      <a class="btn btn-main" id="btnActa" href="#">Acta entrega</a>
+      <a class="btn btn-ghost" id="btnIncidente" href="#">Incidente</a>
+      <a class="btn btn-ghost" id="btnMantenimiento" href="#">Mantenimiento</a>
+      <button class="btn btn-ghost" id="btnDatosGenerales" type="button">Datos generales</button>
+    </div>
+  </div>
+  <script type="module">
+    import { enforceRole, getAccessScope } from "../../../js/auth.js";
+    import { equiposApi } from "../../../js/api/equipos.api.js";
+    const session = enforceRole(["TECNICO_GLOBAL", "TECNICO_CLIENTE"]);
+    const scope = getAccessScope();
+    const params = new URLSearchParams(window.location.search);
+    const rawInput = (params.get("serie") || "").trim();
+    const targetSerie = rawInput.toUpperCase();
+    const targetId = rawInput && !Number.isNaN(Number(rawInput)) ? Number(rawInput) : null;
+    const body = document.getElementById("card-body");
+    const matchesScope = (eq) => {
+      const role = (session?.rol || "").toUpperCase();
+      if (role === "TECNICO_GLOBAL") return true;
+      if (scope.clienteId && eq.idCliente && String(eq.idCliente) !== String(scope.clienteId)) return false;
+      if (scope.empresaId && eq.empresaId && String(eq.empresaId) !== String(scope.empresaId)) return false;
+      return true;
+    };
+    const render = (eq) => {
+      const empresaNombre = eq.nombreEmpresa || eq.empresa || "";
+      const clienteNombre = eq.nombreCliente || eq.cliente || "";
+      const alias = eq.alias || "";
+      body.innerHTML = `
+        <h5>${eq.nombreequipo || alias || eq.serie || ""}</h5>
+        <div class="text-muted">${alias ? `Alias: ${alias} · ` : ""}${eq.serie || eq.serieEquipo || ""}</div>
+        <div class="mt-2 small">Cliente: ${clienteNombre || eq.idCliente || "-"}</div>
+        <div class="small">Empresa: ${empresaNombre || eq.empresaId || "-"}</div>
+        <div class="small">Ubicación: ${eq.ubicacionUsuario || eq.ubicacion || "-"}</div>
+        <div class="small">Estado: ${eq.estado || eq.statusequipo || "-"}</div>
+        <div class="small">Procesador: ${eq.procesador || "-"}</div>
+        <div class="small">Memoria: ${eq.memoria || "-"}</div>
+        <div class="small">Disco: ${eq.disco || "-"}</div>
+      `;
+      const baseParams = new URLSearchParams();
+      baseParams.set("equipoId", eq.id);
+      if (eq.serie || eq.serieEquipo) baseParams.set("serie", eq.serie || eq.serieEquipo);
+      if (eq.idCliente || scope.clienteId) baseParams.set("clienteId", eq.idCliente ?? scope.clienteId);
+      if (eq.empresaId || scope.empresaId) baseParams.set("empresaId", eq.empresaId ?? scope.empresaId ?? eq.idCliente ?? "");
+      baseParams.set("previewMobile", "1");
+      const returnUrl = encodeURIComponent(`/app/pages/dapcom/tecnico/detalle.html?serie=${encodeURIComponent(eq.serie || eq.serieEquipo || "")}`);
+      baseParams.set("return", returnUrl);
+      const actaParams = new URLSearchParams(baseParams);
+
+      document.getElementById("btnActa").href = `../../actas/form.html?${actaParams.toString()}`;
+      document.getElementById("btnIncidente").href = `../../incidentes/form.html?${baseParams.toString()}`;
+      document.getElementById("btnMantenimiento").href = `../../mantenimientos/form.html?${baseParams.toString()}`;
+
+      const btnGeneral = document.getElementById("btnDatosGenerales");
+      if (btnGeneral) {
+        btnGeneral.addEventListener("click", () => {
+          const existing = document.getElementById("datos-generales");
+          if (existing) { existing.remove(); return; }
+          const rows = [
+            ["Activo", eq.codigoInterno || eq.activo || eq.codigo || eq.activoEquipo || "-"],
+            ["Serie", eq.serie || eq.serieEquipo || "-"],
+            ["IP", eq.ip || eq.ipequipo || "-"],
+            ["Tipo", eq.tipo || eq.tipoEquipo || "-"],
+            ["Marca/Modelo", `${eq.marca || eq.marcaEquipo || "-"} ${eq.modelo || eq.modeloEquipo || ""}`.trim()],
+            ["Cliente", clienteNombre || eq.idCliente || "-"],
+            ["Empresa", empresaNombre || eq.empresaId || "-"],
+            ["Ubicación", eq.ubicacionUsuario || eq.ubicacion || "-"],
+            ["Estado", eq.estado || eq.statusequipo || "-"],
+            ["Procesador", eq.procesador || "-"],
+            ["Memoria", eq.memoria || "-"],
+            ["Disco", eq.disco || "-"],
+            ["SO", eq.sistemaOperativo || eq.so || "-"],
+            ["Alias", alias || "-"],
+            ["Usuario", eq.nombreUsuario || eq.usuario || "-"],
+            ["Departamento", eq.departamentoUsuario || "-"],
+            ["Ciudad", eq.ciudad || "-"],
+            ["Office", eq.office || "-"],
+            ["Costo", eq.costo || "-"]
+          ];
+          const container = document.createElement("div");
+          container.id = "datos-generales";
+          container.className = "mt-3";
+          container.innerHTML = `
+            <div class="text-muted mb-2">Datos generales</div>
+            <div class="data-grid">
+              ${rows.map(([label,val])=>`
+                <div class="data-row">
+                  <span>${label}: ${val}</span>
+                  <button class="copy-btn" type="button" data-copy="${String(val)}" aria-label="Copiar ${label}">Copiar</button>
+                </div>
+              `).join("")}
+            </div>
+          `;
+          body.appendChild(container);
+          container.querySelectorAll(".copy-btn").forEach((btn)=>btn.addEventListener("click",()=>copyText(btn.dataset.copy||"")));
+        });
+      }
+    };
+    const normalize = (v) => (v === undefined || v === null ? "" : String(v).trim().toUpperCase());
+    const load = async () => {
+      if (!rawInput) { body.textContent = "Sin serie en QR."; return; }
+      try {
+        const list = (await equiposApi.list()).filter(matchesScope).filter((e) => {
+          const candidates = [
+            e.serie,
+            e.serieEquipo,
+            e.codigoInterno,
+            e.activo,
+            e.codigo,
+            e.activoEquipo
+          ].map(normalize);
+          if (targetSerie && candidates.includes(targetSerie)) return true;
+          if (targetId && Number(e.id) === targetId) return true;
+          return false;
+        });
+        if (!list.length) { body.textContent = "No se encontró el equipo en tu cliente/empresa."; return; }
+        render(list[0]);
+      } catch (err) {
+        body.textContent = "Error al cargar equipo.";
+      }
+    };
+    load();
+  </script>
+  <script>
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+      } catch (e) {}
+      const ta=document.createElement("textarea");
+      ta.value=text;
+      ta.style.position="fixed";
+      ta.style.left="-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch(e){}
+      ta.remove();
+    }
+  </script>
+</body>
+</html>
+
+

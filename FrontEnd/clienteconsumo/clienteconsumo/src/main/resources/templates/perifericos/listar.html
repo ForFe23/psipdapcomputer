@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{plantilla/plantilla}">
+<head>
+  <title>Periféricos · PSIPDAP</title>
+</head>
+<body>
+<section layout:fragment="contenido">
+  <div class="page-header">
+    <div>
+      <h1 class="h4 mb-0">Periféricos</h1>
+      <small class="text-muted">Listado consumiendo /api/perifericos</small>
+    </div>
+    <a class="btn btn-primary" th:href="@{/perifericos/nuevo}"><i class="las la-plus mr-1"></i>Nuevo</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Equipo</th>
+            <th>Cliente</th>
+            <th>Monitor</th>
+            <th>Teclado</th>
+            <th>Mouse</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="perifericos-body">
+          <tr><td colspan="8" class="text-center text-muted">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function cargarPerifericos() {
+    const tbody = document.getElementById('perifericos-body');
+    try {
+      const res = await apiFetch('/perifericos');
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan=\"8\" class=\"text-center text-muted\">Sin periféricos</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(p => `
+        <tr>
+          <td>${p.id ?? ''}</td>
+          <td>${p.equipoId ?? ''}</td>
+          <td>${p.idCliente ?? ''}</td>
+          <td>${p.marcaMonitor ?? ''} ${p.modeloMonitor ?? ''}</td>
+          <td>${p.marcaTeclado ?? ''} ${p.modeloTeclado ?? ''}</td>
+          <td>${p.marcaMouse ?? ''} ${p.modeloMouse ?? ''}</td>
+          <td><span class="badge ${estadoBadge(p.estadoInterno)}">${p.estadoInterno ?? ''}</span></td>
+          <td class="text-right">
+            <a class="btn btn-sm btn-outline-primary" href="/perifericos/nuevo?id=${p.id}">Editar</a>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan=\"8\" class=\"text-danger text-center\">No se pudo cargar (' + err.message + ')</td></tr>';
+    }
+  }
+
+  function estadoBadge(estado) {
+    const e = (estado || '').toUpperCase();
+    if (e.includes('ACT')) return 'badge-success';
+    if (e.includes('INACT')) return 'badge-secondary';
+    return 'badge-light';
+  }
+
+  document.addEventListener('DOMContentLoaded', cargarPerifericos);
+</script>
+</body>
+</html>
+

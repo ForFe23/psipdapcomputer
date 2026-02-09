@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Equipos</title>
+  <link rel="icon" href="/assets/images/qafya-icon.ico">
+  <link rel="stylesheet" href="/assets/css/vendors/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors/line-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/pages/layout.css">
+</head>
+<body>
+  <div data-include="header"></div>
+  <main class="layout-shell">
+    <div data-include="sidebar" class="side-nav"></div>
+    <div class="main-content">
+      <div class="container-fluid">
+        <section class="py-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h4 class="mb-0">Equipos</h4>
+              <small class="text-muted">Inventario y estado operativo</small>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="badge badge-primary mr-3">Total: <span id="total-equipos">0</span></span>
+              <div class="d-flex">
+                <div class="dropdown mr-2">
+                  <button class="btn btn-outline-dark dropdown-toggle" type="button" id="btn-columnas" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Mostrar / Ocultar columnas
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right p-2" style="max-height:320px;overflow:auto;" id="columnas-menu" aria-labelledby="btn-columnas"></div>
+                </div>
+                <button class="btn btn-outline-dark mr-2" id="btn-filtros-avanzados"><i class="las la-filter mr-2"></i>Filtros avanzados</button>
+                <a class="btn btn-outline-primary mr-2" href="./form.html"><i class="las la-plus mr-2"></i>Nuevo equipo</a>
+                <a class="btn btn-outline-secondary" href="../actas/list.html"><i class="las la-file-alt mr-2"></i>Actas</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-primary"><i class="las la-hdd la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Activos</p>
+                    <h5 class="mb-0" id="kpi-activos">0</h5>
+                    <small class="text-success" id="kpi-activos-extra"></small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-warning"><i class="las la-tools la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Mantenimiento</p>
+                    <h5 class="mb-0" id="kpi-mantenimiento">0</h5>
+                    <small class="text-muted" id="kpi-mantenimiento-extra"></small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-info"><i class="las la-exchange-alt la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">En traslado</p>
+                    <h5 class="mb-0" id="kpi-traslado">0</h5>
+                    <small class="text-muted" id="kpi-traslado-extra"></small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                  <div class="mr-3 text-danger"><i class="las la-ban la-2x"></i></div>
+                  <div>
+                    <p class="text-muted mb-1">Baja</p>
+                    <h5 class="mb-0" id="kpi-baja">0</h5>
+                    <small class="text-muted" id="kpi-baja-extra"></small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <form id="filtros-equipos" class="form-row">
+                <div class="form-group col-md-3">
+                  <label for="fEmpresa">Empresa</label>
+                  <select class="form-control" id="fEmpresa">
+                    <option value="">Todas</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fSerie">Serie</label>
+                  <input class="form-control" type="text" id="fSerie" placeholder="Serie o parcial">
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fTipo">Tipo</label>
+                  <input class="form-control" type="text" id="fTipo" placeholder="Laptop, Desktop...">
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fEstado">Estado</label>
+                  <select class="form-control" id="fEstado">
+                    <option value="">Todos</option>
+                    <option>OPERATIVO</option>
+                    <option>REGISTRADO</option>
+                    <option>BAJA</option>
+                    <option>ACTIVO</option>
+                    <option>INACTIVO</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="fTexto">Buscar</label>
+                  <input class="form-control" type="text" id="fTexto" placeholder="Modelo, marca, código">
+                </div>
+                <div class="form-group col-md-3 d-flex align-items-end">
+                  <button class="btn btn-outline-primary mr-2" type="submit"><i class="las la-filter mr-2"></i>Filtrar</button>
+                  <button class="btn btn-outline-secondary" type="button" onclick="window.location.reload()">Limpiar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0" id="equipos-tabla">
+                <thead class="thead-light" id="equipos-thead"></thead>
+                <tbody id="equipos-tbody"></tbody>
+              </table>
+            </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between px-3 pb-3" id="pagination-bar">
+              <div class="form-inline mb-2">
+                <label class="mr-2 mb-0" for="page-size">Filas por página</label>
+                <select id="page-size" class="form-control form-control-sm">
+                  <option>10</option>
+                  <option>25</option>
+                  <option>50</option>
+                  <option>100</option>
+                </select>
+              </div>
+              <div class="d-flex align-items-center">
+                <button class="btn btn-outline-secondary btn-sm mr-2" id="page-prev">Anterior</button>
+                <div id="page-info" class="text-muted small mr-2"></div>
+                <button class="btn btn-outline-secondary btn-sm" id="page-next">Siguiente</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div data-include="footer"></div>
+  <script src="/assets/js/vendors/jquery.min.js"></script>
+  <script>
+    if (!window.jQuery) {
+      document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\\/script>');
+    }
+    if (window.jQuery && !window.$) {
+      window.$ = window.jQuery;
+    }
+  </script>
+  <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/vendors/qrcode.min.js"></script>
+  <script src="/assets/js/global.js"></script>
+  <script type="module" src="/app/js/pages/equipos.list.js"></script>
+
+  <div class="advanced-filter-backdrop" id="filter-backdrop"></div>
+  <aside class="advanced-filter" id="filter-panel">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="mb-0">Filtros avanzados</h6>
+      <button class="btn btn-sm btn-light" id="btn-cerrar-filtros"><i class="las la-times"></i></button>
+    </div>
+    <div class="filter-grid" id="filter-grid">
+      
+    </div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-outline-secondary btn-block mr-2" id="btn-reset-filtros">Restablecer</button>
+      <button class="btn btn-primary btn-block" id="btn-aplicar-filtros">Aplicar</button>
+    </div>
+  </aside>
+
+  <div class="modal fade" id="detalleModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles del Equipo</h5>
+          <div class="ml-auto d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-secondary mr-2" id="btn-copiar-detalle" type="button"><i class="las la-clipboard-list mr-1"></i>Copiar todo</button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+        <div class="modal-body" id="detalle-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
